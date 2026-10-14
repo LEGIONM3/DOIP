@@ -122,7 +122,16 @@ export const SECTOR_PRESETS: Array<{
   { label: "EAST", name: "Eastern Sector (Odisha/Coastal)", center: [86.611, 20.316], zoom: 7.0 },
   { label: "CENTRAL", name: "Central Sector (Nagpur)", center: [79.0882, 21.1458], zoom: 7.0 },
   { label: "SOUTH", name: "Southern Sector (Bengaluru)", center: [77.5946, 12.9716], zoom: 7.5 },
+  { label: "NORTHEAST", name: "North-Eastern Sector (Tezpur/Assam)", center: [92.7926, 26.6338], zoom: 7.0 },
   { label: "ISLANDS", name: "Littoral Sector (Andaman)", center: [92.7265, 11.6234], zoom: 7.2 },
+];
+
+export const ARTIFICIAL_SCENARIOS = [
+  { id: "IN-SC-CASCADE", label: "Cascade (Pan-India)", sector: "ALL-IN", center: [78.9629, 22.5937] as [number, number], zoom: 4.8 },
+  { id: "IN-SC-CYCLONE", label: "Cyclone (Eastern)", sector: "EAST", center: [86.611, 20.316] as [number, number], zoom: 7.0 },
+  { id: "IN-SC-NORTH-COMMS", label: "Blizzard & Comms (North)", sector: "NORTH", center: [77.5771, 34.1526] as [number, number], zoom: 7.2 },
+  { id: "IN-SC-WEST-HEAT", label: "Heatwave (West)", sector: "WEST", center: [70.9083, 26.9157] as [number, number], zoom: 7.0 },
+  { id: "IN-SC-LOGISTICS", label: "Chokepoint (Central)", sector: "CENTRAL", center: [79.0882, 21.1458] as [number, number], zoom: 7.0 },
 ];
 
 export default function TacticalMap({
@@ -428,6 +437,8 @@ export default function TacticalMap({
       markersRef.current = {};
       Object.values(cursorMarkers.current).forEach((m) => m.remove());
       cursorMarkers.current = {};
+      Object.values(stationMarkers.current).forEach((m) => m.remove());
+      stationMarkers.current = {};
       window.clearTimeout(loadFallback);
       map.remove();
 
@@ -676,6 +687,54 @@ export default function TacticalMap({
     }
   }, [cursors, ready]);
 
+  /* ---------- Pan-India Meteorological Observation Stations on Map ---------- */
+  const stationMarkers = useRef<Record<string, maplibregl.Marker>>({});
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !envContext?.stations) return;
+    const seen = new Set<string>();
+
+    for (const stn of Object.values(envContext.stations)) {
+      seen.add(stn.id);
+      let m = stationMarkers.current[stn.id];
+      const isSevere = Boolean(stn.severeAlert);
+      const tempColor =
+        stn.temperatureC <= 0
+          ? "text-cyan-300"
+          : stn.temperatureC >= 35
+            ? "text-amber-400"
+            : "text-sky-400";
+
+      if (!m) {
+        const el = document.createElement("div");
+        el.className = "doip-station-marker group cursor-pointer pointer-events-auto select-none";
+        el.innerHTML = `
+          <div class="flex items-center gap-1 bg-[rgba(10,10,10,0.88)] border ${isSevere ? "border-amber-500/80" : "border-sky-500/50"} hover:border-sky-300 hover:bg-zinc-900 px-1.5 py-0.5 shadow-lg backdrop-blur-sm transition-all rounded-sm">
+            <span class="size-1.5 rounded-full ${isSevere ? "bg-amber-400 animate-ping" : "bg-sky-400 animate-pulse"}"></span>
+            <span class="font-mono text-[9px] font-bold text-zinc-300 group-hover:text-white uppercase tracking-wider">${stn.name.split(" ")[0]}</span>
+            <span class="font-mono text-[9px] font-extrabold ${tempColor}">${stn.temperatureC.toFixed(0)}°</span>
+          </div>
+        `;
+        el.onclick = (e) => {
+          e.stopPropagation();
+          map.easeTo({ center: [stn.lon, stn.lat], zoom: 7.5, duration: 600 });
+          void simStore.fetchWeatherForLocation(stn.lat, stn.lon);
+        };
+        m = new maplibregl.Marker({ element: el }).setLngLat([stn.lon, stn.lat]).addTo(map);
+        stationMarkers.current[stn.id] = m;
+      } else {
+        m.setLngLat([stn.lon, stn.lat]);
+      }
+    }
+
+    for (const id of Object.keys(stationMarkers.current)) {
+      if (!seen.has(id)) {
+        stationMarkers.current[id]?.remove();
+        delete stationMarkers.current[id];
+      }
+    }
+  }, [envContext, ready]);
+
   /* ---------- focus / pulse flyTo ---------- */
   useEffect(() => {
     const map = mapRef.current;
@@ -792,36 +851,88 @@ export default function TacticalMap({
       <div className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-120px)] flex-wrap items-center gap-1.5 font-mono text-[11px]">
         {/* World Mode Indicator */}
         {worldMode === "simulation" ? (
-          <div className="flex items-center gap-1.5 border border-amber-500/50 bg-[rgba(10,10,10,0.88)] px-2 py-1 text-amber-300 shadow-lg backdrop-blur-md">
-            <span className="size-2 rounded-full bg-amber-400 animate-pulse" />
-            <span className="font-bold tracking-wider">IMPACT SIMULATION</span>
-            <span className="text-[10px] text-amber-400/80 border-l border-amber-800/80 pl-1.5">
+          <div className="flex items-center gap-1.5 border border-amber-500/70 bg-[rgba(22,12,6,0.94)] px-2.5 py-1 text-amber-300 shadow-xl backdrop-blur-md">
+            <span className="size-2 rounded-full bg-rose-500 animate-pulse" />
+            <span className="font-bold tracking-wider text-rose-300">ARTIFICIAL IMPACT SIMULATION WORLD</span>
+            <span className="text-[10px] text-amber-400/90 border-l border-amber-800/80 pl-1.5 font-semibold">
               {activeBranchId ?? "BRANCH-ISOLATED"}
             </span>
+
+            {/* Inline Scenario Switcher Dropdown */}
+            <div className="flex items-center gap-1 border-l border-amber-700/60 pl-1.5">
+              <span className="text-[9px] uppercase tracking-wider text-amber-400 font-semibold">SCENARIO:</span>
+              <select
+                value={currentScenarioId}
+                onChange={(e) => {
+                  const chosenId = e.target.value;
+                  const match = ARTIFICIAL_SCENARIOS.find((s) => s.id === chosenId);
+                  simStore.forkSimulation(chosenId);
+                  if (match) {
+                    setActiveSector(match.sector);
+                    mapRef.current?.easeTo({
+                      center: match.center,
+                      zoom: match.zoom,
+                      pitch: is3d ? DEFAULT_PITCH : 0,
+                      duration: 1000,
+                    });
+                  }
+                }}
+                className="bg-black/85 border border-amber-500/60 px-1.5 py-0.5 text-[10px] text-amber-200 font-mono outline-none cursor-pointer hover:border-amber-400 transition-colors"
+                title="Switch Artificial Impact Scenario"
+              >
+                {ARTIFICIAL_SCENARIOS.map((sc) => (
+                  <option key={sc.id} value={sc.id} className="bg-zinc-950 text-amber-200">
+                    {sc.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button
-              onClick={() => simStore.resetToBaseline()}
-              title="Instant Reset to Pan-India Baseline World"
-              className="ml-1 flex items-center gap-1 bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-200 hover:bg-amber-500/40 border border-amber-500/40 transition-colors"
+              onClick={() => {
+                simStore.resetToBaseline();
+                setActiveSector("ALL-IN");
+                mapRef.current?.easeTo({
+                  center: [78.9629, 22.5937],
+                  zoom: 4.8,
+                  pitch: is3d ? DEFAULT_PITCH : 0,
+                  duration: 1000,
+                });
+              }}
+              title="Instant Reset to Pan-India Real World Baseline"
+              className="ml-1 flex items-center gap-1 bg-rose-500/20 px-2 py-0.5 text-[10px] font-semibold text-rose-200 hover:bg-rose-500/40 border border-rose-500/50 transition-colors"
             >
               <RotateCcw className="size-3" /> RESET BASELINE
             </button>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 border border-emerald-500/50 bg-[rgba(10,10,10,0.88)] px-2 py-1 text-emerald-300 shadow-lg backdrop-blur-md">
+          <div className="flex items-center gap-1.5 border border-emerald-500/60 bg-[rgba(8,18,12,0.94)] px-2.5 py-1 text-emerald-300 shadow-xl backdrop-blur-md">
             <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-bold tracking-wider">PAN-INDIA LIVE WORLD</span>
-            <span className="text-[10px] text-emerald-400/80 border-l border-emerald-800/80 pl-1.5">
+            <span className="font-bold tracking-wider text-emerald-300">REAL WORLD MODEL: PAN-INDIA LIVE CONTEXT</span>
+            <span className="text-[10px] text-emerald-400/90 border-l border-emerald-800/80 pl-1.5 font-semibold">
               BASELINE
             </span>
-            <span className="bg-emerald-950/80 text-emerald-400 border border-emerald-800 px-1 py-0.2 text-[9px]">
+            <span className="bg-emerald-950/90 text-emerald-300 border border-emerald-700/80 px-1.5 py-0.2 text-[9px] font-medium">
+              {envContext?.stationsCount ?? 11} STATIONS LIVE
+            </span>
+            <span className="bg-emerald-950/90 text-emerald-400 border border-emerald-800/80 px-1 py-0.2 text-[9px]">
               {envContext?.globalProvenance ?? "REAL_FORECAST"}
             </span>
             <button
-              onClick={() => simStore.switchWorldMode("simulation")}
-              title="Fork Isolated Simulation Branch"
-              className="ml-1 flex items-center gap-1 bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-200 hover:bg-emerald-500/40 border border-emerald-500/40 transition-colors"
+              onClick={() => {
+                simStore.forkSimulation("IN-SC-CASCADE");
+                setActiveSector("ALL-IN");
+                mapRef.current?.easeTo({
+                  center: [78.9629, 22.5937],
+                  zoom: 4.8,
+                  pitch: is3d ? DEFAULT_PITCH : 0,
+                  duration: 1000,
+                });
+              }}
+              title="Fork Isolated Artificial Impact Simulation World"
+              className="ml-1 flex items-center gap-1 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-200 hover:bg-emerald-500/40 border border-emerald-500/50 transition-colors"
             >
-              ⚡ FORK IMPACT SIM
+              ⚡ FORK SIMULATION WORLD
             </button>
           </div>
         )}

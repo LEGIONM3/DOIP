@@ -24,6 +24,7 @@ export const INDIAN_SECTORS: Record<
   CENTRAL: { name: "Central Sector (Nagpur/Corridor)", lat: 21.1458, lon: 79.0882, radius: 0.45 },
   SOUTH: { name: "Southern Sector (Bengaluru/Plateau)", lat: 12.9716, lon: 77.5946, radius: 0.3 },
   LITTORAL: { name: "Littoral Sector (Andaman/Nicobar)", lat: 11.6234, lon: 92.7265, radius: 0.25 },
+  NORTHEAST: { name: "North-Eastern Sector (Assam/Arunachal)", lat: 26.6338, lon: 92.7926, radius: 0.35 },
 };
 
 const PATROL_NAMES = ["ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL"];
@@ -211,6 +212,19 @@ export function buildInitialWorld(seed: number, scenarioId: string): InitWorld {
         },
         capacity: { fuel: 5000, medkit: 200, rations: 1000, battery: 250 },
       },
+      {
+        id: "D-IN-NORTHEAST",
+        name: "NORTH-EASTERN AIRBASE DEPOT (TEZPUR)",
+        lat: 26.6338,
+        lon: 92.7926,
+        stock: {
+          fuel: Math.round(between(rand, 3500, 5200)),
+          medkit: Math.round(between(rand, 90, 160)),
+          rations: Math.round(between(rand, 500, 800)),
+          battery: Math.round(between(rand, 100, 200)),
+        },
+        capacity: { fuel: 6000, medkit: 250, rations: 1200, battery: 350 },
+      },
     ];
 
     const zones: Zone[] = [
@@ -244,6 +258,12 @@ export function buildInitialWorld(seed: number, scenarioId: string): InitWorld {
         kind: "restricted",
         points: ring(rand, 11.6, 92.7, 0.35, 6),
       },
+      {
+        id: "Z-IN-NORTHEAST",
+        name: "BRAHMAPUTRA VALLEY FRONTIER GRID",
+        kind: "patrol",
+        points: ring(rand, 26.63, 92.79, 0.4, 7),
+      },
     ];
 
     const weather: WeatherCell[] = [];
@@ -274,6 +294,41 @@ export function buildInitialWorld(seed: number, scenarioId: string): InitWorld {
         intensity: 0.92,
         kind: "dust",
       });
+    } else if (scenarioId === "IN-SC-CASCADE") {
+      weather.push(
+        {
+          id: "W-CYCLONE-BOB",
+          lat: 18.5,
+          lon: 87.2,
+          radiusM: 180000,
+          intensity: 0.95,
+          kind: "storm",
+        },
+        {
+          id: "W-BLIZZARD-LEH",
+          lat: 34.15,
+          lon: 77.58,
+          radiusM: 95000,
+          intensity: 0.9,
+          kind: "storm",
+        },
+        {
+          id: "W-HEATWAVE-THAR",
+          lat: 26.91,
+          lon: 70.91,
+          radiusM: 120000,
+          intensity: 0.92,
+          kind: "dust",
+        },
+        {
+          id: "W-SQUALL-ANDAMAN",
+          lat: 11.62,
+          lon: 92.73,
+          radiusM: 80000,
+          intensity: 0.85,
+          kind: "rain",
+        },
+      );
     }
 
     return { units, depots, personnel, zones, weather };
@@ -733,6 +788,34 @@ export class MockSimSource implements SimSource {
             name: "Himalayan Blizzard Cell",
           },
         });
+      } else if (w.id.includes("HEATWAVE")) {
+        w.lat += between(rand, -0.001, 0.001);
+        w.lon += between(rand, -0.001, 0.001);
+        out.push({
+          type: "weather_move",
+          severity: "medium",
+          entityId: w.id,
+          payload: {
+            lat: Number(w.lat.toFixed(4)),
+            lon: Number(w.lon.toFixed(4)),
+            intensity: w.intensity,
+            name: "Thar High Thermal Cell",
+          },
+        });
+      } else if (w.id.includes("SQUALL")) {
+        w.lat += between(rand, -0.003, 0.003);
+        w.lon += between(rand, -0.003, 0.003);
+        out.push({
+          type: "weather_move",
+          severity: "medium",
+          entityId: w.id,
+          payload: {
+            lat: Number(w.lat.toFixed(4)),
+            lon: Number(w.lon.toFixed(4)),
+            intensity: w.intensity,
+            name: "Andaman Maritime Squall",
+          },
+        });
       } else {
         w.lat += between(rand, -0.001, 0.001);
         w.lon += between(rand, -0.001, 0.001);
@@ -749,7 +832,10 @@ export class MockSimSource implements SimSource {
       const silentUntil = this.silence.get(u.id) ?? 0;
       if (silentUntil > this.tick) continue;
 
-      const commsFailRate = scId === "IN-SC-NORTH-COMMS" && u.sector === "NORTH" ? 0.025 : 0.004;
+      const commsFailRate =
+        (scId === "IN-SC-NORTH-COMMS" || scId === "IN-SC-CASCADE") && u.sector === "NORTH"
+          ? 0.025
+          : 0.004;
       if (rand() < commsFailRate) {
         this.silence.set(u.id, this.tick + Math.round(between(rand, 180, 420)));
         out.push({
@@ -789,9 +875,13 @@ export class MockSimSource implements SimSource {
 
       let speedMult = 1.0;
       if (inWeather) {
-        speedMult = scId === "IN-SC-CYCLONE" ? 0.35 : 0.5;
+        speedMult = scId === "IN-SC-CYCLONE" || scId === "IN-SC-CASCADE" ? 0.35 : 0.5;
       }
-      if (scId === "IN-SC-LOGISTICS" && u.sector === "CENTRAL" && u.kind === "convoy") {
+      if (
+        (scId === "IN-SC-LOGISTICS" || scId === "IN-SC-CASCADE") &&
+        u.sector === "CENTRAL" &&
+        u.kind === "convoy"
+      ) {
         speedMult = 0.15;
       }
 
@@ -829,9 +919,15 @@ export class MockSimSource implements SimSource {
       });
 
       if (this.tick % 5 === 0) {
-        const fuelRateMult = scId === "IN-SC-WEST-HEAT" && u.sector === "WEST" ? 2.4 : 1.0;
+        const fuelRateMult =
+          (scId === "IN-SC-WEST-HEAT" || scId === "IN-SC-CASCADE") && u.sector === "WEST"
+            ? 2.4
+            : 1.0;
         u.fuel = Math.max(0, u.fuel - between(rand, 0.05, 0.35) * fuelRateMult);
-        const batRateMult = scId === "IN-SC-NORTH-COMMS" && u.sector === "NORTH" ? 3.0 : 1.0;
+        const batRateMult =
+          (scId === "IN-SC-NORTH-COMMS" || scId === "IN-SC-CASCADE") && u.sector === "NORTH"
+            ? 3.0
+            : 1.0;
         u.battery = Math.max(
           0,
           u.battery - between(rand, 0.1, 0.5) * (u.kind === "uav" ? 2 : 1) * batRateMult,
@@ -876,7 +972,10 @@ export class MockSimSource implements SimSource {
 
     if (this.tick % 10 === 0) {
       for (const d of this.depots) {
-        const burnMult = scId === "IN-SC-LOGISTICS" && d.id === "D-IN-CENTRAL" ? 3.5 : 1.0;
+        const burnMult =
+          (scId === "IN-SC-LOGISTICS" || scId === "IN-SC-CASCADE") && d.id === "D-IN-CENTRAL"
+            ? 3.5
+            : 1.0;
         d.stock.fuel = Math.max(0, d.stock.fuel - Math.round(between(rand, 3, 20) * burnMult));
         d.stock.rations = Math.max(0, d.stock.rations - Math.round(between(rand, 2, 8) * burnMult));
         d.stock.medkit = Math.max(0, d.stock.medkit - (rand() < 0.25 ? 1 : 0));
@@ -908,6 +1007,13 @@ export class MockSimSource implements SimSource {
       if (scId === "IN-SC-LOGISTICS") incKind = "supply-shortfall";
       else if (scId === "IN-SC-NORTH-COMMS") incKind = "signal-jamming";
       else if (scId === "IN-SC-WEST-HEAT") incKind = "vehicle-breakdown";
+      else if (scId === "IN-SC-CASCADE") {
+        if (u.sector === "NORTH") incKind = "signal-jamming";
+        else if (u.sector === "WEST") incKind = "vehicle-breakdown";
+        else if (u.sector === "CENTRAL") incKind = "supply-shortfall";
+        else if (u.sector === "EAST") incKind = "perimeter-breach";
+        else incKind = pick(rand, INCIDENT_KINDS);
+      }
 
       const incId = `INC-IN-${this.tick}`;
       const sev: Severity =

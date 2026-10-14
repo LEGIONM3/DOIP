@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EmptyState, Panel, Stat, Mono } from "@/components/doip/primitives";
 import { Sparkline } from "@/components/doip/Sparkline";
@@ -65,12 +65,27 @@ function RunControlScreen() {
   const snapshot = useSim((s) => s.snapshot);
   const role = useSim((s) => s.role);
   const runs = useSim((s) => s.runs);
+  const worldMode = useSim((s) => s.worldMode);
+  const activeBranchId = useSim((s) => s.activeBranchId);
+  const envContext = useSim((s) => s.environmentalContext);
 
   const fingerprint = useMemo(() => computeEventFingerprint(events), [events]);
 
   const [seedInput, setSeedInput] = useState(String(seed));
   const [picked, setPicked] = useState(scenarioId);
+  const [categoryFilter, setCategoryFilter] = useState<
+    "all" | "live-baseline" | "artificial-impact" | "legacy"
+  >("all");
   const allowed = canOperate(role);
+
+  useEffect(() => {
+    setPicked(scenarioId);
+  }, [scenarioId]);
+
+  const filteredScenarios = useMemo(() => {
+    if (categoryFilter === "all") return SCENARIOS;
+    return SCENARIOS.filter((s) => s.category === categoryFilter);
+  }, [categoryFilter]);
 
   const guard = (fn: () => void, label: string) => () => {
     if (!allowed) {
@@ -123,14 +138,202 @@ function RunControlScreen() {
           </div>
         </div>
 
-        <Panel title="Scenario library">
+        {/* World Model Authority & Management Strip */}
+        <div className="border border-border bg-raised/30 p-2.5 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                WORLD MODEL:
+              </span>
+              <div className="flex border border-border bg-background">
+                <button
+                  onClick={guard(() => {
+                    simStore.resetToBaseline();
+                    setPicked("IN-BASE-LIVE");
+                  }, "Switched to Pan-India Real World Model (Live Baseline)")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 font-mono text-xs uppercase tracking-wide transition-colors",
+                    worldMode === "baseline"
+                      ? "bg-emerald-500/20 text-emerald-300 font-bold border-r border-emerald-500/40"
+                      : "text-muted-foreground hover:text-foreground border-r border-border",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "size-2 rounded-full",
+                      worldMode === "baseline" ? "bg-emerald-400 animate-pulse" : "bg-zinc-600",
+                    )}
+                  />
+                  Real World Baseline
+                </button>
+                <button
+                  onClick={guard(() => {
+                    simStore.switchWorldMode("simulation");
+                    setPicked("IN-SC-CASCADE");
+                  }, "Switched to Artificial Impact Simulation World")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 font-mono text-xs uppercase tracking-wide transition-colors",
+                    worldMode === "simulation"
+                      ? "bg-amber-500/20 text-amber-300 font-bold"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "size-2 rounded-full",
+                      worldMode === "simulation" ? "bg-amber-400 animate-pulse" : "bg-zinc-600",
+                    )}
+                  />
+                  Simulation World (Impact Branches)
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 font-mono text-[11px]">
+              {worldMode === "baseline" ? (
+                <>
+                  <span className="border border-emerald-700/60 bg-emerald-950/60 px-2 py-0.5 text-emerald-300 font-medium">
+                    {envContext?.stationsCount ?? 11} MET STATIONS LIVE
+                  </span>
+                  <span className="border border-emerald-800/80 bg-emerald-950/40 px-1.5 py-0.5 text-[10px] text-emerald-400">
+                    PROVENANCE: {envContext?.globalProvenance ?? "REAL_FORECAST"}
+                  </span>
+                  <button
+                    onClick={guard(() => {
+                      simStore.forkSimulation("IN-SC-CASCADE", Number(seedInput) || 20261014);
+                      setPicked("IN-SC-CASCADE");
+                    }, "Forked Simulation World: Pan-India Multi-Sector Cascade")}
+                    className="flex items-center gap-1 border border-amber-500/60 bg-amber-500/20 px-2 py-0.5 text-amber-200 hover:bg-amber-500/30 font-semibold"
+                  >
+                    <Zap className="size-3" /> FORK SIMULATION WORLD
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="border border-amber-700/60 bg-amber-950/60 px-2 py-0.5 text-amber-300 font-semibold">
+                    BRANCH: {activeBranchId ?? "BRANCH-ISOLATED"}
+                  </span>
+                  <button
+                    onClick={guard(() => {
+                      simStore.resetToBaseline();
+                      setPicked("IN-BASE-LIVE");
+                    }, "Reset to Pan-India Baseline World")}
+                    className="flex items-center gap-1 border border-emerald-500/60 bg-emerald-500/20 px-2 py-0.5 text-emerald-200 hover:bg-emerald-500/30 font-semibold"
+                  >
+                    <RotateCcw className="size-3" /> ↺ RESET TO REAL WORLD BASELINE
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* 1-Click Artificial Impact Branch Launchers */}
+          <div className="mt-2.5">
+            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
+              <span>⚡ 1-Click Artificial Impact Branch Launchers (Subcontinent-Wide Multi-Sector)</span>
+              <span className="text-[9px] text-zinc-500">ISOLATED FROM BASELINE WORLD</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-1.5">
+              {[
+                {
+                  id: "IN-SC-CASCADE",
+                  name: "Multi-Sector Cascade",
+                  sector: "Pan-India",
+                  desc: "Cyclone + Blizzard + Heatwave + Logistics",
+                  color: "border-rose-500/50 bg-rose-950/20 text-rose-300 hover:bg-rose-950/40",
+                },
+                {
+                  id: "IN-SC-CYCLONE",
+                  name: "Bay of Bengal Cyclone",
+                  sector: "Eastern Littoral",
+                  desc: "Cat 3 coastal flooding & port choke",
+                  color: "border-sky-500/50 bg-sky-950/20 text-sky-300 hover:bg-sky-950/40",
+                },
+                {
+                  id: "IN-SC-NORTH-COMMS",
+                  name: "Himalayan Blizzard",
+                  sector: "Northern Ladakh",
+                  desc: "Sub-zero blizzard & RF comms loss",
+                  color: "border-blue-500/50 bg-blue-950/20 text-blue-300 hover:bg-blue-950/40",
+                },
+                {
+                  id: "IN-SC-WEST-HEAT",
+                  name: "Thar Desert Heatwave",
+                  sector: "Western Desert",
+                  desc: "48°C extreme heat & fuel boil-off",
+                  color: "border-amber-500/50 bg-amber-950/20 text-amber-300 hover:bg-amber-950/40",
+                },
+                {
+                  id: "IN-SC-LOGISTICS",
+                  name: "Central Logistics Choke",
+                  sector: "Central Nagpur",
+                  desc: "Transit hub rail breakdown",
+                  color: "border-orange-500/50 bg-orange-950/20 text-orange-300 hover:bg-orange-950/40",
+                },
+              ].map((b) => (
+                <button
+                  key={b.id}
+                  onClick={guard(() => {
+                    simStore.forkSimulation(b.id, Number(seedInput) || 20261014);
+                    setPicked(b.id);
+                  }, `Forked Artificial Branch: ${b.name}`)}
+                  className={cn(
+                    "flex flex-col text-left p-1.5 border font-mono transition-all",
+                    b.color,
+                    scenarioId === b.id && worldMode === "simulation"
+                      ? "ring-1 ring-white shadow-md"
+                      : "opacity-90 hover:opacity-100",
+                  )}
+                >
+                  <div className="flex items-center justify-between text-[10px] font-bold">
+                    <span>{b.name}</span>
+                    <span className="text-[9px] opacity-70">[{b.sector}]</span>
+                  </div>
+                  <p className="text-[9px] text-zinc-400 mt-0.5 line-clamp-1">{b.desc}</p>
+                  <span className="text-[8px] uppercase tracking-wider text-primary mt-1 font-semibold">
+                    ⚡ Launch Branch
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <Panel
+          title="Scenario library"
+          actions={
+            <div className="flex items-center gap-1 font-mono text-[10px]">
+              {(
+                [
+                  { id: "all", label: "ALL" },
+                  { id: "live-baseline", label: "PAN-INDIA LIVE" },
+                  { id: "artificial-impact", label: "ARTIFICIAL IMPACT" },
+                  { id: "legacy", label: "LEGACY" },
+                ] as const
+              ).map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setCategoryFilter(tab.id)}
+                  className={cn(
+                    "px-1.5 py-0.5 uppercase tracking-wide border transition-colors",
+                    categoryFilter === tab.id
+                      ? "border-primary bg-primary/20 text-primary font-bold"
+                      : "border-border text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          }
+        >
           <ul className="grid gap-2 sm:grid-cols-2">
-            {SCENARIOS.map((sc) => (
+            {filteredScenarios.map((sc) => (
               <li key={sc.id}>
                 <button
                   onClick={() => setPicked(sc.id)}
                   className={cn(
-                    "h-full w-full  border p-2 text-left transition-colors",
+                    "h-full w-full border p-2 text-left transition-colors",
                     picked === sc.id
                       ? "border-primary/60 bg-raised"
                       : "border-border hover:bg-raised doip-btn-primary",
@@ -138,19 +341,27 @@ function RunControlScreen() {
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-xs text-primary">{sc.id}</span>
-                    <span
-                      className={cn(
-                        "font-mono text-[10px] uppercase",
-                        sc.validation === "valid" ? "text-success" : "text-sev-medium",
-                      )}
-                    >
-                      {sc.validation}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono text-[9px] px-1 py-0.2 bg-muted/60 text-muted-foreground uppercase">
+                        {sc.sector || "PAN-INDIA"}
+                      </span>
+                      <span
+                        className={cn(
+                          "font-mono text-[10px] uppercase",
+                          sc.validation === "valid" ? "text-success" : "text-sev-medium",
+                        )}
+                      >
+                        {sc.validation}
+                      </span>
+                    </div>
                   </div>
-                  <div className="mt-1 text-sm">{sc.name}</div>
+                  <div className="mt-1 text-sm font-medium">{sc.name}</div>
                   <p className="mt-1 text-xs text-muted-foreground">{sc.description}</p>
-                  <div className="mt-2 font-mono text-[10px] text-muted-foreground">
-                    patrols {sc.patrolCount} · uav {sc.uavCount} · convoy {sc.convoyCount}
+                  <div className="mt-2 flex items-center justify-between font-mono text-[10px] text-muted-foreground">
+                    <span>
+                      patrols {sc.patrolCount} · uav {sc.uavCount} · convoy {sc.convoyCount}
+                    </span>
+                    <span className="text-[9px] text-zinc-500 uppercase">{sc.category}</span>
                   </div>
                 </button>
               </li>

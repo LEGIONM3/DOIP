@@ -131,6 +131,19 @@ export const SCENARIOS: Scenario[] = [
     category: "artificial-impact",
     sector: "Central Corridor",
   },
+  {
+    id: "IN-SC-CASCADE",
+    name: "Pan-India Multi-Sector Cascading Crisis",
+    description: "Simultaneous compound crisis across all Indian sectors: Eastern cyclone, Northern blizzard & comms blackout, Western desert fuel boil-off, and Central corridor freight failure.",
+    incidentRate: 0.18,
+    weatherRate: 0.16,
+    uavCount: 10,
+    patrolCount: 14,
+    convoyCount: 8,
+    validation: "warning",
+    category: "artificial-impact",
+    sector: "All-India Subcontinent",
+  },
 ];
 
 export const getScenario = (id: string) => SCENARIOS.find((s) => s.id === id) ?? SCENARIOS[0]!;

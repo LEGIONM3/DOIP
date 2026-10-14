@@ -92,6 +92,7 @@ class WorldModelService:
             ("BRANCH-NORTH-COMMS", "IN-SC-NORTH-COMMS", 8802, "Ladakh High-Altitude Comms Blackout"),
             ("BRANCH-WEST-HEAT", "IN-SC-WEST-HEAT", 8803, "Thar Desert Thermal Strain"),
             ("BRANCH-LOGISTICS", "IN-SC-LOGISTICS", 8804, "Central Corridor Chokepoint"),
+            ("BRANCH-CASCADE", "IN-SC-CASCADE", 8805, "Pan-India Multi-Sector Cascading Crisis"),
         ]
         for b_id, sc_id, seed, name in defaults:
             self.branches[b_id] = SimulationBranch(b_id, sc_id, seed, name)
@@ -117,6 +118,7 @@ class WorldModelService:
                 {"id": "Z-IN-EAST", "name": "BAY OF BENGAL MARITIME SECTOR", "kind": "threat", "sector": "EAST"},
                 {"id": "Z-IN-CENTRAL", "name": "CENTRAL FREIGHT LOGISTICS CORRIDOR", "kind": "patrol", "sector": "CENTRAL"},
                 {"id": "Z-IN-LITTORAL", "name": "ANDAMAN SEA SURVEILLANCE ZONE", "kind": "restricted", "sector": "LITTORAL"},
+                {"id": "Z-IN-NORTHEAST", "name": "BRAHMAPUTRA VALLEY FRONTIER GRID", "kind": "patrol", "sector": "NORTHEAST"},
             ],
         }
 

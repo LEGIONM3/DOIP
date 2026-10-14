@@ -28,6 +28,7 @@ INDIAN_SECTORS = {
     "CENTRAL": {"name": "Central Sector (Nagpur/Corridor)", "lat": 21.1458, "lon": 79.0882, "radius": 0.45},
     "SOUTH": {"name": "Southern Sector (Bengaluru/Plateau)", "lat": 12.9716, "lon": 77.5946, "radius": 0.30},
     "LITTORAL": {"name": "Littoral Sector (Andaman/Nicobar)", "lat": 11.6234, "lon": 92.7265, "radius": 0.25},
+    "NORTHEAST": {"name": "North-Eastern Sector (Assam/Arunachal)", "lat": 26.6338, "lon": 92.7926, "radius": 0.35},
 }
 
 PATROL_NAMES = ["ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL"]
@@ -71,6 +72,9 @@ SCENARIOS: dict[str, dict] = {
     "IN-SC-LOGISTICS": {"id": "IN-SC-LOGISTICS", "name": "Central Corridor Supply Chokepoint & Depot Breakdown",
                         "incidentRate": 0.14, "weatherRate": 0.03,
                         "uavCount": 5, "patrolCount": 8, "convoyCount": 8},
+    "IN-SC-CASCADE": {"id": "IN-SC-CASCADE", "name": "Pan-India Multi-Sector Cascading Crisis",
+                      "incidentRate": 0.18, "weatherRate": 0.16,
+                      "uavCount": 10, "patrolCount": 14, "convoyCount": 8},
 }
 
 
@@ -314,6 +318,15 @@ class SimEngine:
                        "battery": round(between(rand, 90, 180))},
                 capacity={"fuel": 5000, "medkit": 200, "rations": 1000, "battery": 250},
             ),
+            Depot(
+                id="D-IN-NORTHEAST", name="NORTH-EASTERN AIRBASE DEPOT (TEZPUR)",
+                lat=26.6338, lon=92.7926,
+                stock={"fuel": round(between(rand, 3500, 5200)),
+                       "medkit": round(between(rand, 90, 160)),
+                       "rations": round(between(rand, 500, 800)),
+                       "battery": round(between(rand, 100, 200))},
+                capacity={"fuel": 6000, "medkit": 250, "rations": 1200, "battery": 350},
+            ),
         ]
 
         # Strategic zones covering major Indian border / coastal / corridor areas
@@ -328,6 +341,8 @@ class SimEngine:
              "points": _ring(rand, 21.15, 79.1, 0.55, 6)},
             {"id": "Z-IN-LITTORAL", "name": "ANDAMAN SEA APPROACH MARITIME ZONE", "kind": "restricted",
              "points": _ring(rand, 11.6, 92.7, 0.35, 6)},
+            {"id": "Z-IN-NORTHEAST", "name": "BRAHMAPUTRA VALLEY FRONTIER GRID", "kind": "patrol",
+             "points": _ring(rand, 26.63, 92.79, 0.40, 7)},
         ]
 
         # Injects initial artificial scenario weather / effects
@@ -361,6 +376,14 @@ class SimEngine:
                 kind="dust",
             )
             self._weather.append(cell)
+        elif scenario_id == "IN-SC-CASCADE":
+            # Compound crisis across all Indian sectors
+            self._weather.extend([
+                WeatherCell(id="W-CYCLONE-BOB", lat=18.50, lon=87.20, radiusM=180000, intensity=0.95, kind="storm"),
+                WeatherCell(id="W-BLIZZARD-LEH", lat=34.15, lon=77.58, radiusM=95000, intensity=0.90, kind="storm"),
+                WeatherCell(id="W-HEATWAVE-THAR", lat=26.91, lon=70.91, radiusM=120000, intensity=0.92, kind="dust"),
+                WeatherCell(id="W-SQUALL-ANDAMAN", lat=11.62, lon=92.73, radiusM=80000, intensity=0.85, kind="rain"),
+            ])
 
         world_init = self._make_event(
             "world_init", "low", "system",
@@ -588,6 +611,13 @@ class SimEngine:
                              "entityId": w.id,
                              "payload": {"lat": round(w.lat, 4), "lon": round(w.lon, 4),
                                           "intensity": w.intensity, "name": "Thar High Thermal Cell"}})
+            elif "SQUALL" in w.id:
+                w.lat += between(rand, -0.003, 0.003)
+                w.lon += between(rand, -0.003, 0.003)
+                out.append({"type": "weather_move", "severity": "medium",
+                             "entityId": w.id,
+                             "payload": {"lat": round(w.lat, 4), "lon": round(w.lon, 4),
+                                          "intensity": w.intensity, "name": "Andaman Maritime Squall"}})
             else:
                 w.lat += between(rand, -0.002, 0.002)
                 w.lon += between(rand, -0.002, 0.002)
@@ -602,8 +632,8 @@ class SimEngine:
             if silent_until > self.tick:
                 continue
 
-            # Comms loss rate elevated in North Comms Blackout
-            comms_fail_rate = 0.025 if (sc_id == "IN-SC-NORTH-COMMS" and u.sector == "NORTH") else 0.004
+            # Comms loss rate elevated in North Comms Blackout & Cascade
+            comms_fail_rate = 0.025 if (sc_id in ("IN-SC-NORTH-COMMS", "IN-SC-CASCADE") and u.sector == "NORTH") else 0.004
             if rand() < comms_fail_rate:
                 self._silence[u.id] = self.tick + round(between(rand, 180, 420))
                 out.append({"type": "comms_loss", "severity": "high",
@@ -635,8 +665,8 @@ class SimEngine:
             # - Central logistics breakdown halts Central convoys
             speed_mult = 1.0
             if in_weather:
-                speed_mult = 0.35 if sc_id == "IN-SC-CYCLONE" else 0.50
-            if sc_id == "IN-SC-LOGISTICS" and u.sector == "CENTRAL" and u.kind == "convoy":
+                speed_mult = 0.35 if (sc_id in ("IN-SC-CYCLONE", "IN-SC-CASCADE")) else 0.50
+            if (sc_id in ("IN-SC-LOGISTICS", "IN-SC-CASCADE")) and u.sector == "CENTRAL" and u.kind == "convoy":
                 speed_mult = 0.15  # Bottleneck halt
 
             base_step = (u.speedKph / 3600 / 111) * speed_mult * 4
@@ -662,11 +692,11 @@ class SimEngine:
             # Resource consumption
             if self.tick % 5 == 0:
                 # Fuel drain: higher in Thar heatwave due to boil-off
-                fuel_rate_mult = 2.4 if (sc_id == "IN-SC-WEST-HEAT" and u.sector == "WEST") else 1.0
+                fuel_rate_mult = 2.4 if (sc_id in ("IN-SC-WEST-HEAT", "IN-SC-CASCADE") and u.sector == "WEST") else 1.0
                 u.fuel = max(0.0, u.fuel - between(rand, 0.05, 0.35) * fuel_rate_mult)
 
                 # Battery drain: 3x in Himalayan freeze
-                bat_rate_mult = 3.0 if (sc_id == "IN-SC-NORTH-COMMS" and u.sector == "NORTH") else 1.0
+                bat_rate_mult = 3.0 if (sc_id in ("IN-SC-NORTH-COMMS", "IN-SC-CASCADE") and u.sector == "NORTH") else 1.0
                 bat_drain = between(rand, 0.1, 0.5) * (2 if u.kind == "uav" else 1) * bat_rate_mult
                 u.battery = max(0.0, u.battery - bat_drain)
 
@@ -694,7 +724,7 @@ class SimEngine:
         # Depot consumption & logistics breakdown
         if self.tick % 10 == 0:
             for d in self._depots:
-                burn_mult = 3.5 if (sc_id == "IN-SC-LOGISTICS" and d.id == "D-IN-CENTRAL") else 1.0
+                burn_mult = 3.5 if (sc_id in ("IN-SC-LOGISTICS", "IN-SC-CASCADE") and d.id == "D-IN-CENTRAL") else 1.0
                 d.stock["fuel"] = max(0, d.stock["fuel"] - round(between(rand, 3, 20) * burn_mult))
                 d.stock["rations"] = max(0, d.stock["rations"] - round(between(rand, 2, 8) * burn_mult))
                 d.stock["medkit"] = max(0, d.stock["medkit"] - (1 if rand() < 0.25 else 0))
@@ -719,6 +749,17 @@ class SimEngine:
                 inc_kind = "signal-jamming"
             elif sc_id == "IN-SC-WEST-HEAT":
                 inc_kind = "vehicle-breakdown"
+            elif sc_id == "IN-SC-CASCADE":
+                if u.sector == "NORTH":
+                    inc_kind = "signal-jamming"
+                elif u.sector == "WEST":
+                    inc_kind = "vehicle-breakdown"
+                elif u.sector == "CENTRAL":
+                    inc_kind = "supply-shortfall"
+                elif u.sector == "EAST":
+                    inc_kind = "perimeter-breach"
+                else:
+                    inc_kind = pick(rand, INCIDENT_KINDS)
 
             inc_id = f"INC-IN-{self.tick}"
             sev = "critical" if inc_kind in ("supply-shortfall", "signal-jamming") else "high"

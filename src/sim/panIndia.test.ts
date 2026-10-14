@@ -18,7 +18,7 @@ describe("Pan-India Live World Model & Simulation", () => {
   it("generates Pan-India live baseline units across strategic Indian sectors", () => {
     const world = buildInitialWorld(20261014, "IN-BASE-LIVE");
     expect(world.units.length).toBeGreaterThanOrEqual(20);
-    expect(world.depots.length).toBe(6);
+    expect(world.depots.length).toBe(7); // 7 strategic depots across subcontinent
 
     const sectors = new Set(world.units.map((u) => u.sector));
     expect(sectors.has("NORTH")).toBe(true);
@@ -26,6 +26,7 @@ describe("Pan-India Live World Model & Simulation", () => {
     expect(sectors.has("EAST")).toBe(true);
     expect(sectors.has("CENTRAL")).toBe(true);
     expect(sectors.has("SOUTH")).toBe(true);
+    expect(sectors.has("NORTHEAST")).toBe(true);
 
     const lats = world.units.map((u) => u.lat);
     const lons = world.units.map((u) => u.lon);
@@ -41,6 +42,17 @@ describe("Pan-India Live World Model & Simulation", () => {
     expect(cycloneWorld.weather!.length).toBe(1);
     expect(cycloneWorld.weather![0]!.id).toBe("W-CYCLONE-BOB");
     expect(cycloneWorld.weather![0]!.kind).toBe("storm");
+  });
+
+  it("initializes pan-india multi-sector cascade scenario with 4 simultaneous hazard cells", () => {
+    const cascadeWorld = buildInitialWorld(20261014, "IN-SC-CASCADE");
+    expect(cascadeWorld.weather).toBeDefined();
+    expect(cascadeWorld.weather!.length).toBe(4);
+    const weatherIds = cascadeWorld.weather!.map((w) => w.id);
+    expect(weatherIds).toContain("W-CYCLONE-BOB");
+    expect(weatherIds).toContain("W-BLIZZARD-LEH");
+    expect(weatherIds).toContain("W-HEATWAVE-THAR");
+    expect(weatherIds).toContain("W-SQUALL-ANDAMAN");
   });
 
   it("steps Pan-India simulation source and emits movement events", () => {
@@ -66,10 +78,10 @@ describe("Pan-India Live World Model & Simulation", () => {
     expect(simStore.getState().activeBranchId).toBeNull();
 
     // Fork simulation
-    simStore.forkSimulation("IN-SC-NORTH-COMMS", 20261014);
+    simStore.forkSimulation("IN-SC-CASCADE", 20261014);
     expect(simStore.getState().worldMode).toBe("simulation");
     expect(simStore.getState().activeBranchId).toBeTruthy();
-    expect(simStore.getState().scenarioId).toBe("IN-SC-NORTH-COMMS");
+    expect(simStore.getState().scenarioId).toBe("IN-SC-CASCADE");
 
     // Instant Reset to Baseline
     simStore.resetToBaseline();

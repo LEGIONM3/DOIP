@@ -104,4 +104,17 @@ SCENARIOS = [
         "patrolCount": 8,
         "convoyCount": 8,
     },
+    {
+        "id": "IN-SC-CASCADE",
+        "name": "Pan-India Multi-Sector Cascading Crisis",
+        "description": "Simultaneous compound crisis across all Indian sectors: Eastern cyclone, Northern blizzard & comms blackout, Western desert fuel boil-off, and Central corridor freight failure.",
+        "validation": "warning",
+        "category": "artificial-impact",
+        "sector": "All-India Subcontinent",
+        "incidentRate": 0.18,
+        "weatherRate": 0.16,
+        "uavCount": 10,
+        "patrolCount": 14,
+        "convoyCount": 8,
+    },
 ]
