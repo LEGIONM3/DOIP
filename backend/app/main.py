@@ -94,6 +94,8 @@ from .documentation_engine import documentation_engine
 from .data_governance import data_governance_engine
 from .quality_platform import quality_platform
 from .research_sandbox import research_sandbox
+from .environmental_context import environmental_context_service
+from .world_model import world_model_service
 from fastapi.responses import PlainTextResponse
 
 app = FastAPI(title="DOIP Command Center Backend", version="0.9.0")
@@ -172,6 +174,72 @@ def login(body: LoginBody) -> dict:
 @app.get("/scenarios")
 def scenarios_list() -> dict:
     return {"scenarios": SCENARIOS}
+
+
+# ============================================================
+# Pan-India Live World & Artificial Impact Simulation (Phase 9)
+# ============================================================
+class ForkSimulationBody(BaseModel):
+    scenario_id: str
+    seed: int = 20261014
+    branch_id: str | None = None
+    name: str | None = None
+
+
+class ResetSimulationBody(BaseModel):
+    branch_id: str
+
+
+class StepSimulationBody(BaseModel):
+    branch_id: str
+
+
+@app.get("/api/environment/context")
+async def get_environment_context(force_refresh: bool = False) -> dict:
+    return await environmental_context_service.get_environmental_context(force_refresh=force_refresh)
+
+
+@app.get("/api/world/baseline")
+async def get_world_baseline() -> dict:
+    return await world_model_service.get_baseline_world()
+
+
+@app.get("/api/world/branches")
+def list_simulation_branches() -> dict:
+    return {"branches": world_model_service.list_branches()}
+
+
+@app.post("/api/world/simulation/fork")
+def fork_simulation_branch(body: ForkSimulationBody) -> dict:
+    branch = world_model_service.fork_simulation(
+        scenario_id=body.scenario_id,
+        seed=body.seed,
+        branch_id=body.branch_id,
+        name=body.name,
+    )
+    return {
+        "status": "forked",
+        "branch": branch.to_dict(),
+        "initial_events": [ev.to_dict() for ev in branch.init_events],
+    }
+
+
+@app.post("/api/world/simulation/reset")
+def reset_simulation_branch(body: ResetSimulationBody) -> dict:
+    try:
+        return world_model_service.reset_simulation(body.branch_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@app.post("/api/world/simulation/step")
+def step_simulation_branch(body: StepSimulationBody) -> dict:
+    try:
+        events = world_model_service.step_branch(body.branch_id)
+        return {"branch_id": body.branch_id, "events": events}
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
 
 
 # ============================================================

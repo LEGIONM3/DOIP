@@ -6,7 +6,10 @@ server and browser replay.
 
 Entry point for callers: `SimEngine`. Use `start()` to initialise a run and
 call `step()` in a loop (or let `SimSession` drive the async loop via WS).
+Supports legacy scenarios (SC-1..SC-4) and Pan-India live baseline / artificial impact scenarios.
 """
+
+from __future__ import annotations
 
 import math
 from typing import Any
@@ -16,6 +19,16 @@ from .sim_types import Depot, Person, SimEvent, Unit, WeatherCell, Zone
 
 BASE_LAT = 12.9716
 BASE_LON = 77.5946
+
+# Strategic Indian regional anchors
+INDIAN_SECTORS = {
+    "NORTH": {"name": "Northern Sector (Ladakh/J&K)", "lat": 34.1526, "lon": 77.5771, "radius": 0.35},
+    "WEST": {"name": "Western Sector (Rajasthan/Thar)", "lat": 26.9157, "lon": 70.9083, "radius": 0.40},
+    "EAST": {"name": "Eastern Sector (Odisha/Coastal)", "lat": 20.3160, "lon": 86.6110, "radius": 0.35},
+    "CENTRAL": {"name": "Central Sector (Nagpur/Corridor)", "lat": 21.1458, "lon": 79.0882, "radius": 0.45},
+    "SOUTH": {"name": "Southern Sector (Bengaluru/Plateau)", "lat": 12.9716, "lon": 77.5946, "radius": 0.30},
+    "LITTORAL": {"name": "Littoral Sector (Andaman/Nicobar)", "lat": 11.6234, "lon": 92.7265, "radius": 0.25},
+}
 
 PATROL_NAMES = ["ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL"]
 UAV_NAMES = ["RAVEN", "KITE", "FALCON", "OSPREY", "SHRIKE", "HARRIER", "MERLIN", "CONDOR"]
@@ -42,6 +55,22 @@ SCENARIOS: dict[str, dict] = {
     "SC-4": {"id": "SC-4", "name": "Convoy Escort",
              "incidentRate": 0.10, "weatherRate": 0.08,
              "uavCount": 3, "patrolCount": 6, "convoyCount": 6},
+    # Pan-India Scenarios
+    "IN-BASE-LIVE": {"id": "IN-BASE-LIVE", "name": "Pan-India Live Context Baseline",
+                    "incidentRate": 0.04, "weatherRate": 0.02,
+                    "uavCount": 8, "patrolCount": 12, "convoyCount": 6},
+    "IN-SC-CYCLONE": {"id": "IN-SC-CYCLONE", "name": "Bay of Bengal Severe Cyclone & Coastal Flooding",
+                     "incidentRate": 0.16, "weatherRate": 0.15,
+                     "uavCount": 6, "patrolCount": 8, "convoyCount": 4},
+    "IN-SC-NORTH-COMMS": {"id": "IN-SC-NORTH-COMMS", "name": "Himalayan High-Altitude Comms Blackout & Blizzard",
+                          "incidentRate": 0.12, "weatherRate": 0.10,
+                          "uavCount": 6, "patrolCount": 10, "convoyCount": 4},
+    "IN-SC-WEST-HEAT": {"id": "IN-SC-WEST-HEAT", "name": "Thar Desert Extreme Heatwave & Fuel Boil-off",
+                        "incidentRate": 0.11, "weatherRate": 0.05,
+                        "uavCount": 7, "patrolCount": 8, "convoyCount": 5},
+    "IN-SC-LOGISTICS": {"id": "IN-SC-LOGISTICS", "name": "Central Corridor Supply Chokepoint & Depot Breakdown",
+                        "incidentRate": 0.14, "weatherRate": 0.03,
+                        "uavCount": 5, "patrolCount": 8, "convoyCount": 8},
 }
 
 
@@ -84,6 +113,10 @@ class SimEngine:
         self._silence.clear()
         self._weather = []
 
+        if scenario_id.startswith("IN-"):
+            return self._start_pan_india(seed, scenario_id)
+
+        # Legacy SC-1..SC-4 Start (Preserves Golden Run bit-identical PRNG)
         rand = self._rand
 
         def mk(kind: str, callsign: str, i: int) -> Unit:
@@ -166,9 +199,188 @@ class SimEngine:
         return [world_init]
 
     # ------------------------------------------------------------------
+    def _start_pan_india(self, seed: int, scenario_id: str) -> list[SimEvent]:
+        """Initialise Pan-India world state distributed across Indian strategic sectors."""
+        rand = self._rand
+        sc = self._sc
+        sector_keys = list(INDIAN_SECTORS.keys())
+
+        def mk_india_unit(kind: str, callsign: str, i: int, sector_key: str) -> Unit:
+            sec = INDIAN_SECTORS[sector_key]
+            cx = sec["lat"] + between(rand, -sec["radius"] * 0.5, sec["radius"] * 0.5)
+            cy = sec["lon"] + between(rand, -sec["radius"] * 0.5, sec["radius"] * 0.5)
+            radius = sec["radius"] * (0.6 if kind == "uav" else 0.3)
+            route = _ring(rand, cx, cy, radius, 6)
+            speed = 120.0 if kind == "uav" else (48.0 if kind == "convoy" else 8.0)
+            return Unit(
+                id=f"U-IN-{kind.upper()}-{i}",
+                callsign=callsign,
+                kind=kind,
+                lat=route[0][0], lon=route[0][1],
+                heading=0.0, speedKph=speed,
+                status="active",
+                fuel=between(rand, 65, 100),
+                battery=between(rand, 70, 100),
+                lastSeenTick=0,
+                sector=sector_key,
+                route=route,
+            )
+
+        self._units = []
+        self._personnel = []
+
+        # Patrols distributed across sectors
+        for i in range(sc["patrolCount"]):
+            sec_k = sector_keys[i % len(sector_keys)]
+            callsign = f"PATROL-{sec_k}-{1 + (i // len(sector_keys))}"
+            u = mk_india_unit("patrol", callsign, i + 1, sec_k)
+            self._units.append(u)
+            team_size = 2 + int(rand() * 2)
+            for p_idx in range(team_size):
+                self._personnel.append(Person(
+                    id=f"P-{u.id}-{p_idx}",
+                    name=pick(rand, FIRST), rank=pick(rand, RANKS),
+                    unitId=u.id,
+                    heartRate=round(between(rand, 65, 88)),
+                    fatigue=round(between(rand, 0.05, 0.40), 2),
+                    history=[],
+                ))
+
+        # UAVs
+        for i in range(sc["uavCount"]):
+            sec_k = sector_keys[(i + 1) % len(sector_keys)]
+            callsign = f"UAV-{sec_k}-{UAV_NAMES[i % len(UAV_NAMES)]}"
+            self._units.append(mk_india_unit("uav", callsign, i + 1, sec_k))
+
+        # Convoys
+        for i in range(sc["convoyCount"]):
+            sec_k = sector_keys[(i + 2) % len(sector_keys)]
+            callsign = f"CONVOY-{sec_k}-{CONVOY_NAMES[i % len(CONVOY_NAMES)]}"
+            self._units.append(mk_india_unit("convoy", callsign, i + 1, sec_k))
+
+        # Depots across 6 strategic Indian nodes
+        self._depots = [
+            Depot(
+                id="D-IN-NORTH", name="NORTHERN FORWARD DEPOT (LEH)",
+                lat=34.1526, lon=77.5771,
+                stock={"fuel": round(between(rand, 3500, 5000)),
+                       "medkit": round(between(rand, 120, 200)),
+                       "rations": round(between(rand, 600, 1000)),
+                       "battery": round(between(rand, 150, 300))},
+                capacity={"fuel": 6000, "medkit": 250, "rations": 1200, "battery": 350},
+            ),
+            Depot(
+                id="D-IN-WEST", name="WESTERN DESERT DEPOT (JAISALMER)",
+                lat=26.9157, lon=70.9083,
+                stock={"fuel": round(between(rand, 4000, 6000)),
+                       "medkit": round(between(rand, 100, 180)),
+                       "rations": round(between(rand, 500, 900)),
+                       "battery": round(between(rand, 120, 250))},
+                capacity={"fuel": 6000, "medkit": 250, "rations": 1200, "battery": 350},
+            ),
+            Depot(
+                id="D-IN-CENTRAL", name="CENTRAL LOGISTICS HUB (NAGPUR)",
+                lat=21.1458, lon=79.0882,
+                stock={"fuel": round(between(rand, 6000, 9000)),
+                       "medkit": round(between(rand, 200, 350)),
+                       "rations": round(between(rand, 1200, 2000)),
+                       "battery": round(between(rand, 250, 500))},
+                capacity={"fuel": 10000, "medkit": 400, "rations": 2500, "battery": 600},
+            ),
+            Depot(
+                id="D-IN-EAST", name="BAY OF BENGAL NAVAL DEPOT (PARADIP)",
+                lat=20.3160, lon=86.6110,
+                stock={"fuel": round(between(rand, 3800, 5500)),
+                       "medkit": round(between(rand, 90, 170)),
+                       "rations": round(between(rand, 550, 850)),
+                       "battery": round(between(rand, 110, 220))},
+                capacity={"fuel": 6000, "medkit": 250, "rations": 1200, "battery": 350},
+            ),
+            Depot(
+                id="D-IN-SOUTH", name="SOUTHERN COMMAND DEPOT (BENGALURU)",
+                lat=12.9716, lon=77.5946,
+                stock={"fuel": round(between(rand, 4500, 7000)),
+                       "medkit": round(between(rand, 150, 250)),
+                       "rations": round(between(rand, 800, 1400)),
+                       "battery": round(between(rand, 180, 320))},
+                capacity={"fuel": 8000, "medkit": 300, "rations": 1800, "battery": 400},
+            ),
+            Depot(
+                id="D-IN-LITTORAL", name="PORT BLAIR MARITIME DEPOT",
+                lat=11.6234, lon=92.7265,
+                stock={"fuel": round(between(rand, 3000, 4800)),
+                       "medkit": round(between(rand, 80, 150)),
+                       "rations": round(between(rand, 450, 750)),
+                       "battery": round(between(rand, 90, 180))},
+                capacity={"fuel": 5000, "medkit": 200, "rations": 1000, "battery": 250},
+            ),
+        ]
+
+        # Strategic zones covering major Indian border / coastal / corridor areas
+        zones = [
+            {"id": "Z-IN-NORTH", "name": "LADAKH HIGH ALTITUDE PATROL GRID", "kind": "patrol",
+             "points": _ring(rand, 34.2, 77.6, 0.45, 8)},
+            {"id": "Z-IN-WEST", "name": "THAR DESERT SURVEILLANCE CORRIDOR", "kind": "restricted",
+             "points": _ring(rand, 26.9, 70.9, 0.50, 7)},
+            {"id": "Z-IN-EAST", "name": "BAY OF BENGAL CYCLONE WARNING SECTOR", "kind": "threat",
+             "points": _ring(rand, 20.3, 86.6, 0.48, 8)},
+            {"id": "Z-IN-CENTRAL", "name": "CENTRAL FREIGHT LOGISTICS CORRIDOR", "kind": "patrol",
+             "points": _ring(rand, 21.15, 79.1, 0.55, 6)},
+            {"id": "Z-IN-LITTORAL", "name": "ANDAMAN SEA APPROACH MARITIME ZONE", "kind": "restricted",
+             "points": _ring(rand, 11.6, 92.7, 0.35, 6)},
+        ]
+
+        # Injects initial artificial scenario weather / effects
+        if scenario_id == "IN-SC-CYCLONE":
+            # Initialize Cyclone Vardah-Sim in Bay of Bengal
+            cell = WeatherCell(
+                id="W-CYCLONE-BOB",
+                lat=18.50, lon=87.20,
+                radiusM=180000,
+                intensity=0.95,
+                kind="storm",
+            )
+            self._weather.append(cell)
+        elif scenario_id == "IN-SC-NORTH-COMMS":
+            # Initialize Himalayan blizzard cell in Ladakh
+            cell = WeatherCell(
+                id="W-BLIZZARD-LEH",
+                lat=34.15, lon=77.58,
+                radiusM=95000,
+                intensity=0.90,
+                kind="storm",
+            )
+            self._weather.append(cell)
+        elif scenario_id == "IN-SC-WEST-HEAT":
+            # Initialize extreme dust / thermal wave in Thar
+            cell = WeatherCell(
+                id="W-HEATWAVE-THAR",
+                lat=26.91, lon=70.91,
+                radiusM=120000,
+                intensity=0.92,
+                kind="dust",
+            )
+            self._weather.append(cell)
+
+        world_init = self._make_event(
+            "world_init", "low", "system",
+            {
+                "seed": seed, "scenarioId": scenario_id,
+                "worldMode": "baseline" if scenario_id == "IN-BASE-LIVE" else "simulation",
+                "subcontinent": "India",
+                "center": [22.5937, 78.9629],
+                "units": [u.to_dict() for u in self._units],
+                "depots": [d.to_dict() for d in self._depots],
+                "personnel": [p.to_dict() for p in self._personnel],
+                "zones": zones,
+                "weather": [w.to_dict() for w in self._weather],
+            }
+        )
+        return [world_init]
+
+    # ------------------------------------------------------------------
     def inject(self, partial: dict) -> list[SimEvent]:
         """Apply an operator-sourced event (mission tasking, ack, close)."""
-        # Mission tasking rewrites route so the engine follows the plan.
         p = partial.get("payload", {})
         target_id = partial.get("entityId")
         if (partial.get("type") in ("system", "mission_assigned", "route_assigned") and (p.get("mission") or p.get("route"))):
@@ -192,10 +404,14 @@ class SimEngine:
 
     def step(self) -> list[SimEvent]:
         """Advance the simulation by one tick; return the produced events."""
+        if self.scenario_id.startswith("IN-"):
+            return self._step_pan_india()
+
+        # Legacy SC-1..SC-4 step (Preserves Golden Run bit-identical PRNG)
         self.tick += 1
         rand = self._rand
         sc = self._sc
-        out: list[dict[str, Any]] = []   # partials
+        out: list[dict[str, Any]] = []
 
         # weather
         if rand() < sc["weatherRate"] and len(self._weather) < 4:
@@ -239,7 +455,7 @@ class SimEngine:
                 out.append({"type": "alert_raise", "severity": "high",
                              "entityId": u.id,
                              "payload": {"message": f"{u.callsign} comms silence detected",
-                                         "alertId": f"AL-{self.tick}-{u.id}"}})
+                                          "alertId": f"AL-{self.tick}-{u.id}"}})
                 continue
             if silent_until == self.tick:
                 out.append({"type": "comms_restore", "severity": "low",
@@ -333,6 +549,189 @@ class SimEngine:
             out.append({"type": "alert_raise", "severity": sev,
                          "entityId": inc_id,
                          "payload": {"message": f"Incident {inc_id} reported by {u.callsign}",
+                                      "alertId": f"AL-{inc_id}"}})
+
+        return [self._make_event(p["type"], p["severity"], p["entityId"], p["payload"])
+                for p in out]
+
+    # ------------------------------------------------------------------
+    def _step_pan_india(self) -> list[SimEvent]:
+        """Step Pan-India world simulation with scenario-specific artificial impacts."""
+        self.tick += 1
+        rand = self._rand
+        sc = self._sc
+        sc_id = self.scenario_id
+        out: list[dict[str, Any]] = []
+
+        # Weather updates & movement
+        # Cyclone scenario: Move cyclone NW towards Odisha coast
+        for w in self._weather:
+            if "CYCLONE" in w.id:
+                # Tracks NW: lat increases, lon decreases slightly
+                w.lat += between(rand, 0.003, 0.008)
+                w.lon -= between(rand, 0.002, 0.006)
+                out.append({"type": "weather_move", "severity": "high",
+                             "entityId": w.id,
+                             "payload": {"lat": round(w.lat, 4), "lon": round(w.lon, 4),
+                                          "intensity": w.intensity, "name": "Cyclone Vardah-Sim"}})
+            elif "BLIZZARD" in w.id:
+                w.lat += between(rand, -0.002, 0.002)
+                w.lon += between(rand, -0.002, 0.002)
+                out.append({"type": "weather_move", "severity": "high",
+                             "entityId": w.id,
+                             "payload": {"lat": round(w.lat, 4), "lon": round(w.lon, 4),
+                                          "intensity": w.intensity, "name": "Himalayan Blizzard Cell"}})
+            elif "HEATWAVE" in w.id:
+                w.lat += between(rand, -0.001, 0.001)
+                w.lon += between(rand, -0.001, 0.001)
+                out.append({"type": "weather_move", "severity": "medium",
+                             "entityId": w.id,
+                             "payload": {"lat": round(w.lat, 4), "lon": round(w.lon, 4),
+                                          "intensity": w.intensity, "name": "Thar High Thermal Cell"}})
+            else:
+                w.lat += between(rand, -0.002, 0.002)
+                w.lon += between(rand, -0.002, 0.002)
+                out.append({"type": "weather_move", "severity": "low",
+                             "entityId": w.id,
+                             "payload": {"lat": round(w.lat, 4), "lon": round(w.lon, 4),
+                                          "intensity": w.intensity}})
+
+        # Unit movements and impacts
+        for u in self._units:
+            silent_until = self._silence.get(u.id, 0)
+            if silent_until > self.tick:
+                continue
+
+            # Comms loss rate elevated in North Comms Blackout
+            comms_fail_rate = 0.025 if (sc_id == "IN-SC-NORTH-COMMS" and u.sector == "NORTH") else 0.004
+            if rand() < comms_fail_rate:
+                self._silence[u.id] = self.tick + round(between(rand, 180, 420))
+                out.append({"type": "comms_loss", "severity": "high",
+                             "entityId": u.id, "payload": {"callsign": u.callsign, "sector": u.sector}})
+                out.append({"type": "alert_raise", "severity": "high",
+                             "entityId": u.id,
+                             "payload": {"message": f"{u.callsign} RF link silence in {u.sector} sector",
+                                          "alertId": f"AL-IN-{self.tick}-{u.id}"}})
+                continue
+
+            if silent_until == self.tick:
+                out.append({"type": "comms_restore", "severity": "low",
+                             "entityId": u.id, "payload": {"callsign": u.callsign}})
+
+            idx = self._route_idx.get(u.id, 0)
+            target = u.route[idx % len(u.route)]
+            d_lat = target[0] - u.lat
+            d_lon = target[1] - u.lon
+            dist = math.hypot(d_lat, d_lon)
+
+            # Weather proximity check (using geographic distance)
+            in_weather = any(
+                math.hypot(w.lat - u.lat, w.lon - u.lon) * 111000 < w.radiusM
+                for w in self._weather
+            )
+
+            # Special scenario speed slowdowns:
+            # - Cyclone floods East Coast routes
+            # - Central logistics breakdown halts Central convoys
+            speed_mult = 1.0
+            if in_weather:
+                speed_mult = 0.35 if sc_id == "IN-SC-CYCLONE" else 0.50
+            if sc_id == "IN-SC-LOGISTICS" and u.sector == "CENTRAL" and u.kind == "convoy":
+                speed_mult = 0.15  # Bottleneck halt
+
+            base_step = (u.speedKph / 3600 / 111) * speed_mult * 4
+            if dist < base_step * 1.2:
+                self._route_idx[u.id] = idx + 1
+            else:
+                u.lat += (d_lat / dist) * base_step
+                u.lon += (d_lon / dist) * base_step
+                u.heading = math.degrees(math.atan2(d_lon, d_lat))
+
+            new_status = "halted" if speed_mult <= 0.20 else ("slowed" if speed_mult < 0.70 else "active")
+            if new_status != u.status:
+                u.status = new_status
+                out.append({"type": "unit_status", "severity": "medium" if new_status == "halted" else "low",
+                             "entityId": u.id, "payload": {"status": new_status}})
+            u.lastSeenTick = self.tick
+            out.append({"type": "unit_move", "severity": "low",
+                         "entityId": u.id,
+                         "payload": {"lat": round(u.lat, 5), "lon": round(u.lon, 5),
+                                      "heading": round(u.heading, 1), "inWeather": in_weather,
+                                      "sector": u.sector}})
+
+            # Resource consumption
+            if self.tick % 5 == 0:
+                # Fuel drain: higher in Thar heatwave due to boil-off
+                fuel_rate_mult = 2.4 if (sc_id == "IN-SC-WEST-HEAT" and u.sector == "WEST") else 1.0
+                u.fuel = max(0.0, u.fuel - between(rand, 0.05, 0.35) * fuel_rate_mult)
+
+                # Battery drain: 3x in Himalayan freeze
+                bat_rate_mult = 3.0 if (sc_id == "IN-SC-NORTH-COMMS" and u.sector == "NORTH") else 1.0
+                bat_drain = between(rand, 0.1, 0.5) * (2 if u.kind == "uav" else 1) * bat_rate_mult
+                u.battery = max(0.0, u.battery - bat_drain)
+
+                sev = "high" if u.battery < 15 or u.fuel < 15 else "low"
+                out.append({"type": "resource_level", "severity": sev,
+                             "entityId": u.id,
+                             "payload": {"fuel": round(u.fuel, 1), "battery": round(u.battery, 1)}})
+                if u.battery < 12:
+                    out.append({"type": "alert_raise", "severity": "critical",
+                                 "entityId": u.id,
+                                 "payload": {"message": f"{u.callsign} battery critical ({u.battery:.0f}%)",
+                                              "alertId": f"AL-IN-{self.tick}-BAT-{u.id}"}})
+
+            # UAV detections
+            if u.kind == "uav" and rand() < 0.025:
+                out.append({"type": "detection", "severity": "medium",
+                             "entityId": u.id,
+                             "payload": {"label": pick(rand, ["patrol", "transport", "relay-station", "radar-contact"]),
+                                          "confidence": round(between(rand, 0.55, 0.98), 2),
+                                          "model": "yolov8n-pan-india-v2.0",
+                                          "lat": round(u.lat, 5), "lon": round(u.lon, 5),
+                                          "sector": u.sector,
+                                          "frame": f"F-IN-{self.tick}-{u.id}"}})
+
+        # Depot consumption & logistics breakdown
+        if self.tick % 10 == 0:
+            for d in self._depots:
+                burn_mult = 3.5 if (sc_id == "IN-SC-LOGISTICS" and d.id == "D-IN-CENTRAL") else 1.0
+                d.stock["fuel"] = max(0, d.stock["fuel"] - round(between(rand, 3, 20) * burn_mult))
+                d.stock["rations"] = max(0, d.stock["rations"] - round(between(rand, 2, 8) * burn_mult))
+                d.stock["medkit"] = max(0, d.stock["medkit"] - (1 if rand() < 0.25 else 0))
+                d.stock["battery"] = max(0, d.stock["battery"] - (1 if rand() < 0.4 else 0))
+                is_crit = d.stock["fuel"] < 1000 or d.stock["rations"] < 200
+                out.append({"type": "resource_level",
+                             "severity": "critical" if is_crit else "low",
+                             "entityId": d.id, "payload": {"stock": dict(d.stock)}})
+                if is_crit and self.tick % 30 == 0:
+                    out.append({"type": "alert_raise", "severity": "critical",
+                                 "entityId": d.id,
+                                 "payload": {"message": f"Supply depletion alert at {d.name}",
+                                              "alertId": f"AL-IN-DEP-{self.tick}-{d.id}"}})
+
+        # Incidents
+        if rand() < sc["incidentRate"]:
+            u = pick(rand, self._units)
+            inc_kind = pick(rand, INCIDENT_KINDS)
+            if sc_id == "IN-SC-LOGISTICS":
+                inc_kind = "supply-shortfall"
+            elif sc_id == "IN-SC-NORTH-COMMS":
+                inc_kind = "signal-jamming"
+            elif sc_id == "IN-SC-WEST-HEAT":
+                inc_kind = "vehicle-breakdown"
+
+            inc_id = f"INC-IN-{self.tick}"
+            sev = "critical" if inc_kind in ("supply-shortfall", "signal-jamming") else "high"
+            out.append({"type": "incident_open", "severity": sev,
+                         "entityId": inc_id,
+                         "payload": {"kind": inc_kind,
+                                      "lat": round(u.lat + between(rand, -0.01, 0.01), 5),
+                                      "lon": round(u.lon + between(rand, -0.01, 0.01), 5),
+                                      "sector": u.sector,
+                                      "reportedBy": u.id, "callsign": u.callsign}})
+            out.append({"type": "alert_raise", "severity": sev,
+                         "entityId": inc_id,
+                         "payload": {"message": f"Incident {inc_id} ({inc_kind}) reported in {u.sector} by {u.callsign}",
                                       "alertId": f"AL-{inc_id}"}})
 
         return [self._make_event(p["type"], p["severity"], p["entityId"], p["payload"])

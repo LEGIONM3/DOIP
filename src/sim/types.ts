@@ -113,6 +113,52 @@ export interface Zone {
   points: Array<[number, number]>;
 }
 
+export type WorldMode = "baseline" | "simulation";
+
+export type EnvironmentalProvenance =
+  | "REAL_OBSERVATION"
+  | "REAL_FORECAST"
+  | "CACHED_REAL_DATA"
+  | "SYNTHETIC_ENVIRONMENT";
+
+export interface EnvironmentalStation {
+  id: string;
+  name: string;
+  region: string;
+  lat: number;
+  lon: number;
+  elevationM: number;
+  temperatureC: number;
+  humidityPct: number;
+  windSpeedKph: number;
+  windDirectionDeg: number;
+  precipitationMm: number;
+  weatherCode: number;
+  conditionLabel: string;
+  severeAlert?: string | null;
+  provenance: EnvironmentalProvenance;
+  lastUpdated: string;
+}
+
+export interface EnvironmentalAlert {
+  id: string;
+  stationId?: string;
+  region: string;
+  severity: Severity;
+  message: string;
+  timestamp: string;
+}
+
+export interface EnvironmentalContext {
+  subcontinent: string;
+  center: [number, number];
+  globalProvenance: EnvironmentalProvenance;
+  stationsCount: number;
+  stations: Record<string, EnvironmentalStation>;
+  activeAlerts: EnvironmentalAlert[];
+  lastSync: string;
+}
+
 export interface WorldState {
   seed: number;
   scenarioId: string;
@@ -125,6 +171,10 @@ export interface WorldState {
   personnel: Record<string, Person>;
   weather: Record<string, WeatherCell>;
   zones: Zone[];
+  worldMode?: WorldMode;
+  branchId?: string;
+  baselineRevisionId?: string;
+  environmentalContext?: EnvironmentalContext;
 }
 
 /**
@@ -140,3 +190,4 @@ export interface SimSource {
   inject(events: Omit<SimEvent, "id" | "tick" | "simTime">[]): void;
   subscribe(cb: (events: SimEvent[]) => void): () => void;
 }
+

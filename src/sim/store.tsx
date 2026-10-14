@@ -7,7 +7,14 @@ import type { SimSource } from "./types";
 // Active source: starts as local engine, silently upgraded to WS on login.
 let activeSource: SimSource = localSource;
 import { applyEvent, emptyWorld } from "./reducer";
-import type { Role, RunStatus, SimEvent, WorldState } from "./types";
+import type {
+  EnvironmentalContext,
+  Role,
+  RunStatus,
+  SimEvent,
+  WorldMode,
+  WorldState,
+} from "./types";
 
 export interface RunRecord {
   id: string;
@@ -31,7 +38,124 @@ export interface SimStoreState {
   eventRate: number[];
   runs: RunRecord[];
   snapshot: { tick: number; world: WorldState; events: SimEvent[] } | null;
+  worldMode: WorldMode;
+  activeBranchId: string | null;
+  baselineSnapshot: WorldState | null;
+  environmentalContext: EnvironmentalContext | null;
 }
+
+export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
+  subcontinent: "India",
+  center: [22.5937, 78.9629],
+  globalProvenance: "SYNTHETIC_ENVIRONMENT",
+  stationsCount: 6,
+  stations: {
+    "STN-LEH": {
+      id: "STN-LEH",
+      name: "Leh High-Altitude Station",
+      region: "Northern Sector (Ladakh)",
+      lat: 34.1526,
+      lon: 77.5771,
+      elevationM: 3524,
+      temperatureC: -4.2,
+      humidityPct: 42,
+      windSpeedKph: 28.5,
+      windDirectionDeg: 315,
+      precipitationMm: 0,
+      weatherCode: 71,
+      conditionLabel: "Light Snow Flurries",
+      provenance: "SYNTHETIC_ENVIRONMENT",
+      lastUpdated: new Date().toISOString(),
+    },
+    "STN-JAISALMER": {
+      id: "STN-JAISALMER",
+      name: "Thar Desert Border Observatory",
+      region: "Western Sector (Rajasthan)",
+      lat: 26.9157,
+      lon: 70.9083,
+      elevationM: 225,
+      temperatureC: 38.8,
+      humidityPct: 22,
+      windSpeedKph: 24,
+      windDirectionDeg: 240,
+      precipitationMm: 0,
+      weatherCode: 0,
+      conditionLabel: "Clear / High Thermal",
+      provenance: "SYNTHETIC_ENVIRONMENT",
+      lastUpdated: new Date().toISOString(),
+    },
+    "STN-PARADIP": {
+      id: "STN-PARADIP",
+      name: "Bay of Bengal Coastal Radar Station",
+      region: "Eastern Sector (Odisha Coast)",
+      lat: 20.316,
+      lon: 86.611,
+      elevationM: 4,
+      temperatureC: 28.2,
+      humidityPct: 82,
+      windSpeedKph: 38,
+      windDirectionDeg: 160,
+      precipitationMm: 4.5,
+      weatherCode: 61,
+      conditionLabel: "Coastal Rain Showers",
+      provenance: "SYNTHETIC_ENVIRONMENT",
+      lastUpdated: new Date().toISOString(),
+    },
+    "STN-NAGPUR": {
+      id: "STN-NAGPUR",
+      name: "Central Transit Met Hub",
+      region: "Central Sector (Maharashtra/MP)",
+      lat: 21.1458,
+      lon: 79.0882,
+      elevationM: 310,
+      temperatureC: 29.5,
+      humidityPct: 48,
+      windSpeedKph: 11.2,
+      windDirectionDeg: 90,
+      precipitationMm: 0,
+      weatherCode: 2,
+      conditionLabel: "Partly Cloudy",
+      provenance: "SYNTHETIC_ENVIRONMENT",
+      lastUpdated: new Date().toISOString(),
+    },
+    "STN-BENGALURU": {
+      id: "STN-BENGALURU",
+      name: "Southern Plateau Headquarters",
+      region: "Southern Sector (Karnataka/TN)",
+      lat: 12.9716,
+      lon: 77.5946,
+      elevationM: 920,
+      temperatureC: 24.6,
+      humidityPct: 62,
+      windSpeedKph: 15,
+      windDirectionDeg: 260,
+      precipitationMm: 0,
+      weatherCode: 2,
+      conditionLabel: "Scattered Clouds",
+      provenance: "SYNTHETIC_ENVIRONMENT",
+      lastUpdated: new Date().toISOString(),
+    },
+    "STN-PORTBLAIR": {
+      id: "STN-PORTBLAIR",
+      name: "Andaman Maritime Station",
+      region: "Littoral & Island Sector (Andaman & Nicobar)",
+      lat: 11.6234,
+      lon: 92.7265,
+      elevationM: 16,
+      temperatureC: 27.8,
+      humidityPct: 84,
+      windSpeedKph: 26,
+      windDirectionDeg: 220,
+      precipitationMm: 3,
+      weatherCode: 63,
+      conditionLabel: "Maritime Rain Squalls",
+      provenance: "SYNTHETIC_ENVIRONMENT",
+      lastUpdated: new Date().toISOString(),
+    },
+  },
+  activeAlerts: [],
+  lastSync: new Date().toISOString(),
+};
 
 function getInitialSession(): { role: Role | null; userName: string } {
   if (typeof window === "undefined") return { role: null, userName: "" };
@@ -60,6 +184,10 @@ const initial: SimStoreState = {
   eventRate: [],
   runs: [],
   snapshot: null,
+  worldMode: "baseline",
+  activeBranchId: null,
+  baselineSnapshot: null,
+  environmentalContext: DEFAULT_INDIA_ENVIRONMENT,
 };
 
 class SimStore {
@@ -289,6 +417,74 @@ class SimStore {
       world: JSON.parse(JSON.stringify(world)) as WorldState,
       events: [...events],
     });
+  }
+
+  switchWorldMode(mode: WorldMode) {
+    if (mode === this.state.worldMode) return;
+    if (mode === "simulation") {
+      const baselineSnapshot = JSON.parse(JSON.stringify(this.state.world)) as WorldState;
+      const branchId = "BRANCH-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+      this.set({
+        worldMode: "simulation",
+        baselineSnapshot,
+        activeBranchId: branchId,
+      });
+      if (this.state.scenarioId === "IN-BASE-LIVE" || this.state.scenarioId.startsWith("SC-")) {
+        this.startRun(20261014, "IN-SC-CYCLONE");
+      }
+    } else {
+      this.set({
+        worldMode: "baseline",
+        activeBranchId: null,
+      });
+      if (this.state.baselineSnapshot && this.state.baselineSnapshot.scenarioId === "IN-BASE-LIVE") {
+        this.set({ world: JSON.parse(JSON.stringify(this.state.baselineSnapshot)) as WorldState });
+      } else {
+        this.startRun(20261014, "IN-BASE-LIVE");
+      }
+    }
+  }
+
+  forkSimulation(scenarioId: string, seed: number = 20261014) {
+    const branchId = "BRANCH-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const baselineSnapshot =
+      this.state.worldMode === "baseline"
+        ? (JSON.parse(JSON.stringify(this.state.world)) as WorldState)
+        : this.state.baselineSnapshot;
+
+    this.set({
+      worldMode: "simulation",
+      activeBranchId: branchId,
+      baselineSnapshot,
+    });
+    this.startRun(seed, scenarioId);
+  }
+
+  resetToBaseline() {
+    this.set({
+      worldMode: "baseline",
+      activeBranchId: null,
+    });
+    if (this.state.baselineSnapshot && this.state.baselineSnapshot.scenarioId === "IN-BASE-LIVE") {
+      this.set({ world: JSON.parse(JSON.stringify(this.state.baselineSnapshot)) as WorldState });
+    } else {
+      this.startRun(20261014, "IN-BASE-LIVE");
+    }
+  }
+
+  async fetchEnvironmentalContext(): Promise<EnvironmentalContext> {
+    try {
+      const res = await fetch("/api/environment/context");
+      if (res.ok) {
+        const data = (await res.json()) as EnvironmentalContext;
+        this.set({ environmentalContext: data });
+        return data;
+      }
+    } catch {
+      /* offline fallback */
+    }
+    this.set({ environmentalContext: DEFAULT_INDIA_ENVIRONMENT });
+    return DEFAULT_INDIA_ENVIRONMENT;
   }
 }
 

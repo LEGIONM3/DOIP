@@ -3,10 +3,10 @@ import * as maplibregl from "maplibre-gl";
 import type { LngLatLike, StyleSpecification, MapMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { SEVERITY_META, unitDesignator } from "@/lib/doip";
-import { simStore } from "@/sim/store";
+import { simStore, useSim } from "@/sim/store";
 import { isStale } from "@/sim/reducer";
 import type { Incident, Unit, WeatherCell, Zone } from "@/sim/types";
-import { Compass, Box, Square, Key } from "lucide-react";
+import { Compass, Box, Square, Key, RotateCcw, Cloud, Radio, ChevronDown, Activity } from "lucide-react";
 import type { Feature, FeatureCollection } from "geojson";
 import { resolveMapStyle, getMapAttribution } from "@/lib/mapConfig";
 import { MapKeyDialog } from "./MapKeyDialog";
@@ -110,6 +110,21 @@ function fc(features: Feature[]): FeatureCollection {
   return { type: "FeatureCollection", features };
 }
 
+export const SECTOR_PRESETS: Array<{
+  label: string;
+  name: string;
+  center: [number, number];
+  zoom: number;
+}> = [
+  { label: "ALL-IN", name: "Pan-India Subcontinent", center: [78.9629, 22.5937], zoom: 4.8 },
+  { label: "NORTH", name: "Northern Sector (Ladakh/J&K)", center: [77.5771, 34.1526], zoom: 7.2 },
+  { label: "WEST", name: "Western Sector (Thar)", center: [70.9083, 26.9157], zoom: 7.0 },
+  { label: "EAST", name: "Eastern Sector (Odisha/Coastal)", center: [86.611, 20.316], zoom: 7.0 },
+  { label: "CENTRAL", name: "Central Sector (Nagpur)", center: [79.0882, 21.1458], zoom: 7.0 },
+  { label: "SOUTH", name: "Southern Sector (Bengaluru)", center: [77.5946, 12.9716], zoom: 7.5 },
+  { label: "ISLANDS", name: "Littoral Sector (Andaman)", center: [92.7265, 11.6234], zoom: 7.2 },
+];
+
 export default function TacticalMap({
   units = [],
   incidents = [],
@@ -143,6 +158,34 @@ export default function TacticalMap({
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
   const [mapConfigVer, setMapConfigVer] = useState(0);
 
+  const worldMode = useSim((s) => s.worldMode);
+  const activeBranchId = useSim((s) => s.activeBranchId);
+  const currentScenarioId = useSim((s) => s.scenarioId);
+  const envContext = useSim((s) => s.environmentalContext);
+  const [metDrawerOpen, setMetDrawerOpen] = useState(false);
+  const [activeSector, setActiveSector] = useState("ALL-IN");
+
+  const isPanIndia =
+    units.some((u) => u.id.startsWith("U-IN-") || u.lat > 16 || u.lon > 82) ||
+    currentScenarioId.startsWith("IN-");
+
+  useEffect(() => {
+    void simStore.fetchEnvironmentalContext();
+  }, []);
+
+  const jumpToSector = useCallback(
+    (preset: (typeof SECTOR_PRESETS)[number]) => {
+      setActiveSector(preset.label);
+      mapRef.current?.easeTo({
+        center: preset.center,
+        zoom: preset.zoom,
+        pitch: is3d ? DEFAULT_PITCH : 0,
+        duration: 900,
+      });
+    },
+    [is3d],
+  );
+
   useEffect(() => {
     const onConfigChange = () => setMapConfigVer((c) => c + 1);
     window.addEventListener("doip:map-config-changed", onConfigChange);
@@ -170,11 +213,20 @@ export default function TacticalMap({
     setTilesLoading(true);
     const saved = viewRef.current;
     const resolvedStyle = resolveMapStyle(basemap);
+    const effectiveCenter = (
+      saved
+        ? saved.center
+        : isPanIndia && center[0] === 12.9716 && center[1] === 77.5946
+          ? [78.9629, 22.5937]
+          : [center[1], center[0]]
+    ) as LngLatLike;
+    const effectiveZoom = saved ? saved.zoom : isPanIndia && zoom >= 10 ? 4.8 : zoom;
+
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: resolvedStyle as unknown as StyleSpecification,
-      center: (saved ? saved.center : [center[1], center[0]]) as LngLatLike,
-      zoom: saved ? saved.zoom : zoom,
+      center: effectiveCenter,
+      zoom: effectiveZoom,
       pitch: DEFAULT_PITCH,
       bearing: DEFAULT_BEARING,
       // attribution comes from each source/style — never duplicated here
@@ -729,6 +781,125 @@ export default function TacticalMap({
           <Key className="size-3.5" />
         </button>
       </div>
+
+      {/* Pan-India World Model & Sector Navigation Header Bar */}
+      <div className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-120px)] flex-wrap items-center gap-1.5 font-mono text-[11px]">
+        {/* World Mode Indicator */}
+        {worldMode === "simulation" ? (
+          <div className="flex items-center gap-1.5 border border-amber-500/50 bg-[rgba(10,10,10,0.88)] px-2 py-1 text-amber-300 shadow-lg backdrop-blur-md">
+            <span className="size-2 rounded-full bg-amber-400 animate-pulse" />
+            <span className="font-bold tracking-wider">IMPACT SIMULATION</span>
+            <span className="text-[10px] text-amber-400/80 border-l border-amber-800/80 pl-1.5">
+              {activeBranchId ?? "BRANCH-ISOLATED"}
+            </span>
+            <button
+              onClick={() => simStore.resetToBaseline()}
+              title="Instant Reset to Pan-India Baseline World"
+              className="ml-1 flex items-center gap-1 bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-200 hover:bg-amber-500/40 border border-amber-500/40 transition-colors"
+            >
+              <RotateCcw className="size-3" /> RESET BASELINE
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 border border-emerald-500/50 bg-[rgba(10,10,10,0.88)] px-2 py-1 text-emerald-300 shadow-lg backdrop-blur-md">
+            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-bold tracking-wider">PAN-INDIA LIVE WORLD</span>
+            <span className="text-[10px] text-emerald-400/80 border-l border-emerald-800/80 pl-1.5">
+              BASELINE
+            </span>
+            <span className="bg-emerald-950/80 text-emerald-400 border border-emerald-800 px-1 py-0.2 text-[9px]">
+              {envContext?.globalProvenance ?? "REAL_FORECAST"}
+            </span>
+            <button
+              onClick={() => simStore.switchWorldMode("simulation")}
+              title="Fork Isolated Simulation Branch"
+              className="ml-1 flex items-center gap-1 bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-200 hover:bg-emerald-500/40 border border-emerald-500/40 transition-colors"
+            >
+              ⚡ FORK IMPACT SIM
+            </button>
+          </div>
+        )}
+
+        {/* Sector Quick-Jump Toolbar */}
+        <div className="hidden sm:flex items-center border border-[#2A2A2A] bg-[rgba(10,10,10,0.88)] px-1 py-0.5 shadow-lg backdrop-blur-md">
+          <span className="px-1 text-[9px] uppercase tracking-wider text-zinc-500">SECTORS:</span>
+          {SECTOR_PRESETS.map((sec) => (
+            <button
+              key={sec.label}
+              onClick={() => jumpToSector(sec)}
+              className={`px-1.5 py-0.5 text-[10px] uppercase tracking-wide transition-colors ${
+                activeSector === sec.label
+                  ? "bg-white text-black font-semibold"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+              title={sec.name}
+            >
+              {sec.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Live Weather / Met Context Trigger */}
+        <button
+          onClick={() => setMetDrawerOpen((o) => !o)}
+          title="Toggle Pan-India Real Meteorological Observations"
+          className="flex items-center gap-1 border border-zinc-700 bg-[rgba(10,10,10,0.88)] px-2 py-1 text-zinc-300 hover:text-white shadow-lg backdrop-blur-md"
+        >
+          <Cloud className="size-3.5 text-sky-400" />
+          <span className="text-[10px] font-semibold">MET CONTEXT</span>
+          <span className="rounded bg-sky-950 px-1 py-0.2 text-[9px] text-sky-300 border border-sky-800">
+            {envContext?.stationsCount ?? 11} STNS
+          </span>
+        </button>
+      </div>
+
+      {/* Floating Meteorological Context Flyout */}
+      {metDrawerOpen && envContext && (
+        <div className="absolute left-2 top-11 z-20 max-h-[75vh] w-80 overflow-y-auto border border-[#2A2A2A] bg-[rgba(10,10,10,0.96)] p-2.5 font-mono text-zinc-300 shadow-2xl backdrop-blur-md">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-1.5 mb-2">
+            <div>
+              <span className="text-xs font-bold text-white tracking-wider">PAN-INDIA MET CONTEXT</span>
+              <div className="text-[9px] text-zinc-400">
+                PROVENANCE: <span className="text-emerald-400">{envContext.globalProvenance}</span>
+              </div>
+            </div>
+            <button
+              onClick={() => setMetDrawerOpen(false)}
+              className="text-zinc-500 hover:text-white text-xs px-1"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="space-y-1.5 text-[11px]">
+            {Object.values(envContext.stations).map((stn) => (
+              <div
+                key={stn.id}
+                className="border border-zinc-900 bg-zinc-950/60 p-1.5 flex flex-col gap-0.5 hover:border-zinc-700 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-zinc-200">{stn.name}</span>
+                  <span className="text-[10px] font-bold text-sky-400">{stn.temperatureC}°C</span>
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-zinc-400">
+                  <span>{stn.region}</span>
+                  <span>{stn.conditionLabel}</span>
+                </div>
+                <div className="flex items-center justify-between text-[9px] text-zinc-500 pt-0.5">
+                  <span>Wind: {stn.windSpeedKph} km/h</span>
+                  <span>Precip: {stn.precipitationMm} mm</span>
+                  <span className="text-emerald-500/80">{stn.provenance}</span>
+                </div>
+                {stn.severeAlert && (
+                  <div className="mt-1 text-[9px] text-amber-300 bg-amber-950/50 border border-amber-800/60 px-1 py-0.5">
+                    ⚠ {stn.severeAlert}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <MapKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} />
     </div>
   );
