@@ -33,6 +33,21 @@ export interface SimStoreState {
   snapshot: { tick: number; world: WorldState; events: SimEvent[] } | null;
 }
 
+function getInitialSession(): { role: Role | null; userName: string } {
+  if (typeof window === "undefined") return { role: null, userName: "" };
+  try {
+    const raw = window.localStorage.getItem("doip.session");
+    if (!raw) return { role: null, userName: "" };
+    const s = JSON.parse(raw) as { role: Role; userName: string };
+    if (s?.role) return { role: s.role, userName: s.userName || "" };
+  } catch {
+    /* ignore parse error */
+  }
+  return { role: null, userName: "" };
+}
+
+const savedSession = getInitialSession();
+
 const initial: SimStoreState = {
   world: emptyWorld(),
   events: [],
@@ -40,8 +55,8 @@ const initial: SimStoreState = {
   speed: 1,
   seed: 20260101,
   scenarioId: "SC-1",
-  role: null,
-  userName: "",
+  role: savedSession.role,
+  userName: savedSession.userName,
   eventRate: [],
   runs: [],
   snapshot: null,
@@ -112,12 +127,22 @@ class SimStore {
 
   /** Restores the demo session after a page reload (client-only). */
   hydrateSession() {
-    if (typeof window === "undefined" || this.state.role) return;
+    if (typeof window === "undefined") return;
     try {
       const raw = window.localStorage.getItem("doip.session");
       if (!raw) return;
       const s = JSON.parse(raw) as { role: Role; userName: string };
-      if (s?.role) this.login(s.role, s.userName);
+      if (s?.role) {
+        if (!this.state.role) {
+          this.set({ role: s.role, userName: s.userName });
+        }
+        void (async () => {
+          await api.login(s.role, s.userName);
+          await this.tryUpgradeToWs();
+          await this.hydrateRuns();
+        })();
+        if (this.state.status === "IDLE") this.startRun(this.state.seed, this.state.scenarioId);
+      }
     } catch {
       /* ignore corrupt session */
     }

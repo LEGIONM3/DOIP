@@ -44,6 +44,14 @@ class WhatIfResult:
     trajectories: dict[str, Any] = field(default_factory=dict)
     spatial_annotations: dict[str, Any] = field(default_factory=dict)
     monte_carlo_runs: int = 1
+    simulation_mode: str = "DETERMINISTIC_SIM"
+    success_probability: float | None = None
+    delay_probability: float | None = None
+    failure_probability: float | None = None
+    abort_probability: float | None = None
+    risk_distribution: dict[str, float] | None = None
+    ai_confidence: float | None = None
+    dominant_action: str | None = None
 
 
 # Simple KPIs extracted from an event log
@@ -214,11 +222,13 @@ def run_branch(
     actions: list[dict],
     ticks: int = 60,
     runs: int = 1,
+    simulation_mode: str = "DETERMINISTIC_SIM",
 ) -> WhatIfResult:
     """Run both a baseline and a branched simulation for `ticks` steps.
 
     If runs > 1, runs a Monte Carlo ensemble with seeds [seed .. seed+runs-1]
     to produce P10, P50, and P90 confidence envelopes.
+    When simulation_mode == "HYBRID_AI_SIM", augments with Laya-evaluated branch outcomes.
     """
     parsed_actions = [
         WhatIfAction(
@@ -286,7 +296,7 @@ def run_branch(
 
     if runs > 1:
         ensemble_risks: list[list[float]] = [branch_risk]
-        for idx in range(1, runs):
+        for idx in range(1, min(runs, 25)):  # Clamp discrete event runs for responsiveness
             ens_seed = seed + (idx * 37)
             eng = SimEngine()
             eng.start(ens_seed, scenario_id)
@@ -319,6 +329,30 @@ def run_branch(
             p50_risk.append(round(t_vals[p50_idx], 1))
             p90_risk.append(round(t_vals[p90_idx], 1))
 
+    # --- 4. Hybrid AI Simulation Enhancement (Physics + Rules + Laya) ---
+    success_prob = None
+    delay_prob = None
+    failure_prob = None
+    abort_prob = None
+    risk_dist = None
+    ai_conf = None
+    dominant_act = None
+
+    if simulation_mode == "HYBRID_AI_SIM" or runs >= 100:
+        try:
+            from .hybrid_outcome_engine import HybridOutcomeEngine
+            hoe = HybridOutcomeEngine()
+            hybrid_res = hoe.run_massive_hybrid_whatif(branches=runs, ticks=ticks, seed=seed)
+            success_prob = hybrid_res["success_probability"]
+            delay_prob = hybrid_res["delay_probability"]
+            failure_prob = hybrid_res["failure_probability"]
+            abort_prob = hybrid_res["abort_probability"]
+            risk_dist = hybrid_res["risk_distribution"]
+            ai_conf = hybrid_res["confidence"]
+            dominant_act = hybrid_res["dominant_action"]
+        except Exception as ex:
+            print(f"[WhatIf] Hybrid outcome calculation note: {ex}")
+
     return WhatIfResult(
         seed=seed,
         scenario_id=scenario_id,
@@ -334,4 +368,12 @@ def run_branch(
         trajectories=trajectories,
         spatial_annotations=spatial_annotations,
         monte_carlo_runs=runs,
+        simulation_mode=simulation_mode,
+        success_probability=success_prob,
+        delay_probability=delay_prob,
+        failure_probability=failure_prob,
+        abort_probability=abort_prob,
+        risk_distribution=risk_dist,
+        ai_confidence=ai_conf,
+        dominant_action=dominant_act,
     )

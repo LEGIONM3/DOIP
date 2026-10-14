@@ -364,7 +364,7 @@ function WarRoomScreen() {
                       className="flex size-5 items-center justify-center rounded-full border border-border font-mono text-[9px] text-background"
                       style={{ backgroundColor: p.color }}
                     >
-                      {p.name.split(" ").pop()!.slice(0, 1)}
+                      {(p.name || "").split(" ").pop()?.slice(0, 1) || "?"}
                     </span>
                   ))}
                 </div>
@@ -447,7 +447,7 @@ function WarRoomScreen() {
                     onClick={() => applyPreset(p)}
                     className="border border-border bg-surface hover:bg-accent/40 px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   >
-                    + {p.text.split(" ")[0]} {p.text.split(" ")[1] ?? ""}
+                    + {(p.text || "").split(" ")[0] ?? ""} {(p.text || "").split(" ")[1] ?? ""}
                   </button>
                 ))}
               </div>
@@ -486,7 +486,7 @@ function WarRoomScreen() {
                       {t.text}
                     </span>
                     <Mono className="text-[9px] text-muted-foreground">
-                      {t.assignee.split(" ").pop()} · {t.sector}
+                      {(t.assignee || "Staff").split(" ").pop() || "Staff"} · {t.sector || "General"}
                     </Mono>
                     {canOperate(role) && (
                       <button

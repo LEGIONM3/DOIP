@@ -12,19 +12,33 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdvisorRouteImport } from './routes/advisor'
+import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AnalyticsCenterRouteImport } from './routes/analytics-center'
+import { Route as CampaignsRouteImport } from './routes/campaigns'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DatalakeRouteImport } from './routes/datalake'
 import { Route as DoctrineRouteImport } from './routes/doctrine'
+import { Route as FederationRouteImport } from './routes/federation'
+import { Route as ForecastRouteImport } from './routes/forecast'
+import { Route as FuturesRouteImport } from './routes/futures'
+import { Route as GraphRouteImport } from './routes/graph'
 import { Route as LogisticsRouteImport } from './routes/logistics'
+import { Route as MemoryRouteImport } from './routes/memory'
+import { Route as ModelLabRouteImport } from './routes/model-lab'
+import { Route as ModelsRouteImport } from './routes/models'
+import { Route as ObservabilityRouteImport } from './routes/observability'
 import { Route as PersonnelRouteImport } from './routes/personnel'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as ReplayRouteImport } from './routes/replay'
 import { Route as RunRouteImport } from './routes/run'
 import { Route as ScenarioEditorRouteImport } from './routes/scenario-editor'
 import { Route as SitrepRouteImport } from './routes/sitrep'
+import { Route as TheatersRouteImport } from './routes/theaters'
 import { Route as VisionRouteImport } from './routes/vision'
 import { Route as WarroomRouteImport } from './routes/warroom'
 import { Route as WhatifRouteImport } from './routes/whatif'
+import { Route as WorkflowsRouteImport } from './routes/workflows'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -41,9 +55,24 @@ const AdvisorRoute = AdvisorRouteImport.update({
   path: '/advisor',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentsRoute = AgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnalyticsRoute = AnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsCenterRoute = AnalyticsCenterRouteImport.update({
+  id: '/analytics-center',
+  path: '/analytics-center',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampaignsRoute = CampaignsRouteImport.update({
+  id: '/campaigns',
+  path: '/campaigns',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -51,14 +80,59 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DatalakeRoute = DatalakeRouteImport.update({
+  id: '/datalake',
+  path: '/datalake',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DoctrineRoute = DoctrineRouteImport.update({
   id: '/doctrine',
   path: '/doctrine',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FederationRoute = FederationRouteImport.update({
+  id: '/federation',
+  path: '/federation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForecastRoute = ForecastRouteImport.update({
+  id: '/forecast',
+  path: '/forecast',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FuturesRoute = FuturesRouteImport.update({
+  id: '/futures',
+  path: '/futures',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GraphRoute = GraphRouteImport.update({
+  id: '/graph',
+  path: '/graph',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LogisticsRoute = LogisticsRouteImport.update({
   id: '/logistics',
   path: '/logistics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemoryRoute = MemoryRouteImport.update({
+  id: '/memory',
+  path: '/memory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ModelLabRoute = ModelLabRouteImport.update({
+  id: '/model-lab',
+  path: '/model-lab',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ModelsRoute = ModelsRouteImport.update({
+  id: '/models',
+  path: '/models',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObservabilityRoute = ObservabilityRouteImport.update({
+  id: '/observability',
+  path: '/observability',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PersonnelRoute = PersonnelRouteImport.update({
@@ -91,6 +165,11 @@ const SitrepRoute = SitrepRouteImport.update({
   path: '/sitrep',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TheatersRoute = TheatersRouteImport.update({
+  id: '/theaters',
+  path: '/theaters',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VisionRoute = VisionRouteImport.update({
   id: '/vision',
   path: '/vision',
@@ -106,61 +185,108 @@ const WhatifRoute = WhatifRouteImport.update({
   path: '/whatif',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkflowsRoute = WorkflowsRouteImport.update({
+  id: '/workflows',
+  path: '/workflows',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/advisor': typeof AdvisorRoute
+  '/agents': typeof AgentsRoute
   '/analytics': typeof AnalyticsRoute
+  '/analytics-center': typeof AnalyticsCenterRoute
+  '/campaigns': typeof CampaignsRoute
   '/dashboard': typeof DashboardRoute
+  '/datalake': typeof DatalakeRoute
   '/doctrine': typeof DoctrineRoute
+  '/federation': typeof FederationRoute
+  '/forecast': typeof ForecastRoute
+  '/futures': typeof FuturesRoute
+  '/graph': typeof GraphRoute
   '/logistics': typeof LogisticsRoute
+  '/memory': typeof MemoryRoute
+  '/model-lab': typeof ModelLabRoute
+  '/models': typeof ModelsRoute
+  '/observability': typeof ObservabilityRoute
   '/personnel': typeof PersonnelRoute
   '/planner': typeof PlannerRoute
   '/replay': typeof ReplayRoute
   '/run': typeof RunRoute
   '/scenario-editor': typeof ScenarioEditorRoute
   '/sitrep': typeof SitrepRoute
+  '/theaters': typeof TheatersRoute
   '/vision': typeof VisionRoute
   '/warroom': typeof WarroomRoute
   '/whatif': typeof WhatifRoute
+  '/workflows': typeof WorkflowsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/advisor': typeof AdvisorRoute
+  '/agents': typeof AgentsRoute
   '/analytics': typeof AnalyticsRoute
+  '/analytics-center': typeof AnalyticsCenterRoute
+  '/campaigns': typeof CampaignsRoute
   '/dashboard': typeof DashboardRoute
+  '/datalake': typeof DatalakeRoute
   '/doctrine': typeof DoctrineRoute
+  '/federation': typeof FederationRoute
+  '/forecast': typeof ForecastRoute
+  '/futures': typeof FuturesRoute
+  '/graph': typeof GraphRoute
   '/logistics': typeof LogisticsRoute
+  '/memory': typeof MemoryRoute
+  '/model-lab': typeof ModelLabRoute
+  '/models': typeof ModelsRoute
+  '/observability': typeof ObservabilityRoute
   '/personnel': typeof PersonnelRoute
   '/planner': typeof PlannerRoute
   '/replay': typeof ReplayRoute
   '/run': typeof RunRoute
   '/scenario-editor': typeof ScenarioEditorRoute
   '/sitrep': typeof SitrepRoute
+  '/theaters': typeof TheatersRoute
   '/vision': typeof VisionRoute
   '/warroom': typeof WarroomRoute
   '/whatif': typeof WhatifRoute
+  '/workflows': typeof WorkflowsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/advisor': typeof AdvisorRoute
+  '/agents': typeof AgentsRoute
   '/analytics': typeof AnalyticsRoute
+  '/analytics-center': typeof AnalyticsCenterRoute
+  '/campaigns': typeof CampaignsRoute
   '/dashboard': typeof DashboardRoute
+  '/datalake': typeof DatalakeRoute
   '/doctrine': typeof DoctrineRoute
+  '/federation': typeof FederationRoute
+  '/forecast': typeof ForecastRoute
+  '/futures': typeof FuturesRoute
+  '/graph': typeof GraphRoute
   '/logistics': typeof LogisticsRoute
+  '/memory': typeof MemoryRoute
+  '/model-lab': typeof ModelLabRoute
+  '/models': typeof ModelsRoute
+  '/observability': typeof ObservabilityRoute
   '/personnel': typeof PersonnelRoute
   '/planner': typeof PlannerRoute
   '/replay': typeof ReplayRoute
   '/run': typeof RunRoute
   '/scenario-editor': typeof ScenarioEditorRoute
   '/sitrep': typeof SitrepRoute
+  '/theaters': typeof TheatersRoute
   '/vision': typeof VisionRoute
   '/warroom': typeof WarroomRoute
   '/whatif': typeof WhatifRoute
+  '/workflows': typeof WorkflowsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -168,74 +294,130 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/advisor'
+    | '/agents'
     | '/analytics'
+    | '/analytics-center'
+    | '/campaigns'
     | '/dashboard'
+    | '/datalake'
     | '/doctrine'
+    | '/federation'
+    | '/forecast'
+    | '/futures'
+    | '/graph'
     | '/logistics'
+    | '/memory'
+    | '/model-lab'
+    | '/models'
+    | '/observability'
     | '/personnel'
     | '/planner'
     | '/replay'
     | '/run'
     | '/scenario-editor'
     | '/sitrep'
+    | '/theaters'
     | '/vision'
     | '/warroom'
     | '/whatif'
+    | '/workflows'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
     | '/advisor'
+    | '/agents'
     | '/analytics'
+    | '/analytics-center'
+    | '/campaigns'
     | '/dashboard'
+    | '/datalake'
     | '/doctrine'
+    | '/federation'
+    | '/forecast'
+    | '/futures'
+    | '/graph'
     | '/logistics'
+    | '/memory'
+    | '/model-lab'
+    | '/models'
+    | '/observability'
     | '/personnel'
     | '/planner'
     | '/replay'
     | '/run'
     | '/scenario-editor'
     | '/sitrep'
+    | '/theaters'
     | '/vision'
     | '/warroom'
     | '/whatif'
+    | '/workflows'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/advisor'
+    | '/agents'
     | '/analytics'
+    | '/analytics-center'
+    | '/campaigns'
     | '/dashboard'
+    | '/datalake'
     | '/doctrine'
+    | '/federation'
+    | '/forecast'
+    | '/futures'
+    | '/graph'
     | '/logistics'
+    | '/memory'
+    | '/model-lab'
+    | '/models'
+    | '/observability'
     | '/personnel'
     | '/planner'
     | '/replay'
     | '/run'
     | '/scenario-editor'
     | '/sitrep'
+    | '/theaters'
     | '/vision'
     | '/warroom'
     | '/whatif'
+    | '/workflows'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   AdvisorRoute: typeof AdvisorRoute
+  AgentsRoute: typeof AgentsRoute
   AnalyticsRoute: typeof AnalyticsRoute
+  AnalyticsCenterRoute: typeof AnalyticsCenterRoute
+  CampaignsRoute: typeof CampaignsRoute
   DashboardRoute: typeof DashboardRoute
+  DatalakeRoute: typeof DatalakeRoute
   DoctrineRoute: typeof DoctrineRoute
+  FederationRoute: typeof FederationRoute
+  ForecastRoute: typeof ForecastRoute
+  FuturesRoute: typeof FuturesRoute
+  GraphRoute: typeof GraphRoute
   LogisticsRoute: typeof LogisticsRoute
+  MemoryRoute: typeof MemoryRoute
+  ModelLabRoute: typeof ModelLabRoute
+  ModelsRoute: typeof ModelsRoute
+  ObservabilityRoute: typeof ObservabilityRoute
   PersonnelRoute: typeof PersonnelRoute
   PlannerRoute: typeof PlannerRoute
   ReplayRoute: typeof ReplayRoute
   RunRoute: typeof RunRoute
   ScenarioEditorRoute: typeof ScenarioEditorRoute
   SitrepRoute: typeof SitrepRoute
+  TheatersRoute: typeof TheatersRoute
   VisionRoute: typeof VisionRoute
   WarroomRoute: typeof WarroomRoute
   WhatifRoute: typeof WhatifRoute
+  WorkflowsRoute: typeof WorkflowsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -261,11 +443,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdvisorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agents': {
+      id: '/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/analytics': {
       id: '/analytics'
       path: '/analytics'
       fullPath: '/analytics'
       preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics-center': {
+      id: '/analytics-center'
+      path: '/analytics-center'
+      fullPath: '/analytics-center'
+      preLoaderRoute: typeof AnalyticsCenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campaigns': {
+      id: '/campaigns'
+      path: '/campaigns'
+      fullPath: '/campaigns'
+      preLoaderRoute: typeof CampaignsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -275,6 +478,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/datalake': {
+      id: '/datalake'
+      path: '/datalake'
+      fullPath: '/datalake'
+      preLoaderRoute: typeof DatalakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/doctrine': {
       id: '/doctrine'
       path: '/doctrine'
@@ -282,11 +492,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DoctrineRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/federation': {
+      id: '/federation'
+      path: '/federation'
+      fullPath: '/federation'
+      preLoaderRoute: typeof FederationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forecast': {
+      id: '/forecast'
+      path: '/forecast'
+      fullPath: '/forecast'
+      preLoaderRoute: typeof ForecastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/futures': {
+      id: '/futures'
+      path: '/futures'
+      fullPath: '/futures'
+      preLoaderRoute: typeof FuturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/graph': {
+      id: '/graph'
+      path: '/graph'
+      fullPath: '/graph'
+      preLoaderRoute: typeof GraphRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/logistics': {
       id: '/logistics'
       path: '/logistics'
       fullPath: '/logistics'
       preLoaderRoute: typeof LogisticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/memory': {
+      id: '/memory'
+      path: '/memory'
+      fullPath: '/memory'
+      preLoaderRoute: typeof MemoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/model-lab': {
+      id: '/model-lab'
+      path: '/model-lab'
+      fullPath: '/model-lab'
+      preLoaderRoute: typeof ModelLabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/models': {
+      id: '/models'
+      path: '/models'
+      fullPath: '/models'
+      preLoaderRoute: typeof ModelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/observability': {
+      id: '/observability'
+      path: '/observability'
+      fullPath: '/observability'
+      preLoaderRoute: typeof ObservabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/personnel': {
@@ -331,6 +597,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitrepRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/theaters': {
+      id: '/theaters'
+      path: '/theaters'
+      fullPath: '/theaters'
+      preLoaderRoute: typeof TheatersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vision': {
       id: '/vision'
       path: '/vision'
@@ -352,6 +625,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhatifRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workflows': {
+      id: '/workflows'
+      path: '/workflows'
+      fullPath: '/workflows'
+      preLoaderRoute: typeof WorkflowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -359,19 +639,33 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   AdvisorRoute: AdvisorRoute,
+  AgentsRoute: AgentsRoute,
   AnalyticsRoute: AnalyticsRoute,
+  AnalyticsCenterRoute: AnalyticsCenterRoute,
+  CampaignsRoute: CampaignsRoute,
   DashboardRoute: DashboardRoute,
+  DatalakeRoute: DatalakeRoute,
   DoctrineRoute: DoctrineRoute,
+  FederationRoute: FederationRoute,
+  ForecastRoute: ForecastRoute,
+  FuturesRoute: FuturesRoute,
+  GraphRoute: GraphRoute,
   LogisticsRoute: LogisticsRoute,
+  MemoryRoute: MemoryRoute,
+  ModelLabRoute: ModelLabRoute,
+  ModelsRoute: ModelsRoute,
+  ObservabilityRoute: ObservabilityRoute,
   PersonnelRoute: PersonnelRoute,
   PlannerRoute: PlannerRoute,
   ReplayRoute: ReplayRoute,
   RunRoute: RunRoute,
   ScenarioEditorRoute: ScenarioEditorRoute,
   SitrepRoute: SitrepRoute,
+  TheatersRoute: TheatersRoute,
   VisionRoute: VisionRoute,
   WarroomRoute: WarroomRoute,
   WhatifRoute: WhatifRoute,
+  WorkflowsRoute: WorkflowsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

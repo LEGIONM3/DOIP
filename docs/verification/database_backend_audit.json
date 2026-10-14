@@ -1,0 +1,920 @@
+{
+  "database": {
+    "existing_tables_count": 46,
+    "model_tables_count": 44,
+    "missing_in_db": [],
+    "untracked_in_models": [
+      "alembic_version",
+      "audit"
+    ],
+    "table_details": {
+      "users": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "username",
+          "name",
+          "role",
+          "unit",
+          "hashed_password",
+          "created_at",
+          "updated_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "runs": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "seed",
+          "scenario_id",
+          "ticks",
+          "events_count",
+          "log",
+          "world_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "sim_events": {
+        "column_count": 11,
+        "columns": [
+          "id",
+          "run_id",
+          "tick",
+          "event_type",
+          "severity",
+          "entity_id",
+          "lat",
+          "lon",
+          "payload",
+          "geom",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 1,
+        "indexes_count": 6
+      },
+      "whatif_results": {
+        "column_count": 10,
+        "columns": [
+          "id",
+          "seed",
+          "scenario_id",
+          "ticks",
+          "actions_json",
+          "baseline_kpis",
+          "branch_kpis",
+          "deltas_json",
+          "score",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "custom_scenarios": {
+        "column_count": 10,
+        "columns": [
+          "id",
+          "scenario_id",
+          "name",
+          "description",
+          "config_json",
+          "actions_json",
+          "status",
+          "author",
+          "created_at",
+          "updated_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "audit_events": {
+        "column_count": 5,
+        "columns": [
+          "id",
+          "actor",
+          "action",
+          "detail",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 2
+      },
+      "warroom_messages": {
+        "column_count": 4,
+        "columns": [
+          "id",
+          "type",
+          "payload",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 0
+      },
+      "doctrine_documents": {
+        "column_count": 9,
+        "columns": [
+          "id",
+          "doc_id",
+          "category",
+          "title",
+          "tags",
+          "version",
+          "source_file",
+          "content",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 2
+      },
+      "doctrine_chunks": {
+        "column_count": 11,
+        "columns": [
+          "id",
+          "chunk_id",
+          "document_id",
+          "document_type",
+          "section",
+          "source",
+          "citation",
+          "text",
+          "token_count",
+          "embedding",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 1,
+        "indexes_count": 2
+      },
+      "tactical_zones": {
+        "column_count": 10,
+        "columns": [
+          "id",
+          "zone_id",
+          "name",
+          "zone_type",
+          "min_alt_m",
+          "max_alt_m",
+          "active",
+          "coordinates_json",
+          "geom",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "missions": {
+        "column_count": 13,
+        "columns": [
+          "id",
+          "name",
+          "description",
+          "priority",
+          "status",
+          "author",
+          "approved_by",
+          "assigned_unit_ids",
+          "risk_score",
+          "estimated_duration_s",
+          "estimated_fuel_l",
+          "created_at",
+          "updated_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "mission_tasks": {
+        "column_count": 9,
+        "columns": [
+          "id",
+          "mission_id",
+          "sequence",
+          "title",
+          "task_type",
+          "target_entity",
+          "status",
+          "duration_s",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 1,
+        "indexes_count": 1
+      },
+      "waypoints": {
+        "column_count": 9,
+        "columns": [
+          "id",
+          "mission_id",
+          "sequence",
+          "name",
+          "lat",
+          "lon",
+          "alt_m",
+          "geom",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 1,
+        "indexes_count": 1
+      },
+      "routes": {
+        "column_count": 12,
+        "columns": [
+          "id",
+          "mission_id",
+          "unit_id",
+          "strategy",
+          "distance_km",
+          "estimated_duration_s",
+          "fuel_l",
+          "risk_score",
+          "waypoints_json",
+          "explanation",
+          "geom",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 1,
+        "indexes_count": 2
+      },
+      "route_segments": {
+        "column_count": 11,
+        "columns": [
+          "id",
+          "route_id",
+          "segment_idx",
+          "start_lat",
+          "start_lon",
+          "end_lat",
+          "end_lon",
+          "distance_km",
+          "terrain_cost",
+          "threat_cost",
+          "weather_cost"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 1,
+        "indexes_count": 1
+      },
+      "warroom_presence": {
+        "column_count": 9,
+        "columns": [
+          "id",
+          "username",
+          "name",
+          "role",
+          "status",
+          "current_screen",
+          "cursor_lat",
+          "cursor_lon",
+          "last_heartbeat"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "warroom_tasks": {
+        "column_count": 10,
+        "columns": [
+          "id",
+          "title",
+          "description",
+          "incident_id",
+          "assigned_to",
+          "status",
+          "priority",
+          "created_by",
+          "created_at",
+          "updated_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 2
+      },
+      "warroom_assignments": {
+        "column_count": 7,
+        "columns": [
+          "id",
+          "task_id",
+          "incident_id",
+          "from_user",
+          "to_user",
+          "reason",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 1,
+        "indexes_count": 1
+      },
+      "optimizer_runs": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "budget",
+          "priorities_json",
+          "status",
+          "score",
+          "recommendations_json",
+          "tradeoffs_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 0
+      },
+      "redteam_scenarios": {
+        "column_count": 9,
+        "columns": [
+          "id",
+          "mission_id",
+          "title",
+          "risk_rating",
+          "vulnerability_summary",
+          "injects_json",
+          "status",
+          "approved_by",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "knowledge_graph_nodes": {
+        "column_count": 6,
+        "columns": [
+          "id",
+          "entity_type",
+          "label",
+          "properties_json",
+          "created_at",
+          "updated_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "knowledge_graph_edges": {
+        "column_count": 7,
+        "columns": [
+          "id",
+          "source_id",
+          "target_id",
+          "relation_type",
+          "weight",
+          "properties_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 3
+      },
+      "vision_detections": {
+        "column_count": 16,
+        "columns": [
+          "id",
+          "frame_id",
+          "tick",
+          "entity_id",
+          "class_label",
+          "confidence",
+          "box_x",
+          "box_y",
+          "box_w",
+          "box_h",
+          "lat",
+          "lon",
+          "metadata_json",
+          "created_at",
+          "class_name",
+          "bbox_json"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "vision_tracks": {
+        "column_count": 19,
+        "columns": [
+          "id",
+          "track_id",
+          "class_label",
+          "frame_id",
+          "tick",
+          "lat",
+          "lon",
+          "velocity_mps",
+          "heading_deg",
+          "activity_state",
+          "history_json",
+          "metadata_json",
+          "created_at",
+          "updated_at",
+          "class_name",
+          "first_tick",
+          "last_tick",
+          "trajectory_json",
+          "status"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "forecast_runs": {
+        "column_count": 10,
+        "columns": [
+          "id",
+          "scenario_id",
+          "horizon_hours",
+          "confidence",
+          "ticks",
+          "predictions_json",
+          "summary",
+          "created_at",
+          "tick",
+          "horizon_ticks"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "copilot_sessions": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "mission_id",
+          "title",
+          "messages_json",
+          "proposals_json",
+          "status",
+          "approved_by",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 0
+      },
+      "replay_reports": {
+        "column_count": 7,
+        "columns": [
+          "id",
+          "run_id",
+          "comparison_run_id",
+          "summary",
+          "turning_points_json",
+          "kpi_deltas_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "federation_nodes": {
+        "column_count": 9,
+        "columns": [
+          "id",
+          "name",
+          "tier",
+          "region",
+          "endpoint",
+          "status",
+          "heartbeat_at",
+          "metadata_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 2
+      },
+      "theaters": {
+        "column_count": 7,
+        "columns": [
+          "id",
+          "name",
+          "code",
+          "bounds_json",
+          "active_world_id",
+          "status",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "worlds": {
+        "column_count": 7,
+        "columns": [
+          "id",
+          "theater_id",
+          "name",
+          "tick",
+          "status",
+          "state_snapshot_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "campaigns": {
+        "column_count": 7,
+        "columns": [
+          "id",
+          "title",
+          "theater_ids_json",
+          "status",
+          "objectives_json",
+          "created_at",
+          "updated_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 0
+      },
+      "strategic_reports": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "campaign_id",
+          "title",
+          "brief_text",
+          "readiness_score",
+          "risk_score",
+          "outlook_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "future_branches": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "baseline_world_id",
+          "branch_seed",
+          "ticks",
+          "outcome_rank",
+          "outcome_json",
+          "risk_band",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "event_streams": {
+        "column_count": 7,
+        "columns": [
+          "id",
+          "stream_name",
+          "offset",
+          "partition",
+          "event_type",
+          "payload_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 2
+      },
+      "data_lake_objects": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "bucket",
+          "key",
+          "content_type",
+          "size_bytes",
+          "etag",
+          "metadata_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 2
+      },
+      "agents": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "name",
+          "role",
+          "status",
+          "capabilities_json",
+          "metadata_json",
+          "created_at",
+          "updated_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "agent_tasks": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "agent_id",
+          "task_type",
+          "payload_json",
+          "result_json",
+          "status",
+          "created_at",
+          "completed_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 2
+      },
+      "agent_memories": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "agent_id",
+          "memory_type",
+          "content",
+          "tags_json",
+          "embedding",
+          "importance",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 2
+      },
+      "analysis_findings": {
+        "column_count": 6,
+        "columns": [
+          "id",
+          "category",
+          "severity",
+          "title",
+          "details_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "forecast_matrices": {
+        "column_count": 6,
+        "columns": [
+          "id",
+          "horizon_hours",
+          "matrix_json",
+          "risk_tensor_json",
+          "summary",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 0
+      },
+      "scenario_outcomes": {
+        "column_count": 7,
+        "columns": [
+          "id",
+          "batch_id",
+          "scenario_seed",
+          "score",
+          "rank",
+          "outcome_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "model_registry": {
+        "column_count": 8,
+        "columns": [
+          "id",
+          "name",
+          "provider",
+          "model_type",
+          "endpoint",
+          "is_active",
+          "metadata_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 0
+      },
+      "workflow_instances": {
+        "column_count": 10,
+        "columns": [
+          "id",
+          "workflow_type",
+          "title",
+          "current_step",
+          "steps_json",
+          "status",
+          "requires_human_confirmation",
+          "approved_by",
+          "created_at",
+          "updated_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      },
+      "operational_reports": {
+        "column_count": 6,
+        "columns": [
+          "id",
+          "report_type",
+          "title",
+          "content_md",
+          "data_json",
+          "created_at"
+        ],
+        "primary_key": [
+          "id"
+        ],
+        "foreign_keys_count": 0,
+        "indexes_count": 1
+      }
+    },
+    "migrations_count": 5,
+    "migrations": [
+      "60bd2854aa56_phase1_initial_schema.py",
+      "7a0e8d19bc23_phase2_tactical_schemas.py",
+      "8b1f2930cd34_phase3_digital_twin_schemas.py",
+      "9c2f3041de45_phase4_distributed_ecosystem_schemas.py",
+      "a1c3e5f7a9b0_phase5_unified_platform_schemas.py"
+    ],
+    "fresh_install_success": true
+  },
+  "backend": {
+    "total_modules": 68,
+    "unreferenced_modules": [],
+    "module_definitions_count": {
+      "aar": 9,
+      "agent_runtime": 26,
+      "ai_service": 10,
+      "analysis_engine": 8,
+      "analytics_engine": 8,
+      "auth": 2,
+      "cache": 15,
+      "campaign_replay": 3,
+      "copilot": 7,
+      "datalake": 7,
+      "data_governance": 10,
+      "db": 128,
+      "distributed_forecaster": 3,
+      "documentation_engine": 8,
+      "dsl_parser": 3,
+      "embeddings": 13,
+      "engine": 8,
+      "event_stream": 7,
+      "federation": 20,
+      "forecasting": 14,
+      "future_generator": 3,
+      "governance": 12,
+      "graph_intelligence": 6,
+      "hub": 5,
+      "hybrid_outcome_engine": 7,
+      "knowledge_graph": 16,
+      "knowledge_synthesizer": 3,
+      "large_scale_forecasting": 3,
+      "laya_engine": 17,
+      "llm_provider": 31,
+      "main": 236,
+      "massive_whatif": 6,
+      "memory_store": 18,
+      "mission_planner": 8,
+      "models": 53,
+      "model_management": 13,
+      "multiworld": 12,
+      "observability": 10,
+      "operations_center": 10,
+      "optimizer": 3,
+      "platform_unification": 27,
+      "prng": 7,
+      "quality_platform": 5,
+      "rag": 16,
+      "redteam": 4,
+      "replay_intelligence": 8,
+      "reporting_engine": 6,
+      "research_sandbox": 12,
+      "resilience": 21,
+      "routing": 13,
+      "scalability": 14,
+      "scenarios": 0,
+      "self_healing": 9,
+      "session": 5,
+      "sim_types": 12,
+      "sitrep": 7,
+      "strategic_copilot": 7,
+      "swarm": 15,
+      "time_utils": 4,
+      "unified_knowledge": 9,
+      "validation_engine": 8,
+      "vector_store": 10,
+      "vision": 13,
+      "vision_pipeline": 12,
+      "warroom": 3,
+      "whatif": 7,
+      "workflow_engine": 8,
+      "__init__": 0
+    }
+  }
+}

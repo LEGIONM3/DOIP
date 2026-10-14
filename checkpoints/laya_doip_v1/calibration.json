@@ -1,0 +1,77 @@
+{
+  "model_id": "laya_doip_v1",
+  "optimal_temperature": 0.16,
+  "calibrated_temperature": 0.16,
+  "calibrated_ece": 0.0237,
+  "uncalibrated_ece": 0.1508,
+  "pre_calibration": {
+    "ece": 0.1508,
+    "brier_score": 0.1598,
+    "temperature": 1.0
+  },
+  "post_calibration": {
+    "ece": 0.0237,
+    "brier_score": 0.0764,
+    "temperature": 0.16
+  },
+  "target_threshold": 0.05,
+  "target_met": true,
+  "ece_reduction_pct": 84.3,
+  "calibration_bins": [
+    {
+      "bin": 6,
+      "range": [
+        0.5,
+        0.6
+      ],
+      "count": 83,
+      "accuracy": 0.5181,
+      "confidence": 0.5346,
+      "calibration_error": 0.0165
+    },
+    {
+      "bin": 7,
+      "range": [
+        0.6,
+        0.7
+      ],
+      "count": 77,
+      "accuracy": 0.8182,
+      "confidence": 0.6572,
+      "calibration_error": 0.161
+    },
+    {
+      "bin": 8,
+      "range": [
+        0.7,
+        0.8
+      ],
+      "count": 124,
+      "accuracy": 0.8468,
+      "confidence": 0.7599,
+      "calibration_error": 0.0869
+    },
+    {
+      "bin": 9,
+      "range": [
+        0.8,
+        0.9
+      ],
+      "count": 576,
+      "accuracy": 0.9583,
+      "confidence": 0.8579,
+      "calibration_error": 0.1005
+    },
+    {
+      "bin": 10,
+      "range": [
+        0.9,
+        1.0
+      ],
+      "count": 9137,
+      "accuracy": 0.9667,
+      "confidence": 0.9836,
+      "calibration_error": 0.0169
+    }
+  ]
+}

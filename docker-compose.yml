@@ -1,4 +1,22 @@
 services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: doip-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=doip
+      - POSTGRES_USER=doip_user
+      - POSTGRES_PASSWORD=doip_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U doip_user -d doip"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: .
@@ -8,10 +26,15 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - DATABASE_URL=postgresql+psycopg://doip_user:doip_password@postgres:5432/doip
+      - VECTOR_DATABASE_URL=postgresql+psycopg://doip_user:doip_password@postgres:5432/doip
       - DOIP_SECRET=doip-production-secret-change-me
       - PYTHONUNBUFFERED=1
     volumes:
       - doip_data:/app/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -31,4 +54,5 @@ services:
         condition: service_healthy
 
 volumes:
+  pgdata:
   doip_data:

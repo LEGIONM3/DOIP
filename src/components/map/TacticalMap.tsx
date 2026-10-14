@@ -6,8 +6,10 @@ import { SEVERITY_META, unitDesignator } from "@/lib/doip";
 import { simStore } from "@/sim/store";
 import { isStale } from "@/sim/reducer";
 import type { Incident, Unit, WeatherCell, Zone } from "@/sim/types";
-import { Compass, Box, Square } from "lucide-react";
+import { Compass, Box, Square, Key } from "lucide-react";
 import type { Feature, FeatureCollection } from "geojson";
+import { resolveMapStyle, getMapAttribution } from "@/lib/mapConfig";
+import { MapKeyDialog } from "./MapKeyDialog";
 
 export const STYLE_URL = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 export const ATTRIBUTION = "© OpenStreetMap contributors © CARTO";
@@ -138,23 +140,39 @@ export default function TacticalMap({
     const v = window.localStorage.getItem(BASEMAP_KEY);
     return v === "dark" ? "dark" : "imagery";
   });
+  const [keyDialogOpen, setKeyDialogOpen] = useState(false);
+  const [mapConfigVer, setMapConfigVer] = useState(0);
+
+  useEffect(() => {
+    const onConfigChange = () => setMapConfigVer((c) => c + 1);
+    window.addEventListener("doip:map-config-changed", onConfigChange);
+    return () => window.removeEventListener("doip:map-config-changed", onConfigChange);
+  }, []);
   const [tilesLoading, setTilesLoading] = useState(true);
   const trailsRef = useRef<Record<string, Array<[number, number]>>>({});
   const markersRef = useRef<Record<string, maplibregl.Marker>>({});
+  const unitAnimRef = useRef<
+    Record<
+      string,
+      { start: [number, number]; target: [number, number]; startTime: number; duration: number }
+    >
+  >({});
+  const animRafRef = useRef<number | null>(null);
   const cbRef = useRef({ onSelectUnit, onSelectIncident, onMapClick });
   cbRef.current = { onSelectUnit, onSelectIncident, onMapClick };
   const radarRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<{ center: [number, number]; zoom: number } | null>(null);
 
-  /* ---------- init (rebuilds when the basemap changes) ---------- */
+  /* ---------- init (rebuilds when the basemap or map configuration changes) ---------- */
   useEffect(() => {
     if (!containerRef.current) return;
     setReady(false);
     setTilesLoading(true);
     const saved = viewRef.current;
+    const resolvedStyle = resolveMapStyle(basemap);
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: basemap === "imagery" ? imageryStyle() : (STYLE_URL as unknown as StyleSpecification),
+      style: resolvedStyle as unknown as StyleSpecification,
       center: (saved ? saved.center : [center[1], center[0]]) as LngLatLike,
       zoom: saved ? saved.zoom : zoom,
       pitch: DEFAULT_PITCH,
@@ -345,6 +363,9 @@ export default function TacticalMap({
     });
 
     return () => {
+      if (animRafRef.current) cancelAnimationFrame(animRafRef.current);
+      animRafRef.current = null;
+      unitAnimRef.current = {};
       Object.values(markersRef.current).forEach((m) => m.remove());
       markersRef.current = {};
       Object.values(cursorMarkers.current).forEach((m) => m.remove());
@@ -355,7 +376,7 @@ export default function TacticalMap({
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [basemap]);
+  }, [basemap, mapConfigVer]);
 
   /* ---------- zones ---------- */
   useEffect(() => {
@@ -497,8 +518,19 @@ export default function TacticalMap({
           .setLngLat([u.lon, u.lat])
           .addTo(map);
         markersRef.current[u.id] = marker;
+      } else {
+        const cur = marker.getLngLat();
+        const dLon = Math.abs(cur.lng - u.lon);
+        const dLat = Math.abs(cur.lat - u.lat);
+        if (dLon > 0.00001 || dLat > 0.00001) {
+          unitAnimRef.current[u.id] = {
+            start: [cur.lng, cur.lat],
+            target: [u.lon, u.lat],
+            startTime: performance.now(),
+            duration: 350,
+          };
+        }
       }
-      marker.setLngLat([u.lon, u.lat]);
       const el = marker.getElement();
       const elevated = u.kind === "uav";
       el.classList.toggle("is-elevated", elevated);
@@ -507,6 +539,32 @@ export default function TacticalMap({
       el.style.setProperty("--unit-color", color);
       const label = el.querySelector(".doip-unit-label");
       if (label) label.textContent = unitDesignator(u, personnel);
+    }
+
+    const animLoop = (time: number) => {
+      let hasActive = false;
+      for (const [id, anim] of Object.entries(unitAnimRef.current)) {
+        const m = markersRef.current[id];
+        if (!m) continue;
+        const progress = Math.min(1, (time - anim.startTime) / anim.duration);
+        const ease = 1 - Math.pow(1 - progress, 2);
+        const lng = anim.start[0] + (anim.target[0] - anim.start[0]) * ease;
+        const lat = anim.start[1] + (anim.target[1] - anim.start[1]) * ease;
+        m.setLngLat([lng, lat]);
+        if (progress < 1) {
+          hasActive = true;
+        } else {
+          delete unitAnimRef.current[id];
+        }
+      }
+      if (hasActive) {
+        animRafRef.current = requestAnimationFrame(animLoop);
+      } else {
+        animRafRef.current = null;
+      }
+    };
+    if (Object.keys(unitAnimRef.current).length > 0 && !animRafRef.current) {
+      animRafRef.current = requestAnimationFrame(animLoop);
     }
 
     for (const id of Object.keys(markersRef.current)) {
@@ -663,7 +721,15 @@ export default function TacticalMap({
           {is3d ? <Square className="size-3.5" /> : <Box className="size-3.5" />}
           <span className="font-mono text-[10px]">{is3d ? "2D" : "3D"}</span>
         </button>
+        <button
+          onClick={() => setKeyDialogOpen(true)}
+          title="Map API Key & Provider Settings"
+          className="doip-map-btn"
+        >
+          <Key className="size-3.5" />
+        </button>
       </div>
+      <MapKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} />
     </div>
   );
 }

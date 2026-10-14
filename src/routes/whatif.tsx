@@ -35,6 +35,8 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/whatif")({
+  validateSearch: (s: Record<string, unknown>): { scenario?: string } =>
+    typeof s["scenario"] === "string" ? { scenario: s["scenario"] } : {},
   head: () => ({
     meta: [
       { title: "What-If Theater — DOIP" },
@@ -701,6 +703,7 @@ interface WhatIfHistoryItem {
 }
 
 function WhatIfScreen() {
+  const { scenario: scenarioParam } = Route.useSearch();
   const seed = useSim((s) => s.world.seed);
   const tick = useSim((s) => s.world.tick);
   const role = useSim((s) => s.role);
@@ -709,6 +712,14 @@ function WhatIfScreen() {
   const [prompt, setPrompt] = useState("");
   const [actions, setActions] = useState<DslAction[]>([]);
   const [phase, setPhase] = useState<Phase>("draft");
+
+  useEffect(() => {
+    if (scenarioParam && !prompt) {
+      setPrompt(
+        `Evaluate tactical scenario branch for ${scenarioParam}: assess operational friction, perimeter breach response, and logistics demand.`,
+      );
+    }
+  }, [scenarioParam, prompt]);
 
   // Playback & Scrubber Controls
   const [playTick, setPlayTick] = useState(0);
@@ -823,7 +834,7 @@ function WhatIfScreen() {
     );
 
     try {
-      const scenarioId = currentScenarioId || "SC-1";
+      const scenarioId = scenarioParam || currentScenarioId || "SC-1";
       const branchSeed = seed || 42;
       const engActions = toEngineActions(actions);
 
@@ -1375,6 +1386,15 @@ function WhatIfScreen() {
                           .map((e, idx) => (
                             <div
                               key={`b-${e.id || idx}`}
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(ev) => {
+                                if (ev.key === "Enter" || ev.key === " ") {
+                                  ev.preventDefault();
+                                  setPlayTick(Number(e.tick));
+                                  toast.info(`Scrubbed to event [e:${e.id}] at T+${e.tick}`);
+                                }
+                              }}
                               onClick={() => {
                                 setPlayTick(Number(e.tick));
                                 toast.info(`Scrubbed to event [e:${e.id}] at T+${e.tick}`);
@@ -1414,6 +1434,15 @@ function WhatIfScreen() {
                             return (
                               <div
                                 key={`br-${e.id || idx}`}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(ev) => {
+                                  if (ev.key === "Enter" || ev.key === " ") {
+                                    ev.preventDefault();
+                                    setPlayTick(Number(e.tick));
+                                    toast.info(`Scrubbed to branch event [e:${e.id}] at T+${e.tick}`);
+                                  }
+                                }}
                                 onClick={() => {
                                   setPlayTick(Number(e.tick));
                                   toast.info(`Scrubbed to branch event [e:${e.id}] at T+${e.tick}`);
@@ -1504,18 +1533,31 @@ function WhatIfScreen() {
                 </button>
               }
             >
-              {historyOpen &&
-                (historyLoading ? (
-                  <Mono className="p-2 text-[10px] text-muted-foreground">
-                    Loading wargame history…
-                  </Mono>
-                ) : historyData.length === 0 ? (
-                  <EmptyState
-                    label="No past runs"
-                    hint="Runs are archived whenever a branch executes."
-                  />
-                ) : (
-                  <div className="space-y-1.5 p-1 max-h-60 overflow-y-auto">
+              {!historyOpen ? (
+                <div className="flex items-center justify-between p-2 font-mono text-[10px] text-muted-foreground">
+                  <span>Branch history archive. Past wargame simulations are indexed here.</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHistoryOpen(true);
+                      if (historyData.length === 0) loadHistory();
+                    }}
+                    className="text-primary hover:underline font-bold"
+                  >
+                    Expand Archive ({historyData.length} records) →
+                  </button>
+                </div>
+              ) : historyLoading ? (
+                <Mono className="p-2 text-[10px] text-muted-foreground">
+                  Loading wargame history…
+                </Mono>
+              ) : historyData.length === 0 ? (
+                <EmptyState
+                  label="No past runs"
+                  hint="Runs are archived whenever a branch executes."
+                />
+              ) : (
+                <div className="space-y-1.5 p-1 max-h-60 overflow-y-auto">
                     {historyData.map((r, i) => (
                       <div
                         key={r.id ?? i}
@@ -1559,7 +1601,7 @@ function WhatIfScreen() {
                       </div>
                     ))}
                   </div>
-                ))}
+                )}
             </Panel>
           </>
         )}

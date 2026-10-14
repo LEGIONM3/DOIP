@@ -164,6 +164,81 @@ export function applyEvent(state: WorldState, e: SimEvent): WorldState {
         };
       break;
     }
+    case "system": {
+      const p = e.payload as unknown as {
+        mission?: boolean;
+        missionId?: string;
+        route?: Array<[number, number]>;
+        assignedPersonnel?: string[];
+      };
+      if (p.mission) {
+        const u = s.units[e.entityId];
+        if (u) {
+          s.units = {
+            ...s.units,
+            [u.id]: {
+              ...u,
+              ...(p.route?.length ? { route: p.route } : {}),
+              ...(p.missionId ? { activeMissionId: p.missionId } : {}),
+            },
+          };
+        }
+        if (p.assignedPersonnel?.length && p.missionId) {
+          const updatedPersons = { ...s.personnel };
+          for (const pid of p.assignedPersonnel) {
+            if (updatedPersons[pid]) {
+              const prev = updatedPersons[pid];
+              const history = prev.missionHistory ? [...prev.missionHistory] : [];
+              if (!history.includes(p.missionId)) history.push(p.missionId);
+              updatedPersons[pid] = {
+                ...prev,
+                activeMissionId: p.missionId,
+                missionHistory: history,
+              };
+            }
+          }
+          s.personnel = updatedPersons;
+        }
+      }
+      break;
+    }
+    case "mission_assigned": {
+      const p = e.payload as unknown as {
+        missionId: string;
+        unitId: string;
+        route?: Array<[number, number]>;
+        assignedPersonnel?: string[];
+      };
+      const uid = p.unitId || e.entityId;
+      const u = s.units[uid];
+      if (u) {
+        s.units = {
+          ...s.units,
+          [uid]: {
+            ...u,
+            ...(p.route?.length ? { route: p.route } : {}),
+            activeMissionId: p.missionId,
+          },
+        };
+      }
+      if (p.assignedPersonnel?.length) {
+        const updatedPersons = { ...s.personnel };
+        for (const pid of p.assignedPersonnel) {
+          if (updatedPersons[pid]) {
+            const prev = updatedPersons[pid];
+            const history = prev.missionHistory ? [...prev.missionHistory] : [];
+            if (!history.includes(p.missionId)) history.push(p.missionId);
+            updatedPersons[pid] = {
+              ...prev,
+              activeMissionId: p.missionId,
+              missionHistory: history,
+            };
+          }
+        }
+        s.personnel = updatedPersons;
+      }
+      break;
+    }
     default:
       break;
   }

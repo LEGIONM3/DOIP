@@ -1,0 +1,276 @@
+{
+  "total_journeys": 9,
+  "passed_journeys": 2,
+  "journeys": [
+    {
+      "journey_name": "Mission Planning",
+      "journey_success": false,
+      "total_latency_ms": 34.31,
+      "steps": [
+        {
+          "step": "AI Draft Mission",
+          "method": "POST",
+          "url": "/api/missions/ai-draft",
+          "status_code": 422,
+          "latency_ms": 14.56,
+          "success": false,
+          "response_preview": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"prompt\"],\"msg\":\"Field required\",\"input\":{\"intent\":\"Surveillance Patrol Sector Delta\",\"theater\":\"EASTERN_BO"
+        },
+        {
+          "step": "List Missions",
+          "method": "GET",
+          "url": "/api/missions",
+          "status_code": 200,
+          "latency_ms": 6.26,
+          "success": true,
+          "response_preview": "{'missions': [{'id': 'MSN-098434', 'name': 'Audit', 'description': '', 'priority': 'medium', 'status': 'draft', 'author': 'operator', 'approved_by': N"
+        },
+        {
+          "step": "Run Tactical Route Optimizer",
+          "method": "POST",
+          "url": "/api/optimizer/solve",
+          "status_code": 200,
+          "latency_ms": 13.49,
+          "success": true,
+          "response_preview": "{'budget': 250000.0, 'total_spent': 235000.0, 'score': 60.1, 'priorities': {'readiness': 0.25, 'coverage': 0.25, 'response_time': 0.2, 'fuel_resilienc"
+        }
+      ]
+    },
+    {
+      "journey_name": "War Room",
+      "journey_success": false,
+      "total_latency_ms": 11.32,
+      "steps": [
+        {
+          "step": "Register Presence",
+          "method": "POST",
+          "url": "/api/warroom/presence",
+          "status_code": 405,
+          "latency_ms": 2.29,
+          "success": false,
+          "response_preview": "{\"detail\":\"Method Not Allowed\"}"
+        },
+        {
+          "step": "List Active Participants",
+          "method": "GET",
+          "url": "/api/warroom/presence",
+          "status_code": 200,
+          "latency_ms": 4.58,
+          "success": true,
+          "response_preview": "{'presence': [{'id': 1, 'username': 'demo_operator', 'name': 'Demo Operator', 'role': 'operator', 'status': 'offline', 'current_screen': 'map', 'curso"
+        },
+        {
+          "step": "Post Message",
+          "method": "POST",
+          "url": "/api/warroom/messages",
+          "status_code": 404,
+          "latency_ms": 2.14,
+          "success": false,
+          "response_preview": "{\"detail\":\"Not Found\"}"
+        },
+        {
+          "step": "Fetch Message Feed",
+          "method": "GET",
+          "url": "/api/warroom/messages",
+          "status_code": 404,
+          "latency_ms": 2.31,
+          "success": false,
+          "response_preview": "{\"detail\":\"Not Found\"}"
+        }
+      ]
+    },
+    {
+      "journey_name": "What-If Analysis",
+      "journey_success": false,
+      "total_latency_ms": 108.64,
+      "steps": [
+        {
+          "step": "Run Deterministic What-If",
+          "method": "POST",
+          "url": "/api/whatif/run",
+          "status_code": 404,
+          "latency_ms": 1.83,
+          "success": false,
+          "response_preview": "{\"detail\":\"Not Found\"}"
+        },
+        {
+          "step": "Run Massive 100-Branch Hybrid",
+          "method": "POST",
+          "url": "/api/simulation/hybrid/whatif/massive",
+          "status_code": 200,
+          "latency_ms": 106.81,
+          "success": true,
+          "response_preview": "{'branches_evaluated': 100, 'ticks': 10, 'success_probability': 1.0, 'delay_probability': 0.0, 'failure_probability': 0.0, 'abort_probability': 0.0, '"
+        }
+      ]
+    },
+    {
+      "journey_name": "Forecasting Intelligence",
+      "journey_success": true,
+      "total_latency_ms": 163.28,
+      "steps": [
+        {
+          "step": "Generate Trajectory Forecast",
+          "method": "POST",
+          "url": "/api/forecast",
+          "status_code": 200,
+          "latency_ms": 143.69,
+          "success": true,
+          "response_preview": "{'id': 'FC-1791124251-7901a8', 'scenario_id': 'SC-1', 'horizon_hours': 2.0, 'confidence': 0.95, 'ticks': 120, 'created_at': '2026-10-04T14:30:51.56628"
+        },
+        {
+          "step": "Fetch Forecast History",
+          "method": "GET",
+          "url": "/api/forecast/history",
+          "status_code": 200,
+          "latency_ms": 19.59,
+          "success": true,
+          "response_preview": "{'runs': [{'id': 'FC-1791124251-7901a8', 'scenario_id': 'SC-1', 'horizon_hours': 2.0, 'confidence': 0.95, 'ticks': 120, 'predictions_json': {'fuel_exh"
+        }
+      ]
+    },
+    {
+      "journey_name": "Knowledge Search & RAG",
+      "journey_success": false,
+      "total_latency_ms": 1108.92,
+      "steps": [
+        {
+          "step": "Query RAG Intelligence",
+          "method": "POST",
+          "url": "/api/ai/query",
+          "status_code": 200,
+          "latency_ms": 1106.86,
+          "success": true,
+          "response_preview": "{'query': 'What are emergency fuel procedures?', 'run_id': None, 'tick': 0, 'answer': 'According to [POL-02 \u00a72] (2. Personnel data): Simulated personn"
+        },
+        {
+          "step": "Query Knowledge Graph Entities",
+          "method": "GET",
+          "url": "/api/knowledge/graph",
+          "status_code": 404,
+          "latency_ms": 2.06,
+          "success": false,
+          "response_preview": "{\"detail\":\"Not Found\"}"
+        }
+      ]
+    },
+    {
+      "journey_name": "Analytics Center",
+      "journey_success": false,
+      "total_latency_ms": 4.84,
+      "steps": [
+        {
+          "step": "Get Operational Platform Metrics",
+          "method": "GET",
+          "url": "/api/analytics/platform",
+          "status_code": 404,
+          "latency_ms": 1.96,
+          "success": false,
+          "response_preview": "{\"detail\":\"Not Found\"}"
+        },
+        {
+          "step": "Get Readiness Scorecard",
+          "method": "GET",
+          "url": "/api/quality/scorecard",
+          "status_code": 200,
+          "latency_ms": 2.88,
+          "success": true,
+          "response_preview": "{'scorecard_type': 'DOIP_QUALITY_SCORECARD', 'composite_dqi': 98.1, 'letter_grade': 'A+', 'pillars': {'test_coverage': {'test_count': 162, 'statement_"
+        }
+      ]
+    },
+    {
+      "journey_name": "Simulation Replay & AAR",
+      "journey_success": false,
+      "total_latency_ms": 3.57,
+      "steps": [
+        {
+          "step": "List Available Runs",
+          "method": "GET",
+          "url": "/api/runs",
+          "status_code": 404,
+          "latency_ms": 1.72,
+          "success": false,
+          "response_preview": "{\"detail\":\"Not Found\"}"
+        },
+        {
+          "step": "Get Replay Turning Points",
+          "method": "GET",
+          "url": "/api/replay/RUN-DEFAULT/turning-points",
+          "status_code": 404,
+          "latency_ms": 1.85,
+          "success": false,
+          "response_preview": "{\"detail\":\"Not Found\"}"
+        }
+      ]
+    },
+    {
+      "journey_name": "Model Lab",
+      "journey_success": true,
+      "total_latency_ms": 183.2,
+      "steps": [
+        {
+          "step": "Check Laya Engine Status",
+          "method": "GET",
+          "url": "/api/laya/status",
+          "status_code": 200,
+          "latency_ms": 2.68,
+          "success": true,
+          "response_preview": "{'model_name': 'laya-doip-v1', 'architecture': 'LayaNonAutoregressiveEncoder / Multi-Task Neural Scorer', 'checkpoint_loaded': True, 'checkpoint_path'"
+        },
+        {
+          "step": "List Model Registry Models",
+          "method": "GET",
+          "url": "/api/laya/models",
+          "status_code": 200,
+          "latency_ms": 3.18,
+          "success": true,
+          "response_preview": "[{'model_id': 'laya-base', 'version': '0.9.0', 'name': 'Laya Base Prototype', 'status': 'ARCHIVED', 'dataset_version': 'v0-synthetic-2.8k', 'training_"
+        },
+        {
+          "step": "Run Calibrated Hybrid Step",
+          "method": "POST",
+          "url": "/api/simulation/hybrid/step",
+          "status_code": 200,
+          "latency_ms": 172.8,
+          "success": true,
+          "response_preview": "{'tick': 1, 'sim_time_sec': 1.0, 'mode': 'HYBRID_AI_SIM', 'physics_state': {'tick': 1, 'sim_time_sec': 1.0, 'unit_id': 'PATROL-1', 'unit_type': 'patro"
+        },
+        {
+          "step": "Fetch Disagreements Log",
+          "method": "GET",
+          "url": "/api/simulation/disagreements/history?limit=10",
+          "status_code": 200,
+          "latency_ms": 4.54,
+          "success": true,
+          "response_preview": "{'history': [{'disagreement_id': 'DISAGREE-DD3A9E24', 'tick': 1, 'physics_risk': 'LOW', 'rules_risk': 'MODERATE', 'laya_risk': 'LOW', 'physics_score':"
+        }
+      ]
+    },
+    {
+      "journey_name": "Digital Twin & Multiworld",
+      "journey_success": false,
+      "total_latency_ms": 14.11,
+      "steps": [
+        {
+          "step": "Generate Multiworld Futures",
+          "method": "POST",
+          "url": "/api/futures/generate",
+          "status_code": 200,
+          "latency_ms": 11.8,
+          "success": true,
+          "response_preview": "{'batch_id': 'FUT-BATCH-479AFE', 'baseline_world_id': 'WLD-NORTH-01', 'branches_count': 4, 'ticks': 120, 'risk_bands': {'P10_optimistic': {'score': 72"
+        },
+        {
+          "step": "Fetch Federation Status",
+          "method": "GET",
+          "url": "/api/federation/theaters",
+          "status_code": 404,
+          "latency_ms": 2.31,
+          "success": false,
+          "response_preview": "{\"detail\":\"Not Found\"}"
+        }
+      ]
+    }
+  ]
+}

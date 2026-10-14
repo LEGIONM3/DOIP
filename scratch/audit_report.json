@@ -1,0 +1,918 @@
+{
+  "routeAudit": [
+    {
+      "route": "/",
+      "loaded": true,
+      "title": "Live Map — DOIP Command Center",
+      "buttonsCount": 26,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/dashboard",
+      "loaded": true,
+      "title": "Dashboard — DOIP",
+      "buttonsCount": 20,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/run",
+      "loaded": true,
+      "title": "Run Control — DOIP",
+      "buttonsCount": 33,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/planner",
+      "loaded": true,
+      "title": "Mission Planner — DOIP",
+      "buttonsCount": 32,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/federation",
+      "loaded": true,
+      "title": "Federated Command Mesh — DOIP",
+      "buttonsCount": 19,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/theaters",
+      "loaded": true,
+      "title": "Multi-Theater Digital Twin — DOIP",
+      "buttonsCount": 13,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/campaigns",
+      "loaded": true,
+      "title": "Strategic Campaigns & Swarm Copilot — DOIP",
+      "buttonsCount": 15,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/futures",
+      "loaded": true,
+      "title": "Autonomous Simulation Futures — DOIP",
+      "buttonsCount": 14,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/datalake",
+      "loaded": true,
+      "title": "Event Streams & Data Lake — DOIP",
+      "buttonsCount": 18,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/doctrine",
+      "loaded": true,
+      "title": "Doctrine & SOP Corpus — DOIP",
+      "buttonsCount": 38,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/replay",
+      "loaded": true,
+      "title": "Replay — DOIP",
+      "buttonsCount": 26,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/sitrep",
+      "loaded": true,
+      "title": "AI Sitrep — DOIP",
+      "buttonsCount": 15,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/forecast",
+      "loaded": true,
+      "title": "Digital Twin Forecasting & Lookahead — DOIP",
+      "buttonsCount": 13,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/graph",
+      "loaded": true,
+      "title": "Operational Knowledge Graph & Causal Analysis — DOIP",
+      "buttonsCount": 14,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/whatif",
+      "loaded": true,
+      "title": "What-If Theater — DOIP",
+      "buttonsCount": 12,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/vision",
+      "loaded": false,
+      "title": "",
+      "buttonsCount": 0,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/logistics",
+      "loaded": true,
+      "title": "Logistics — DOIP",
+      "buttonsCount": 17,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/personnel",
+      "loaded": true,
+      "title": "Personnel — DOIP",
+      "buttonsCount": 14,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/analytics",
+      "loaded": true,
+      "title": "Analytics — DOIP",
+      "buttonsCount": 13,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/advisor",
+      "loaded": true,
+      "title": "Investment Advisor — DOIP",
+      "buttonsCount": 17,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/warroom",
+      "loaded": true,
+      "title": "War-Room — DOIP",
+      "buttonsCount": 25,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/agents",
+      "loaded": true,
+      "title": "Unified Agent Runtime — DOIP",
+      "buttonsCount": 19,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/memory",
+      "loaded": true,
+      "title": "Long-Term Memory Explorer — DOIP",
+      "buttonsCount": 20,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/analytics-center",
+      "loaded": true,
+      "title": "Operational Analytics & Reporting Center — DOIP",
+      "buttonsCount": 16,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/workflows",
+      "loaded": true,
+      "title": "Operational Workflow Engine — DOIP",
+      "buttonsCount": 14,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/models",
+      "loaded": true,
+      "title": "Model Management & Router — DOIP",
+      "buttonsCount": 19,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/observability",
+      "loaded": true,
+      "title": "Observability Platform — DOIP",
+      "buttonsCount": 14,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/model-lab",
+      "loaded": true,
+      "title": "Model Lab — Hybrid Physics & Laya Decision Engine",
+      "buttonsCount": 19,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/scenario-editor",
+      "loaded": true,
+      "title": "Scenario Editor — DOIP",
+      "buttonsCount": 20,
+      "nonClickableButtons": []
+    },
+    {
+      "route": "/admin",
+      "loaded": true,
+      "title": "Admin — DOIP",
+      "buttonsCount": 22,
+      "nonClickableButtons": []
+    }
+  ],
+  "consoleErrors": [
+    {
+      "url": "http://127.0.0.1:5173/",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/dashboard",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/dashboard",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/dashboard",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/run",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/run",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/run",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/planner",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/planner",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/planner",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/federation",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/federation",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/federation",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/federation",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/federation",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/theaters",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/theaters",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/theaters",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/theaters",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/theaters",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/theaters",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/theaters",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/theaters",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/theaters",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/campaigns",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/futures",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/futures",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/futures",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/futures",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/futures",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/datalake",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/doctrine",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/doctrine",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/doctrine",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/doctrine",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/doctrine",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/replay",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/replay",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/replay",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/sitrep",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/sitrep",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/sitrep",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/forecast",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/forecast",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/forecast",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/forecast",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/forecast",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/forecast",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/forecast",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/graph",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/graph",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/graph",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/graph",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/graph",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/whatif",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/whatif",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/whatif",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/vision",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/vision",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/vision",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/vision",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/vision",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/vision",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/vision",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/logistics",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/logistics",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/logistics",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/personnel",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/personnel",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/personnel",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/analytics",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/analytics",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/analytics",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/advisor",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/advisor",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/advisor",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/warroom",
+      "text": "WebSocket connection to 'ws://localhost:8000/ws/warroom' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/warroom",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/warroom",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/warroom",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/agents",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/agents",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/agents",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/agents",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/agents",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/agents",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/agents",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/agents",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/agents",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/memory",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/memory",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/memory",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/memory",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/memory",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/memory",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/memory",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/analytics-center",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/analytics-center",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/analytics-center",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/analytics-center",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/analytics-center",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/workflows",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/workflows",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/workflows",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/workflows",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/workflows",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/models",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/models",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/models",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/models",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/models",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/observability",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/observability",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/observability",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/observability",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/observability",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/observability",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/observability",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/model-lab",
+      "text": "Failed to load resource: the server responded with a status of 502 (Bad Gateway)"
+    },
+    {
+      "url": "http://127.0.0.1:5173/scenario-editor",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/scenario-editor",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/scenario-editor",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/scenario-editor",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/scenario-editor",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/admin",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/admin",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/admin",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/admin",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/admin",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/dashboard",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/dashboard",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/dashboard",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/planner",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/planner",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/planner",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/whatif",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/whatif",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:5173/whatif",
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    }
+  ],
+  "pageErrors": [],
+  "inAppBackBtn": false
+}

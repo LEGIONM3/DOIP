@@ -19,18 +19,25 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
+import re
 import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
+try:
+    from .llm_provider import llm_service
+except ImportError:
+    from app.llm_provider import llm_service
+
 log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Ollama configuration — override via env vars if needed
+# LLM configuration — override via env vars if needed
 # ---------------------------------------------------------------------------
-OLLAMA_BASE_URL = "http://localhost:11434"
-OLLAMA_MODEL = "llama3.2"
-OLLAMA_TIMEOUT_S = 2.0   # hard wall; fail fast so the API stays snappy
+OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.2")
+OLLAMA_TIMEOUT_S = float(os.environ.get("OLLAMA_TIMEOUT_S", "2.0"))   # hard wall; fail fast so the API stays snappy
 
 # System prompt keeps the LLM in a tightly scoped role
 _SYSTEM_PROMPT = (
@@ -138,34 +145,24 @@ def _build_sections(world_snapshot: dict, events: list[dict]) -> list[SitrepSect
 
 
 # ---------------------------------------------------------------------------
-# Phase 2 — async Ollama LLM enhancement (best-effort, fail-soft)
+# Phase 2 — multi-provider LLM enhancement (best-effort, fail-soft)
 # ---------------------------------------------------------------------------
-def _ollama_rewrite_sync(sections_json: str) -> str | None:
-    """Blocking Ollama call — run in a thread so it can be time-limited."""
-    payload = json.dumps({
-        "model": OLLAMA_MODEL,
-        "system": _SYSTEM_PROMPT,
-        "prompt": sections_json,
-        "stream": False,
-        "options": {"temperature": 0.3, "num_predict": 600},
-    }).encode()
-    req = urllib.request.Request(
-        f"{OLLAMA_BASE_URL}/api/generate",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
+def _llm_rewrite_sync(sections_json: str) -> str | None:
+    """Invokes llm_service to synthesize/enhance sitrep sections."""
     try:
-        with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT_S) as resp:
-            result = json.loads(resp.read())
-            return result.get("response", "")
+        return llm_service.generate(
+            prompt=sections_json,
+            system_prompt=_SYSTEM_PROMPT,
+            max_tokens=800,
+            temperature=0.3,
+        )
     except Exception as exc:
-        log.debug("Ollama unavailable (%s) — using rule-based sitrep", exc)
+        log.debug("LLM service unavailable (%s) — using rule-based sitrep", exc)
         return None
 
 
 async def _llm_enhance(sections: list[SitrepSection]) -> list[SitrepSection]:
-    """Try to rewrite bodies via Ollama; return originals on any failure."""
+    """Try to rewrite bodies via multi-provider LLM service; return originals on any failure."""
     # Build a lean context for the LLM — only the fields it needs
     ctx = [
         {"heading": s.heading, "body": s.body, "evidence_kind": s.evidence_kind}
@@ -173,10 +170,11 @@ async def _llm_enhance(sections: list[SitrepSection]) -> list[SitrepSection]:
     ]
     try:
         raw = await asyncio.wait_for(
-            asyncio.get_event_loop().run_in_executor(None, _ollama_rewrite_sync, json.dumps(ctx)),
-            timeout=OLLAMA_TIMEOUT_S + 0.5,   # slightly above inner timeout
+            asyncio.get_event_loop().run_in_executor(None, _llm_rewrite_sync, json.dumps(ctx)),
+            timeout=OLLAMA_TIMEOUT_S + 1.0,   # slightly above inner timeout
         )
-    except (asyncio.TimeoutError, Exception):
+    except (asyncio.TimeoutError, Exception) as exc:
+        log.debug("Sitrep enhancement failed or timed out: %s", exc)
         return sections
 
     if not raw:
@@ -184,27 +182,43 @@ async def _llm_enhance(sections: list[SitrepSection]) -> list[SitrepSection]:
 
     # Parse LLM response — expect a JSON array
     try:
-        rewritten = json.loads(raw)
+        match = re.search(r"(\[\s*\{.*\}\s*\])", raw, re.DOTALL)
+        content_to_parse = match.group(1) if match else raw
+        rewritten = json.loads(content_to_parse)
         if not isinstance(rewritten, list) or len(rewritten) != len(sections):
             return sections
         for i, item in enumerate(rewritten):
             if isinstance(item, dict) and isinstance(item.get("body"), str) and item["body"].strip():
                 sections[i].body = item["body"].strip()
         return sections
-    except (json.JSONDecodeError, KeyError, IndexError):
+    except (json.JSONDecodeError, KeyError, IndexError, Exception) as exc:
+        log.debug("Could not parse LLM sitrep JSON (%s) — retaining base text", exc)
         return sections
 
 
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
-def generate(world_snapshot: dict, events: list[dict]) -> list[dict]:
-    """Synchronous entry-point — returns rule-based sections only.
+def generate(world_snapshot: dict, events: list[dict], enhance: bool = False) -> list[dict]:
+    """Synchronous entry-point.
 
-    Used by the blocking FastAPI route. For LLM enhancement, use
-    `generate_async` from an async context.
+    Returns rule-based sections by default, or runs LLM synthesis if enhance=True.
     """
     sections = _build_sections(world_snapshot, events)
+    if enhance:
+        ctx = [{"heading": s.heading, "body": s.body, "evidence_kind": s.evidence_kind} for s in sections]
+        raw = _llm_rewrite_sync(json.dumps(ctx))
+        if raw:
+            try:
+                match = re.search(r"(\[\s*\{.*\}\s*\])", raw, re.DOTALL)
+                content = match.group(1) if match else raw
+                rewritten = json.loads(content)
+                if isinstance(rewritten, list) and len(rewritten) == len(sections):
+                    for i, item in enumerate(rewritten):
+                        if isinstance(item, dict) and isinstance(item.get("body"), str) and item["body"].strip():
+                            sections[i].body = item["body"].strip()
+            except Exception:
+                pass
     return _serialise(sections)
 
 

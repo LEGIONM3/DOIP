@@ -1,0 +1,106 @@
+{
+  "model_id": "laya_doip_v2",
+  "epochs": 10,
+  "batch_size": 128,
+  "learning_rate": 0.001,
+  "train_samples": 82540,
+  "val_samples": 9997,
+  "best_val_loss": 2.078,
+  "final_operational_acc": 0.9733,
+  "final_outcome_acc": 0.9929,
+  "final_action_acc": 0.9467,
+  "training_time_sec": 60.93,
+  "checkpoint_file": "C:\\Users\\mohith\\OneDrive\\Documents\\MiniProject\\DOIP\\checkpoints\\laya_doip_v2\\model.pt",
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 2.0535,
+      "val_loss": 2.1001,
+      "op_acc": 0.9649,
+      "outcome_acc": 0.9882,
+      "action_acc": 0.9542,
+      "time_sec": 5.8
+    },
+    {
+      "epoch": 2,
+      "train_loss": 2.042,
+      "val_loss": 2.0843,
+      "op_acc": 0.9385,
+      "outcome_acc": 0.9882,
+      "action_acc": 0.9393,
+      "time_sec": 5.92
+    },
+    {
+      "epoch": 3,
+      "train_loss": 2.0315,
+      "val_loss": 2.1156,
+      "op_acc": 0.967,
+      "outcome_acc": 0.9917,
+      "action_acc": 0.9395,
+      "time_sec": 6.13
+    },
+    {
+      "epoch": 4,
+      "train_loss": 2.0183,
+      "val_loss": 2.0991,
+      "op_acc": 0.9532,
+      "outcome_acc": 0.9924,
+      "action_acc": 0.9345,
+      "time_sec": 6.08
+    },
+    {
+      "epoch": 5,
+      "train_loss": 2.0037,
+      "val_loss": 2.1033,
+      "op_acc": 0.968,
+      "outcome_acc": 0.993,
+      "action_acc": 0.9396,
+      "time_sec": 5.99
+    },
+    {
+      "epoch": 6,
+      "train_loss": 1.9926,
+      "val_loss": 2.0999,
+      "op_acc": 0.9661,
+      "outcome_acc": 0.9932,
+      "action_acc": 0.9517,
+      "time_sec": 6.43
+    },
+    {
+      "epoch": 7,
+      "train_loss": 1.9806,
+      "val_loss": 2.1186,
+      "op_acc": 0.9614,
+      "outcome_acc": 0.9926,
+      "action_acc": 0.9413,
+      "time_sec": 6.16
+    },
+    {
+      "epoch": 8,
+      "train_loss": 1.972,
+      "val_loss": 2.0786,
+      "op_acc": 0.9654,
+      "outcome_acc": 0.9934,
+      "action_acc": 0.9462,
+      "time_sec": 6.13
+    },
+    {
+      "epoch": 9,
+      "train_loss": 1.9634,
+      "val_loss": 2.0963,
+      "op_acc": 0.9709,
+      "outcome_acc": 0.9931,
+      "action_acc": 0.943,
+      "time_sec": 6.17
+    },
+    {
+      "epoch": 10,
+      "train_loss": 1.9598,
+      "val_loss": 2.078,
+      "op_acc": 0.9733,
+      "outcome_acc": 0.9929,
+      "action_acc": 0.9467,
+      "time_sec": 6.12
+    }
+  ]
+}

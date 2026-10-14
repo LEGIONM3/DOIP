@@ -1,0 +1,57 @@
+{
+  "simulation_audit_level_5": {
+    "simulations_executed": 100,
+    "unique_trajectories_generated": 100,
+    "determinism_verification": "ZERO_DRIFT_IDENTICAL",
+    "determinism_failures": 0
+  },
+  "physics_audit_level_6": {
+    "zero_fuel_halts_motion": {
+      "expected": true,
+      "actual": false,
+      "speed": 15.0,
+      "status": "FAILED"
+    },
+    "storm_increases_fuel_burn": {
+      "expected": true,
+      "actual": true,
+      "burn_calm": 0.1575,
+      "burn_storm": 0.1617,
+      "status": "PASSED"
+    },
+    "jamming_degrades_rf": {
+      "signal_dropped": true,
+      "loss_increased": true,
+      "clean_dbm": -76.20007600086933,
+      "jammed_dbm": -114.20007600086933,
+      "status": "PASSED"
+    },
+    "kinematic_continuity_no_teleport": {
+      "lat_delta": 9.071906699631427e-05,
+      "status": "PASSED"
+    }
+  },
+  "rule_engine_audit_level_7": {
+    "nominal_state": {
+      "operational": "NORMAL",
+      "action": "CONTINUE",
+      "invariants_passed": true,
+      "status": "PASSED"
+    },
+    "low_reserve_trigger": {
+      "operational": "DEGRADED",
+      "action": "CONTINUE",
+      "status": "PASSED"
+    },
+    "critical_fuel_trigger": {
+      "operational": "CRITICAL",
+      "action": "RESUPPLY",
+      "status": "PASSED"
+    },
+    "action_validation_depleted": {
+      "can_continue": false,
+      "can_resupply": true,
+      "status": "PASSED"
+    }
+  }
+}

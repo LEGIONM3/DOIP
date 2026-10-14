@@ -79,6 +79,15 @@ function ReplayScreen() {
   }, [playing, speed, maxTick]);
 
   const snapshot = useMemo(() => foldEvents(events, tick), [events, tick]);
+  const replayRoutes = useMemo(() => {
+    return Object.values(snapshot.units)
+      .filter((u) => u.route && u.route.length > 0)
+      .map((u) => ({
+        points: u.route,
+        color: u.kind === "uav" ? "#38bdf8" : "#4ade80",
+        dashed: false,
+      }));
+  }, [snapshot.units]);
   const density = useMemo(() => {
     const buckets = new Array(80).fill(0) as number[];
     if (!maxTick) return buckets;
@@ -219,6 +228,7 @@ function ReplayScreen() {
             incidents={Object.values(snapshot.incidents).filter((i) => i.open)}
             weather={Object.values(snapshot.weather)}
             zones={snapshot.zones}
+            routes={replayRoutes}
             tick={tick}
             pulseAt={pulseAt}
             focus={pulseAt}
@@ -349,6 +359,31 @@ function ReplayScreen() {
               <EmptyState label="No telemetry" hint="Scrub to a tick with active units." />
             )}
           </div>
+
+          {/* Reconstructed Personnel Biometrics at Tick */}
+          {Object.keys(snapshot.personnel).length > 0 && (
+            <div className="mt-2 border-t border-border/40 pt-2">
+              <div className="mb-1 font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+                Reconstructed Personnel Vitals · T+{tick}
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+                {Object.values(snapshot.personnel).slice(0, 4).map((p) => (
+                  <div key={p.id} className="border border-border/60 bg-base/50 p-1 font-mono text-[9px]">
+                    <div className="flex justify-between font-semibold text-foreground">
+                      <span className="truncate">{p.rank} {p.name}</span>
+                      <span className={cn(p.heartRate > 120 ? "text-sev-critical" : "text-primary")}>
+                        {Math.round(p.heartRate)} BPM
+                      </span>
+                    </div>
+                    <div className="mt-0.5 flex justify-between text-muted-foreground">
+                      <span>{p.unitId}</span>
+                      <span>FATIGUE {(p.fatigue * 100).toFixed(0)}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </Panel>
       </div>
 

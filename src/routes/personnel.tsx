@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { EmptyState, Panel, Mono, SeverityTag, AiBadge } from "@/components/doip/primitives";
 import { Sparkline } from "@/components/doip/Sparkline";
 import { useSim } from "@/sim/store";
 import { cn } from "@/lib/utils";
 import { canOperate, formatSimClock } from "@/lib/doip";
 import { taskStore } from "@/sim/tasks";
-import { Link } from "@tanstack/react-router";
+import { contextStore } from "@/sim/contextStore";
 import { toast } from "sonner";
-import { HeartPulse, ShieldAlert, Clock, ArrowRight, UserCheck, Activity } from "lucide-react";
+import { HeartPulse, ShieldAlert, Clock, ArrowRight, UserCheck, Activity, Route as RouteIcon } from "lucide-react";
 import type { Person } from "@/sim/types";
 
 export const Route = createFileRoute("/personnel")({
@@ -48,6 +48,7 @@ const WATCH_SHIFTS = [
 ];
 
 function PersonnelScreen() {
+  const navigate = useNavigate();
   const world = useSim((s) => s.world);
   const role = useSim((s) => s.role);
   const [filter, setFilter] = useState<"all" | "attention">("all");
@@ -95,9 +96,14 @@ function PersonnelScreen() {
       sector,
       tick: world.tick,
     });
-    toast.success("SOP-02 Casualty Evacuation Protocol Dispatched", {
-      description: `Task created on War-Room Task Board for ${p.rank} ${p.name}. Cited § SOP-02.`,
+    contextStore.handoffToPlanner({
+      unitId: p.unitId,
+      taskId: `MEDEVAC-${p.id}`,
     });
+    toast.success("SOP-02 Casualty Evacuation Dispatched", {
+      description: `Task logged on War-Room board. Navigating to Mission Planner for flight corridor...`,
+    });
+    void navigate({ to: "/planner" });
   };
 
   if (!people.length) {
@@ -202,6 +208,17 @@ function PersonnelScreen() {
             </div>
           }
         >
+          {/* §5.10 / §18 Synthetic Telemetry Mandatory Disclaimer */}
+          <div className="mb-2 flex items-center justify-between border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[10px] font-mono text-amber-300">
+            <span className="flex items-center gap-1.5 font-semibold tracking-wider">
+              <ShieldAlert className="size-3.5 text-amber-400" />
+              SYNTHETIC TELEMETRY · §5.10 / §18 SIMULATED BIOMETRICS
+            </span>
+            <span className="text-[9px] text-amber-400/80 uppercase">
+              NOT CLINICAL DATA · TRAINING ONLY
+            </span>
+          </div>
+
           <div className="grid gap-2 sm:grid-cols-2">
             {rows.map(({ p, b }) => {
               const isCrit = b.severity === "critical" || p.fatigue > 78 || p.heartRate > 148;
@@ -239,9 +256,18 @@ function PersonnelScreen() {
                     </div>
                   </div>
                   <div className="mt-2 flex items-center justify-between border-t border-border/50 pt-1.5 font-mono text-[10px]">
-                    <span style={{ color: b.color }} className="font-semibold">
-                      {b.label}
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span style={{ color: b.color }} className="font-semibold">
+                        {b.label}
+                      </span>
+                      {p.activeMissionId ? (
+                        <span className="border border-primary/40 bg-primary/10 px-1 py-0.2 text-[9px] text-primary">
+                          MISSION: {p.activeMissionId}
+                        </span>
+                      ) : (
+                        <span className="text-[9px] text-muted-foreground">UNASSIGNED</span>
+                      )}
+                    </div>
                     {isCrit && (
                       <button
                         onClick={() => handleDispatchMedevac(p)}
@@ -253,6 +279,11 @@ function PersonnelScreen() {
                       </button>
                     )}
                   </div>
+                  {p.missionHistory && p.missionHistory.length > 0 && (
+                    <div className="mt-1 font-mono text-[9px] text-muted-foreground truncate border-t border-border/20 pt-1">
+                      History: {p.missionHistory.join(", ")}
+                    </div>
+                  )}
                 </div>
               );
             })}

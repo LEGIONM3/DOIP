@@ -1,0 +1,138 @@
+{
+  "model_id": "laya_doip_v2",
+  "evaluation_timestamp": "2026-10-04T13:41:39Z",
+  "test_samples": 9961,
+  "calibrated_temperature": 0.17,
+  "tasks": {
+    "operational_state": {
+      "accuracy": 0.9695,
+      "macro_precision": 0.9305,
+      "macro_recall": 0.9517,
+      "macro_f1": 0.9408,
+      "per_class": {
+        "NORMAL": {
+          "support": 2024,
+          "precision": 0.9725,
+          "recall": 0.9946,
+          "f1_score": 0.9834
+        },
+        "DEGRADED": {
+          "support": 970,
+          "precision": 0.8774,
+          "recall": 0.9299,
+          "f1_score": 0.9029
+        },
+        "CRITICAL": {
+          "support": 6584,
+          "precision": 0.9884,
+          "recall": 0.971,
+          "f1_score": 0.9796
+        },
+        "FAILED": {
+          "support": 383,
+          "precision": 0.8835,
+          "recall": 0.9112,
+          "f1_score": 0.8972
+        }
+      }
+    },
+    "mission_outcome": {
+      "accuracy": 0.9873,
+      "macro_precision": 0.7117,
+      "macro_recall": 0.7282,
+      "macro_f1": 0.7197,
+      "per_class": {
+        "SUCCESS": {
+          "support": 2024,
+          "precision": 0.9787,
+          "recall": 0.9985,
+          "f1_score": 0.9885
+        },
+        "DELAYED": {
+          "support": 7554,
+          "precision": 0.9959,
+          "recall": 0.9873,
+          "f1_score": 0.9916
+        },
+        "ABORTED": {
+          "support": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1_score": 0.0
+        },
+        "FAILED": {
+          "support": 383,
+          "precision": 0.8722,
+          "recall": 0.9269,
+          "f1_score": 0.8987
+        }
+      }
+    },
+    "recommended_action": {
+      "accuracy": 0.9648,
+      "macro_precision": 0.9534,
+      "macro_recall": 0.9305,
+      "macro_f1": 0.9397,
+      "per_class": {
+        "CONTINUE": {
+          "support": 2697,
+          "precision": 0.9545,
+          "recall": 0.9948,
+          "f1_score": 0.9742
+        },
+        "REROUTE": {
+          "support": 421,
+          "precision": 0.9942,
+          "recall": 0.8076,
+          "f1_score": 0.8912
+        },
+        "RESUPPLY": {
+          "support": 2190,
+          "precision": 0.9244,
+          "recall": 0.9767,
+          "f1_score": 0.9498
+        },
+        "PAUSE": {
+          "support": 4270,
+          "precision": 0.9988,
+          "recall": 0.9597,
+          "f1_score": 0.9789
+        },
+        "ABORT": {
+          "support": 383,
+          "precision": 0.8951,
+          "recall": 0.9138,
+          "f1_score": 0.9044
+        }
+      }
+    },
+    "logistics_state": {
+      "accuracy": 0.9867,
+      "macro_f1": 0.9034
+    },
+    "comms_state": {
+      "accuracy": 0.9883,
+      "macro_f1": 0.7318
+    }
+  },
+  "critical_recall": 0.9677,
+  "calibration": {
+    "expected_calibration_error_ece": 0.0075,
+    "brier_score": 0.0514,
+    "ece_target_met": true
+  },
+  "risk_estimation": {
+    "mae": 0.0196,
+    "rmse": 0.0263
+  },
+  "abstention_rates": {
+    "threshold_0_65": 0.0,
+    "threshold_0_80": 0.0108
+  },
+  "latency": {
+    "mean_ms": 0.003,
+    "p50_ms": 0.003,
+    "p95_ms": 0.005,
+    "p99_ms": 0.006
+  }
+}

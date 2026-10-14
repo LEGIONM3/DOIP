@@ -170,11 +170,20 @@ class SimEngine:
         """Apply an operator-sourced event (mission tasking, ack, close)."""
         # Mission tasking rewrites route so the engine follows the plan.
         p = partial.get("payload", {})
-        if partial.get("type") == "system" and p.get("mission") and p.get("route"):
+        target_id = partial.get("entityId")
+        if (partial.get("type") in ("system", "mission_assigned", "route_assigned") and (p.get("mission") or p.get("route"))):
             for u in self._units:
-                if u.id == partial.get("entityId"):
-                    u.route = [tuple(wp) for wp in p["route"]]
-                    self._route_idx[u.id] = 0
+                if u.id == target_id:
+                    if p.get("route"):
+                        u.route = [tuple(wp) for wp in p["route"]]
+                        self._route_idx[u.id] = 0
+                    mid = p.get("missionId", f"MSN-{self.tick}-{u.id}")
+                    u.activeMissionId = mid
+                    for prs in self._personnel:
+                        if prs.unitId == u.id:
+                            prs.activeMissionId = mid
+                            if mid not in prs.missionHistory:
+                                prs.missionHistory.append(mid)
         ev = self._make_event(
             partial["type"], partial.get("severity", "low"),
             partial.get("entityId", "system"), p,
@@ -343,3 +352,15 @@ class SimEngine:
         )
         self._next_id += 1
         return ev
+
+    def snapshot(self) -> dict[str, Any]:
+        """Return a serializable dictionary snapshot of the current engine state."""
+        return {
+            "tick": self.tick,
+            "scenarioId": getattr(self, "scenario_id", "SC-1"),
+            "seed": getattr(self, "seed", 0),
+            "units": [u.to_dict() for u in self._units],
+            "depots": [d.to_dict() for d in self._depots],
+            "personnel": [p.to_dict() for p in self._personnel],
+            "weather": [w.to_dict() for w in self._weather],
+        }

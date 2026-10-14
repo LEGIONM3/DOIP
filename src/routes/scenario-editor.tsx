@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { EmptyState, Panel, Mono, AiBadge, SeverityTag } from "@/components/doip/primitives";
-import { useSim } from "@/sim/store";
+import { simStore, useSim } from "@/sim/store";
 import { canOperate } from "@/lib/doip";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
@@ -764,6 +764,7 @@ function ScenarioEditorScreen() {
                     : "Validate all actions before submitting for approval."}
                 </Mono>
                 <button
+                  type="button"
                   id="send-to-whatif-btn"
                   onClick={() => {
                     toast.info(`Deep-linking ${scenarioId} to What-If Theater`);
@@ -772,10 +773,22 @@ function ScenarioEditorScreen() {
                       search: { scenario: scenarioId },
                     });
                   }}
-                  className="flex items-center gap-1 border border-primary/40 bg-primary/10 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20 transition-colors"
+                  className="flex items-center gap-1 border border-primary/40 bg-primary/10 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20 transition-colors cursor-pointer"
                   title="Test this scenario in the What-If Theater"
                 >
                   <FlaskConical className="size-3" /> Test in What-If
+                </button>
+                <button
+                  id="launch-sim-btn"
+                  onClick={() => {
+                    toast.success(`Launching scenario ${scenarioId} in Run Control`);
+                    simStore.startRun(simStore.getState().seed, scenarioId);
+                    void navigate({ to: "/run" });
+                  }}
+                  className="flex items-center gap-1 border border-success/40 bg-success/10 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-success hover:bg-success/20 transition-colors"
+                  title="Launch this scenario in Run Control"
+                >
+                  <Play className="size-3" /> Launch in Sim
                 </button>
                 <button
                   id="save-draft-btn"

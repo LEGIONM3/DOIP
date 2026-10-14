@@ -1,0 +1,48 @@
+{
+  "model_id": "laya_doip_v1",
+  "architecture": "LayaNeuralScorer / Non-Autoregressive System 1",
+  "input_features": 15,
+  "hidden_dim": 64,
+  "calibrated_temperature": 0.16,
+  "task_heads": {
+    "operational_state": [
+      "NORMAL",
+      "DEGRADED",
+      "CRITICAL",
+      "FAILED"
+    ],
+    "mission_outcome": [
+      "SUCCESS",
+      "DELAYED",
+      "ABORTED",
+      "FAILED"
+    ],
+    "recommended_action": [
+      "CONTINUE",
+      "REROUTE",
+      "RESUPPLY",
+      "PAUSE",
+      "ABORT"
+    ],
+    "logistics_state": [
+      "HEALTHY",
+      "LOW_RESERVE",
+      "RESUPPLY_REQUIRED",
+      "CRITICAL"
+    ],
+    "comms_state": [
+      "CONNECTED",
+      "DEGRADED",
+      "INTERMITTENT",
+      "LOST"
+    ],
+    "risk_score": "continuous_score_[0,1]"
+  },
+  "artifacts": {
+    "weights": "model.pt",
+    "traced_model": "model_traced.pt",
+    "metadata": "metadata.json",
+    "calibration": "calibration.json",
+    "evaluation": "evaluation_report.json"
+  }
+}

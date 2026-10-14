@@ -9,10 +9,22 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import { NAV_ITEMS } from "./SideNav";
 import { simStore, useSim } from "@/sim/store";
+import { contextStore } from "@/sim/contextStore";
 import { canOperate } from "@/lib/doip";
+import { WORKSPACES, ROLE_PROFILES, type WorkspaceId } from "@/lib/workspaces";
+import type { Role } from "@/sim/types";
 import { toast } from "sonner";
+import {
+  Compass,
+  Play,
+  Sparkles,
+  Boxes,
+  Users,
+  Activity,
+  Shield,
+  UserCheck,
+} from "lucide-react";
 
 export function CommandPalette({
   open,
@@ -20,6 +32,7 @@ export function CommandPalette({
 }: {
   open: boolean;
   setOpen: (v: boolean) => void;
+  onSelectWorkspace?: (ws: WorkspaceId) => void;
 }) {
   const navigate = useNavigate();
   const role = useSim((s) => s.role);
@@ -49,6 +62,13 @@ export function CommandPalette({
     void navigate({ to });
   };
 
+  const switchWorkspace = (ws: WorkspaceId, route: string) => {
+    setOpen(false);
+    contextStore.setWorkspace(ws);
+    void navigate({ to: route });
+    toast.info(`Switched to ${ws.toUpperCase()} workspace`);
+  };
+
   const act = (label: string, fn: () => void, needsOperator = true) => {
     setOpen(false);
     if (needsOperator && !canOperate(role)) {
@@ -59,33 +79,85 @@ export function CommandPalette({
     toast.success(label);
   };
 
+  const switchRole = (newRole: Role) => {
+    setOpen(false);
+    const profile = ROLE_PROFILES[newRole];
+    simStore.login(newRole, profile.name);
+    toast.info(`Role switched to ${newRole.toUpperCase()}`);
+    void navigate({ to: profile.defaultRoute });
+  };
+
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Jump to a screen or run a command…" />
+      <CommandInput placeholder="Search tools, switch workspace, or run tactical command…" />
       <CommandList>
-        <CommandEmpty>No matching command.</CommandEmpty>
-        <CommandGroup heading="Screens">
-          {NAV_ITEMS.filter((i) => !i.adminOnly || role === "admin").map((i) => (
-            <CommandItem key={i.to} value={`${i.label} ${i.code}`} onSelect={() => go(i.to)}>
-              <i.icon className="size-4" />
-              <span>{i.label}</span>
-              <span className="ml-auto font-mono text-[10px] text-muted-foreground">{i.code}</span>
-            </CommandItem>
-          ))}
+        <CommandEmpty>No matching workspace, tool, or command.</CommandEmpty>
+
+        {/* 1. Primary Workspaces */}
+        <CommandGroup heading="Seven Primary Workspaces">
+          {WORKSPACES.filter((ws) => !ws.adminOnly || role === "admin").map((ws) => {
+            const Icon = ws.icon;
+            return (
+              <CommandItem
+                key={ws.id}
+                value={`workspace ${ws.name} ${ws.code} ${ws.shortName}`}
+                onSelect={() => switchWorkspace(ws.id, ws.defaultRoute)}
+              >
+                <Icon className="size-4 text-primary" />
+                <span className="font-medium">{ws.name}</span>
+                <span className="ml-auto font-mono text-[9px] text-muted-foreground">{ws.code}</span>
+              </CommandItem>
+            );
+          })}
         </CommandGroup>
+
         <CommandSeparator />
-        <CommandGroup heading="Run control">
-          <CommandItem value="pause run" onSelect={() => act("Run paused", () => simStore.pause())}>
-            Pause run
+
+        {/* 2. Tools Grouped by Workspace */}
+        {WORKSPACES.filter((ws) => !ws.adminOnly || role === "admin").map((ws) => {
+          const visibleTools = ws.tools.filter((t) => {
+            if (t.adminOnly && role !== "admin") return false;
+            if (t.plannerOnly && role !== "admin" && role !== "planner") return false;
+            return true;
+          });
+
+          return (
+            <CommandGroup key={ws.id} heading={ws.name}>
+              {visibleTools.map((tool) => {
+                const Icon = tool.icon;
+                return (
+                  <CommandItem
+                    key={tool.to}
+                    value={`${tool.label} ${tool.code} ${ws.name} ${tool.shortLabel}`}
+                    onSelect={() => go(tool.to)}
+                  >
+                    <Icon className="size-4" />
+                    <span>{tool.label}</span>
+                    <span className="ml-auto font-mono text-[9px] text-muted-foreground">
+                      {tool.code}
+                    </span>
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          );
+        })}
+
+        <CommandSeparator />
+
+        {/* 3. Run Control Actions */}
+        <CommandGroup heading="Simulation Controls">
+          <CommandItem value="pause simulation" onSelect={() => act("Run paused", () => simStore.pause())}>
+            Pause deterministic simulation
           </CommandItem>
           <CommandItem
-            value="resume run"
+            value="resume simulation"
             onSelect={() => act("Run resumed", () => simStore.resume())}
           >
-            Resume run
+            Resume simulation
           </CommandItem>
-          <CommandItem value="stop run" onSelect={() => act("Run stopped", () => simStore.stop())}>
-            Stop run
+          <CommandItem value="stop simulation" onSelect={() => act("Run stopped", () => simStore.stop())}>
+            Stop and snapshot simulation
           </CommandItem>
           <CommandItem
             value="acknowledge all alerts"
@@ -98,8 +170,30 @@ export function CommandPalette({
               })
             }
           >
-            Acknowledge all alerts
+            Acknowledge all pending alerts
           </CommandItem>
+        </CommandGroup>
+
+        <CommandSeparator />
+
+        {/* 4. Quick Profile Switching */}
+        <CommandGroup heading="Role Profiles (Demo Identity)">
+          {(Object.keys(ROLE_PROFILES) as Role[]).map((r) => {
+            const p = ROLE_PROFILES[r];
+            return (
+              <CommandItem
+                key={r}
+                value={`switch role ${r} ${p.name} ${p.callsign}`}
+                onSelect={() => switchRole(r)}
+              >
+                <UserCheck className="size-4 text-primary" />
+                <span>Switch to {r.toUpperCase()} Profile ({p.name})</span>
+                <span className="ml-auto font-mono text-[9px] text-muted-foreground">
+                  {p.callsign}
+                </span>
+              </CommandItem>
+            );
+          })}
         </CommandGroup>
       </CommandList>
     </CommandDialog>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Panel, Mono, SeverityTag, EmptyState } from "@/components/doip/primitives";
 import { useSim } from "@/sim/store";
 import { formatSimClock } from "@/lib/doip";
@@ -188,11 +188,26 @@ function AdminScreen() {
 
   if (role !== "admin") {
     return (
-      <div className="p-2">
+      <div className="p-6 max-w-md mx-auto mt-10 text-center">
         <EmptyState
           label="Administrator access required"
-          hint="Sign in with the ADMIN demo role."
+          hint="Sign in with the ADMIN demo role to access security audit logs and user rosters."
         />
+        <div className="mt-4 flex items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="border border-border bg-raised px-3 py-1.5 font-mono text-xs text-foreground hover:bg-surface cursor-pointer"
+          >
+            ← Go Back
+          </button>
+          <Link
+            to="/dashboard"
+            className="border border-primary bg-primary/10 px-3 py-1.5 font-mono text-xs text-primary hover:bg-primary/20 cursor-pointer"
+          >
+            Return to Dashboard
+          </Link>
+        </div>
       </div>
     );
   }
@@ -631,9 +646,11 @@ function AdminScreen() {
                 {/* Pagination controls */}
                 <div className="mt-2 flex items-center gap-2 border-t border-border pt-2 font-mono text-[10px]">
                   <button
+                    type="button"
+                    aria-label="Previous audit page"
                     disabled={auditPage <= 1}
                     onClick={() => setAuditPage((p) => Math.max(1, p - 1))}
-                    className="border border-border px-1.5 py-0.5 text-muted-foreground hover:bg-raised disabled:opacity-30"
+                    className="border border-border px-1.5 py-0.5 text-muted-foreground hover:bg-raised disabled:opacity-30 cursor-pointer"
                   >
                     ‹ Prev
                   </button>
@@ -641,9 +658,11 @@ function AdminScreen() {
                     Page {auditPage} / {auditPages} · {auditTotal} entries
                   </Mono>
                   <button
+                    type="button"
+                    aria-label="Next audit page"
                     disabled={auditPage >= auditPages}
                     onClick={() => setAuditPage((p) => Math.min(auditPages, p + 1))}
-                    className="border border-border px-1.5 py-0.5 text-muted-foreground hover:bg-raised disabled:opacity-30"
+                    className="border border-border px-1.5 py-0.5 text-muted-foreground hover:bg-raised disabled:opacity-30 cursor-pointer"
                   >
                     Next ›
                   </button>

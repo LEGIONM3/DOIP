@@ -1,0 +1,18 @@
+{
+  "total_samples": 100000,
+  "train_samples": 80042,
+  "val_samples": 9997,
+  "test_samples": 9961,
+  "feature_dim": 15,
+  "target_tasks": [
+    "operational_state",
+    "mission_outcome",
+    "logistics_state",
+    "comms_state",
+    "recommended_action",
+    "risk_score"
+  ],
+  "soft_label_support": true,
+  "multi_future_branches": 100,
+  "generated_at": "2026-10-04T13:25:50Z"
+}

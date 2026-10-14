@@ -26,8 +26,11 @@ __pycache__/
 *$py.class
 .venv/
 venv/
+**/.venv/
+**/venv/
 .pytest_cache/
 /yolov8n.pt
+data/laya_training/train.json
 
 # Local databases and IDE caches
 .reentry/

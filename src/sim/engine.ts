@@ -261,7 +261,8 @@ export class MockSimSource implements SimSource {
   }
 
   private startTimer() {
-    this.timer = setInterval(() => this.step(), Math.max(120, 1000 / this.speed));
+    const clampedSpeed = Math.max(1, Math.min(20, this.speed));
+    this.timer = setInterval(() => this.step(), Math.max(25, 1000 / clampedSpeed));
   }
 
   private stopTimer() {
@@ -269,7 +270,7 @@ export class MockSimSource implements SimSource {
     this.timer = null;
   }
 
-  private step() {
+  step() {
     this.tick += 1;
     const rand = this.rand;
     const sc = getScenario(this.scenarioId);

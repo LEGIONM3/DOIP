@@ -1,0 +1,59 @@
+{
+  "validation_status": "PASSED",
+  "dataset_size": {
+    "total_samples": 100000,
+    "train_samples": 80042,
+    "val_samples": 9997,
+    "test_samples": 9961,
+    "target_threshold_met": true
+  },
+  "class_distributions_pct": {
+    "operational_state": {
+      "DEGRADED": 11.57,
+      "NORMAL": 20.77,
+      "CRITICAL": 64.11,
+      "FAILED": 3.55
+    },
+    "mission_outcome": {
+      "DELAYED": 75.68,
+      "SUCCESS": 20.77,
+      "FAILED": 3.55
+    },
+    "recommended_action": {
+      "REROUTE": 4.93,
+      "CONTINUE": 29.23,
+      "PAUSE": 40.09,
+      "RESUPPLY": 22.2,
+      "ABORT": 3.55
+    }
+  },
+  "shannon_entropy": {
+    "operational_state": 0.979,
+    "mission_outcome": 0.656,
+    "recommended_action": 1.327
+  },
+  "edge_case_occurrences": {
+    "fuel_exhaustion_samples": 7423,
+    "comms_failure_samples": 17910,
+    "weather_extreme_samples": 31527,
+    "maintenance_failure_samples": 12720,
+    "abort_action_samples": 3549,
+    "coverage_criteria_passed": true
+  },
+  "soft_label_validation": {
+    "probabilities_sum_to_one": true,
+    "branch_count_per_sample": 100
+  },
+  "scenario_family_distribution": {
+    "ADVERSE_WEATHER": 9691,
+    "EDGE_FAILURE_COMMS_BLACKOUT": 9508,
+    "EDGE_FAILURE_MASSIVE_STORM": 10343,
+    "EDGE_FAILURE_SEVERE_BREAKDOWN": 11008,
+    "COMBINED_HIGH_THREAT": 12040,
+    "LOGISTICS_STRESS": 10363,
+    "BASELINE_PATROL": 10020,
+    "ELECTRONIC_WARFARE": 9299,
+    "BORDER_SURVEILLANCE": 10309,
+    "EDGE_FAILURE_FUEL_EXHAUSTION": 7419
+  }
+}

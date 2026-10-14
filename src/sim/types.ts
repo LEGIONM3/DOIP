@@ -22,6 +22,7 @@ export type EventType =
   | "weather_move"
   | "weather_clear"
   | "detection"
+  | "mission_assigned"
   | "system";
 
 export interface SimEvent {
@@ -48,6 +49,7 @@ export interface Unit {
   lastSeenTick: number;
   sector: string;
   route: Array<[number, number]>;
+  activeMissionId?: string;
 }
 
 export interface Incident {
@@ -90,6 +92,9 @@ export interface Person {
   heartRate: number;
   fatigue: number;
   history: number[];
+  activeMissionId?: string;
+  condition?: string;
+  missionHistory?: string[];
 }
 
 export interface WeatherCell {

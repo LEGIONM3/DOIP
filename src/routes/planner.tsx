@@ -18,7 +18,13 @@ import {
   AlertOctagon,
   Fuel,
   Compass,
+  Navigation,
+  Crosshair,
+  ShieldAlert,
 } from "lucide-react";
+import { calculateRoute, type RouteResponse, type RouteStrategy } from "@/services/routing";
+import { createMission, transitionMission, type Mission, type MissionStatus } from "@/services/missions";
+import { generateRedTeamScenario, approveRedTeamInject, type RedTeamScenario, type ProposedInject } from "@/services/redteam";
 
 export const Route = createFileRoute("/planner")({
   head: () => ({
@@ -87,6 +93,112 @@ function PlannerScreen() {
   );
   const unit = units.find((u) => u.id === unitId) ?? units[0];
   const editable = canPlan(role);
+
+  const [strategy, setStrategy] = useState<RouteStrategy>("safest");
+  const [calculatedRoute, setCalculatedRoute] = useState<RouteResponse | null>(null);
+  const [isCalculatingRoute, setIsCalculatingRoute] = useState(false);
+  const [currentMission, setCurrentMission] = useState<Mission | null>(null);
+  const [redTeamScenario, setRedTeamScenario] = useState<RedTeamScenario | null>(null);
+  const [isGeneratingRedTeam, setIsGeneratingRedTeam] = useState(false);
+
+  const handleCalculateRoute = async () => {
+    if (waypoints.length < 2) {
+      toast.error("At least 2 waypoints required for routing");
+      return;
+    }
+    setIsCalculatingRoute(true);
+    try {
+      const res = await calculateRoute({
+        start: waypoints[0]!,
+        destination: waypoints[waypoints.length - 1]!,
+        strategy,
+        world_state: {
+          weather: world.weather,
+          zones: world.zones,
+        },
+      });
+      setCalculatedRoute(res);
+      toast.success(`Calculated ${res.strategy} route`, {
+        description: `${res.distance_km} km · Risk score: ${(res.risk_score * 100).toFixed(0)}%`,
+      });
+    } catch (e: any) {
+      toast.error("Routing error", { description: e.message });
+    } finally {
+      setIsCalculatingRoute(false);
+    }
+  };
+
+  const handleCreateMission = async () => {
+    if (!waypoints.length) return;
+    try {
+      const m = await createMission({
+        name: `OP-${unit?.callsign || "DEF"}-${Date.now() % 10000}`,
+        description: `Tactical plan for ${unit?.callsign || "Unit"} using ${strategy} routing strategy.`,
+        waypoints: waypoints.map((w, i) => ({
+          sequence: i + 1,
+          name: `WP-${i + 1}`,
+          lat: w[0],
+          lon: w[1],
+          alt_m: 500,
+        })),
+        assigned_assets: unit ? [unit.id] : [],
+        priority: "medium",
+      });
+      setCurrentMission(m);
+      toast.success("Mission plan created", { description: `${m.id} staged in DRAFT status.` });
+    } catch (e: any) {
+      toast.error("Failed to create mission", { description: e.message });
+    }
+  };
+
+  const handleTransitionMission = async (target: MissionStatus) => {
+    if (!currentMission) return;
+    try {
+      const updated = await transitionMission(currentMission.id, target);
+      setCurrentMission(updated);
+      toast.success(`Mission transitioned to ${target.toUpperCase()}`);
+    } catch (e: any) {
+      toast.error("Transition failed", { description: e.message });
+    }
+  };
+
+  const handleGenerateRedTeam = async () => {
+    setIsGeneratingRedTeam(true);
+    try {
+      const sc = await generateRedTeamScenario({
+        mission_id: currentMission?.id ?? null,
+        route_data: calculatedRoute || { waypoints },
+        world_state: { weather: world.weather },
+      });
+      setRedTeamScenario(sc);
+      toast.success("Red Team stress test generated", {
+        description: `${sc.injects.length} staged adversarial injects created.`,
+      });
+    } catch (e: any) {
+      toast.error("Red Team generator failed", { description: e.message });
+    } finally {
+      setIsGeneratingRedTeam(false);
+    }
+  };
+
+  const handleApproveInject = async (injectId: string) => {
+    if (!redTeamScenario) return;
+    try {
+      await approveRedTeamInject(redTeamScenario.id, injectId);
+      setRedTeamScenario((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          injects: prev.injects.map((inj) =>
+            inj.id === injectId ? { ...inj, status: "approved", approved_by: userName || "operator" } : inj
+          ),
+        };
+      });
+      toast.success(`Inject ${injectId} approved by exercise coordinator`);
+    } catch (e: any) {
+      toast.error("Approval error", { description: e.message });
+    }
+  };
 
   const naive = waypoints;
   const optimized = useMemo(() => optimize(waypoints), [waypoints]);
@@ -234,6 +346,7 @@ ${optimized.map((p) => `    - [${p[0]}, ${p[1]}]`).join("\n")}
           routes={[
             { points: naive, color: "#8A8A8A", dashed: true },
             { points: optimized, color: "#FFFFFF" },
+            ...(calculatedRoute?.waypoints?.length ? [{ points: calculatedRoute.waypoints, color: "#10B981" }] : []),
           ]}
           {...(editable
             ? { onMapClick: (p: [number, number]) => setWaypoints((w) => [...w, p]) }
@@ -388,6 +501,147 @@ ${optimized.map((p) => `    - [${p[0]}, ${p[1]}]`).join("\n")}
             Synthetic cost model: km-equivalent penalties over segments crossing threat zones and
             weather cells.
           </p>
+        </Panel>
+
+        <Panel title="Tactical A* Route Engine (Phase 2A)">
+          <label className="mb-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Routing Strategy
+          </label>
+          <div className="grid grid-cols-2 gap-1 font-mono text-[10px]">
+            {(["shortest", "safest", "fuel_efficient", "fastest"] as RouteStrategy[]).map((st) => (
+              <button
+                key={st}
+                onClick={() => setStrategy(st)}
+                className={cn(
+                  "border px-2 py-1 uppercase tracking-wider text-left transition-colors",
+                  strategy === st
+                    ? "border-primary bg-primary/20 text-primary font-bold"
+                    : "border-border text-muted-foreground hover:bg-raised",
+                )}
+              >
+                {st.replace("_", " ")}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={handleCalculateRoute}
+            disabled={waypoints.length < 2 || isCalculatingRoute}
+            className="mt-2 flex w-full items-center justify-center gap-1.5 border border-primary/60 bg-primary/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20 disabled:opacity-40"
+          >
+            <Navigation className="size-3" />
+            {isCalculatingRoute ? "Solving Multi-Layer Grid..." : "Compute Optimal Tactical Route"}
+          </button>
+          {calculatedRoute && (
+            <div className="mt-2 space-y-1 rounded border border-primary/30 bg-primary/5 p-2 font-mono text-[10px]">
+              <div className="flex justify-between font-bold text-primary">
+                <span>{calculatedRoute.id}</span>
+                <span className="uppercase">{calculatedRoute.strategy}</span>
+              </div>
+              <Row k="Route Distance" v={`${calculatedRoute.distance_km} km`} />
+              <Row k="Est. Duration" v={`${Math.round(calculatedRoute.estimated_duration_s / 60)} min`} />
+              <Row k="Fuel Required" v={`${calculatedRoute.fuel_l} L`} />
+              <Row k="Risk Score" v={`${(calculatedRoute.risk_score * 100).toFixed(0)}%`} />
+              <p className="mt-1 text-muted-foreground leading-tight">{calculatedRoute.explanation}</p>
+            </div>
+          )}
+        </Panel>
+
+        <Panel title="Mission Lifecycle & Safety (Phase 2B)">
+          <div className="flex items-center justify-between font-mono text-xs">
+            <span className="text-muted-foreground">Current Plan:</span>
+            <span className="font-bold text-primary uppercase">
+              {currentMission ? currentMission.status : "UNSTAGED"}
+            </span>
+          </div>
+          {!currentMission ? (
+            <button
+              onClick={handleCreateMission}
+              disabled={!waypoints.length}
+              className="mt-2 flex w-full items-center justify-center gap-1.5 border border-border px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest hover:bg-raised disabled:opacity-40"
+            >
+              Stage Formal Mission Draft
+            </button>
+          ) : (
+            <div className="mt-2 space-y-1.5 font-mono text-[10px]">
+              <div className="flex justify-between text-muted-foreground">
+                <span>ID: {currentMission.id}</span>
+                <span>{currentMission.priority.toUpperCase()}</span>
+              </div>
+              <div className="flex gap-1 pt-1">
+                {currentMission.status === "draft" && (
+                  <button
+                    onClick={() => handleTransitionMission("review")}
+                    className="flex-1 border border-border bg-raised px-2 py-1 text-center hover:bg-muted"
+                  >
+                    Submit for Review
+                  </button>
+                )}
+                {currentMission.status === "review" && (
+                  <button
+                    onClick={() => handleTransitionMission("approved")}
+                    className="flex-1 border border-success/60 bg-success/20 text-success text-center hover:bg-success/30 font-bold"
+                  >
+                    Approve (Human Gate)
+                  </button>
+                )}
+                {currentMission.status === "approved" && (
+                  <button
+                    onClick={() => handleTransitionMission("executing")}
+                    className="flex-1 border border-primary/60 bg-primary/20 text-primary text-center hover:bg-primary/30 font-bold"
+                  >
+                    Authorize Execution
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+          <p className="mt-1.5 font-mono text-[9px] text-muted-foreground">
+            Safety Boundary: AI can draft proposals, but cannot approve or execute.
+          </p>
+        </Panel>
+
+        <Panel title="Red Team Adversarial Stress Test (Phase 2E)">
+          <button
+            onClick={handleGenerateRedTeam}
+            disabled={isGeneratingRedTeam || !waypoints.length}
+            className="flex w-full items-center justify-center gap-1.5 border border-sev-critical/60 bg-sev-critical/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest text-sev-critical hover:bg-sev-critical/20 disabled:opacity-40"
+          >
+            <ShieldAlert className="size-3" />
+            {isGeneratingRedTeam ? "Synthesizing Threat Vectors..." : "Run Adversarial Stress Test"}
+          </button>
+          {redTeamScenario && (
+            <div className="mt-2 space-y-2 font-mono text-[10px]">
+              <div className="flex justify-between border-b border-border pb-1">
+                <span className="font-bold text-foreground">{redTeamScenario.id}</span>
+                <span className="font-bold text-sev-critical">{redTeamScenario.risk_rating} RISK</span>
+              </div>
+              <p className="text-[9px] text-muted-foreground">{redTeamScenario.vulnerability_summary}</p>
+              <div className="space-y-1.5">
+                {redTeamScenario.injects.map((inj) => (
+                  <div key={inj.id} className="rounded border border-border p-1.5 bg-base">
+                    <div className="flex justify-between text-[9px]">
+                      <span className="font-bold text-primary">{inj.title}</span>
+                      <span className={inj.status === "approved" ? "text-success font-bold" : "text-amber-400"}>
+                        {inj.status.toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="mt-0.5 text-[9px] text-muted-foreground flex justify-between">
+                      <span>Action: {inj.action} (DSL Verified)</span>
+                      <span>T+{inj.trigger_tick}</span>
+                    </div>
+                    {inj.status === "staged" && (
+                      <button
+                        onClick={() => handleApproveInject(inj.id)}
+                        className="mt-1 w-full border border-sev-critical/40 bg-sev-critical/10 py-0.5 text-[9px] uppercase tracking-wider text-sev-critical hover:bg-sev-critical/20"
+                      >
+                        Approve Staged Inject
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </Panel>
 
         <Panel title="Feasibility">

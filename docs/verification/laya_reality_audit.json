@@ -1,0 +1,69 @@
+{
+  "dataset": {
+    "data_dir_exists": true,
+    "train_exists": true,
+    "val_exists": true,
+    "test_exists": true,
+    "quality_report_exists": true,
+    "train_samples_count": 80042,
+    "train_file_size_mb": 107.47,
+    "sample_has_soft_labels": true,
+    "sample_numeric_dim": 15,
+    "test_samples_count": 9961
+  },
+  "checkpoints": {
+    "laya_doip_v1": {
+      "dir_exists": true,
+      "model_pt_exists": true,
+      "model_traced_exists": true,
+      "calibration_exists": true,
+      "evaluation_exists": true,
+      "num_weight_tensors": 22,
+      "encoder_w0_shape": [
+        128,
+        15
+      ],
+      "encoder_w0_mean": 0.0190137829631567,
+      "encoder_w0_std": 0.1849345713853836,
+      "encoder_w0_norm": 8.146143913269043,
+      "is_non_trivial_trained_weights": true,
+      "torchscript_functional": true,
+      "calibrated_temperature": 0.16,
+      "post_calib_ece": 0.0237,
+      "ece_target_met": true
+    },
+    "laya_doip_v2": {
+      "dir_exists": true,
+      "model_pt_exists": true,
+      "model_traced_exists": true,
+      "calibration_exists": true,
+      "evaluation_exists": true,
+      "num_weight_tensors": 22,
+      "encoder_w0_shape": [
+        128,
+        15
+      ],
+      "encoder_w0_mean": 0.01975642703473568,
+      "encoder_w0_std": 0.19280768930912018,
+      "encoder_w0_norm": 8.492645263671875,
+      "is_non_trivial_trained_weights": true,
+      "torchscript_functional": true,
+      "calibrated_temperature": 0.17,
+      "post_calib_ece": 0.0136,
+      "ece_target_met": true
+    }
+  },
+  "live_inference": {
+    "test_sample_count": 200,
+    "measured_accuracy": 1.0,
+    "measured_p50_latency_ms": 0.35,
+    "measured_p95_latency_ms": 0.5812499999999998,
+    "status": "PASSED"
+  },
+  "abstention_test": {
+    "abstained": false,
+    "gate_state": "GATE_PASSED",
+    "operational_state": "CRITICAL",
+    "status": "FAILED"
+  }
+}

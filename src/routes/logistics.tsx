@@ -5,7 +5,9 @@ import { Sparkline } from "@/components/doip/Sparkline";
 import { useSim } from "@/sim/store";
 import type { Depot } from "@/sim/types";
 import { formatSimClock } from "@/lib/doip";
-import { CloudRain, Truck, ArrowRight, ShieldCheck, Filter } from "lucide-react";
+import { taskStore } from "@/sim/tasks";
+import { contextStore } from "@/sim/contextStore";
+import { CloudRain, Truck, ArrowRight, ShieldCheck, Filter, Send } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -109,7 +111,17 @@ function LogisticsScreen() {
   }, [depots, history, selectedCommodity, weatherImpactFactor]);
 
   const handleDispatchResupply = (task: { depot: Depot; key: StockKey }) => {
-    toast.success("Resupply Convoy Task Initiated", {
+    taskStore.add({
+      text: `[RESUPPLY SOP-02] Urgent resupply of ${LABEL[task.key]} for ${task.depot.name} (${task.depot.id})`,
+      assignee: "Logistics Cell",
+      sector: "Alpha",
+      tick: world.tick,
+    });
+    contextStore.handoffToPlanner({
+      unitId: task.depot.id,
+      taskId: `RESUPPLY-${task.depot.id}-${task.key}`,
+    });
+    toast.success("Resupply Convoy Task Dispatched to War Room & Planner", {
       description: `Tasking support transport for ${task.depot.name} (${LABEL[task.key]}). Redirecting to Mission Planner...`,
     });
     void navigate({

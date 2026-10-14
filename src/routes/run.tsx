@@ -7,6 +7,7 @@ import { simStore, useSim } from "@/sim/store";
 import { canOperate, computeEventFingerprint } from "@/lib/doip";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { contextStore } from "@/sim/contextStore";
 import {
   Play,
   Pause,
@@ -17,6 +18,9 @@ import {
   Download,
   BookmarkPlus,
   Zap,
+  Sparkles,
+  FileText,
+  Navigation,
 } from "lucide-react";
 
 export const Route = createFileRoute("/run")({
@@ -26,7 +30,7 @@ export const Route = createFileRoute("/run")({
       {
         name: "description",
         content:
-          "Start, pause and replay deterministic training scenarios with seed control and speed 1-8x.",
+          "Start, pause and replay deterministic training scenarios with seed control and speed 1-20x.",
       },
       { property: "og:title", content: "Run Control — DOIP" },
       {
@@ -80,6 +84,45 @@ function RunControlScreen() {
   return (
     <div className="grid gap-2 p-2 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="space-y-2">
+        {/* Cross-Feature Workflow Handoffs */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border border-border bg-raised/40 px-3 py-1.5 font-mono text-xs">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            WORKFLOW HANDOFFS:
+          </span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Link
+              to="/replay"
+              search={{ run: "LIVE" }}
+              className="flex items-center gap-1 border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] text-primary hover:bg-primary/20"
+              title="Open current live/recorded state in Replay"
+            >
+              <History className="size-3" /> Total Replay (S6)
+            </Link>
+            <Link
+              to="/whatif"
+              search={{ scenario: picked }}
+              className="flex items-center gap-1 border border-ai/40 bg-ai/10 px-2 py-0.5 text-[10px] text-ai hover:bg-ai/20"
+              title="Branch What-If scenario from current state"
+            >
+              <Sparkles className="size-3" /> Branch What-If (S8)
+            </Link>
+            <Link
+              to="/sitrep"
+              className="flex items-center gap-1 border border-border px-2 py-0.5 text-[10px] text-muted-foreground hover:text-foreground"
+              title="Generate AI situation report"
+            >
+              <FileText className="size-3" /> AI SITREP (S7)
+            </Link>
+            <Link
+              to="/planner"
+              className="flex items-center gap-1 border border-border px-2 py-0.5 text-[10px] text-muted-foreground hover:text-foreground"
+              title="Plan new waypoint routes"
+            >
+              <Navigation className="size-3" /> Mission Planner (S5)
+            </Link>
+          </div>
+        </div>
+
         <Panel title="Scenario library">
           <ul className="grid gap-2 sm:grid-cols-2">
             {SCENARIOS.map((sc) => (
@@ -160,13 +203,13 @@ function RunControlScreen() {
             <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Speed · {speed}x
             </div>
-            <div className="mt-2 flex gap-1">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {[1, 2, 4, 5, 8, 10, 16, 20].map((s) => (
                 <button
                   key={s}
                   onClick={guard(() => simStore.setSpeed(s), `Speed set to ${s}x`)}
                   className={cn(
-                    "h-8 w-10  border font-mono text-xs",
+                    "h-8 px-2 border font-mono text-xs",
                     speed === s
                       ? "border-primary/60 bg-raised text-primary"
                       : "border-border hover:bg-raised doip-btn-primary",

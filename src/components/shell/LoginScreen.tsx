@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { simStore } from "@/sim/store";
 import type { Role } from "@/sim/types";
+import { getDefaultRouteForRole } from "@/lib/workspaces";
 import { cn } from "@/lib/utils";
 import {
   FlaskConical,
@@ -80,8 +82,15 @@ const CAPABILITIES = [
 ];
 
 export function LoginScreen() {
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<Role>("operator");
   const chosen = ROLES.find((r) => r.role === selected)!;
+
+  const handleEnter = () => {
+    simStore.login(selected, chosen.name);
+    const targetRoute = getDefaultRouteForRole(selected);
+    void navigate({ to: targetRoute });
+  };
 
   return (
     <div className="min-h-screen overflow-y-auto bg-background text-foreground">
@@ -171,9 +180,11 @@ export function LoginScreen() {
               {ROLES.map((r) => (
                 <li key={r.role}>
                   <button
+                    type="button"
+                    data-testid={`role-select-${r.role}`}
                     onClick={() => setSelected(r.role)}
                     className={cn(
-                      "w-full border px-3 py-2 text-left transition-colors",
+                      "w-full border px-3 py-2 text-left transition-colors cursor-pointer",
                       selected === r.role
                         ? "border-primary/60 bg-raised"
                         : "border-border bg-background hover:bg-raised",
@@ -192,8 +203,10 @@ export function LoginScreen() {
             </ul>
 
             <button
-              onClick={() => simStore.login(selected, chosen.name)}
-              className="mt-4 w-full bg-primary px-3 py-2 font-mono text-xs uppercase tracking-[0.16em] text-primary-foreground transition-opacity hover:opacity-90"
+              type="button"
+              data-testid="login-enter-btn"
+              onClick={handleEnter}
+              className="mt-4 w-full bg-primary px-3 py-2 font-mono text-xs uppercase tracking-[0.16em] text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
             >
               Enter command center
             </button>

@@ -1,0 +1,17 @@
+{
+  "model_id": "laya_doip_v2",
+  "iterations": 1000,
+  "latency_ms": {
+    "mean": 0.4765,
+    "p50": 0.4696,
+    "p95": 0.6937,
+    "p99": 0.8098
+  },
+  "throughput_samples_per_sec": {
+    "batch_1": 3704.6,
+    "batch_16": 53680.3,
+    "batch_64": 198393.0,
+    "batch_256": 413787.5
+  },
+  "sub_millisecond_p50": true
+}

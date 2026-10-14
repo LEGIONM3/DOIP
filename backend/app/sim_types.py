@@ -49,9 +49,27 @@ class Unit:
     lastSeenTick: int
     sector: str
     route: list[tuple[float, float]]
+    activeMissionId: str | None = None
 
     def to_dict(self) -> dict:
-        return self.__dict__.copy()
+        d = {
+            "id": self.id,
+            "callsign": self.callsign,
+            "kind": self.kind,
+            "lat": self.lat,
+            "lon": self.lon,
+            "heading": self.heading,
+            "speedKph": self.speedKph,
+            "status": self.status,
+            "fuel": self.fuel,
+            "battery": self.battery,
+            "lastSeenTick": self.lastSeenTick,
+            "sector": self.sector,
+            "route": self.route,
+        }
+        if self.activeMissionId is not None:
+            d["activeMissionId"] = self.activeMissionId
+        return d
 
 
 @dataclass
@@ -76,9 +94,29 @@ class Person:
     heartRate: float
     fatigue: float
     history: list[float] = field(default_factory=list)
+    condition: str = "fit"
+    activeMissionId: str | None = None
+    missionHistory: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
-        return self.__dict__.copy()
+        d = {
+            "id": self.id,
+            "name": self.name,
+            "rank": self.rank,
+            "unitId": self.unitId,
+            "heartRate": self.heartRate,
+            "fatigue": self.fatigue,
+            "history": self.history,
+        }
+        if self.condition != "fit":
+            d["condition"] = self.condition
+        if self.activeMissionId is not None:
+            d["activeMissionId"] = self.activeMissionId
+        if self.missionHistory:
+            d["missionHistory"] = self.missionHistory
+        return d
+
+
 
 
 @dataclass

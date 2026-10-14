@@ -23,10 +23,17 @@ function NotFoundComponent() {
         <p className="mt-2 text-sm text-muted-foreground">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <div className="mt-2">
+        <div className="mt-4 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="inline-flex items-center justify-center border border-border bg-raised px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface cursor-pointer"
+          >
+            ← Go back
+          </button>
           <Link
             to="/"
-            className="inline-flex items-center justify-center bg-primary px-2 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Go home
           </Link>

@@ -1,0 +1,185 @@
+# DOIP Comprehensive API & Security Coverage Matrix
+
+**Total Audited Endpoints**: 168  
+**Average Latency**: 118.35 ms  
+
+## Verdict Summary
+
+| Verdict | Count | Description |
+|:---|:---:|:---|
+| `WORKING` | **100** | Tested behavior classification |
+| `REQUIRES_SPECIFIC_ENTITY` | **44** | Tested behavior classification |
+| `AUTH_PROTECTED` | **24** | Tested behavior classification |
+
+## Endpoint Audit Table
+
+| Method | Route | Happy Status | Latency (ms) | Unauth Status | Security Tests | Verdict |
+|:---|:---|:---:|:---:|:---:|:---:|:---|
+| `GET` | `/health` | `200` | 22.44 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/auth/login` | `422` | 4.35 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/scenarios` | `200` | 4.59 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/runs` | `401` | 2.86 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/runs` | `401` | 2.49 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/runs/{run_id}/report` | `401` | 3.85 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/audit` | `401` | 2.77 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/admin/users` | `401` | 2.66 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `POST` | `/admin/users` | `401` | 3.5 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `DELETE` | `/admin/users/{name}` | `401` | 2.74 | `None` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/scenarios/custom` | `401` | 2.44 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `POST` | `/scenarios/custom` | `401` | 3.11 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `DELETE` | `/scenarios/custom/{scenario_id}` | `401` | 3.29 | `None` | `PASSED` | **AUTH_PROTECTED** |
+| `POST` | `/scenarios/validate` | `401` | 2.73 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/scenarios/yaml` | `401` | 3.95 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `POST` | `/ai/query` | `200` | 1197.13 | `422` | `PASSED` | **WORKING** |
+| `POST` | `/api/ai/query` | `200` | 18.93 | `422` | `PASSED` | **WORKING** |
+| `POST` | `/api/rag/retrieve` | `200` | 5.18 | `422` | `PASSED` | **WORKING** |
+| `POST` | `/rag/query` | `200` | 10.67 | `422` | `PASSED` | **WORKING** |
+| `GET` | `/corpus/docs` | `401` | 8.24 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/corpus/docs/{doc_id}` | `401` | 2.79 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `POST` | `/sitrep` | `401` | 2.81 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `POST` | `/vision/adjudicate` | `401` | 3.43 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/vision/status` | `401` | 3.15 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/vision/samples` | `401` | 2.45 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/vision/tracks` | `401` | 2.53 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/vision/detections` | `401` | 3.33 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `POST` | `/vision/infer` | `401` | 3.33 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/vision/frames` | `401` | 3.23 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `POST` | `/whatif` | `401` | 2.78 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `GET` | `/whatif/history` | `401` | 2.38 | `401` | `PASSED` | **AUTH_PROTECTED** |
+| `POST` | `/corpus/query` | `200` | 3.73 | `422` | `PASSED` | **WORKING** |
+| `POST` | `/api/routes/calculate` | `422` | 2.9 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/routes` | `200` | 6.4 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/routes/{route_id}` | `404` | 4.04 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/missions` | `200` | 12.33 | `422` | `PASSED` | **WORKING** |
+| `GET` | `/api/missions` | `200` | 8.06 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/missions/{mission_id}` | `404` | 4.83 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/missions/{mission_id}/transition` | `422` | 3.11 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/missions/ai-draft` | `422` | 3.2 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/warroom/presence` | `200` | 4.66 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/warroom/tasks` | `200` | 4.27 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/warroom/tasks` | `422` | 2.79 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/warroom/tasks/{task_id}/assign` | `422` | 3.63 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/optimizer/solve` | `200` | 6.36 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/optimizer/history` | `200` | 5.63 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/redteam/generate` | `200` | 8.65 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/redteam/validate-inject` | `422` | 2.78 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/redteam/injects/{inject_id}/approve` | `422` | 2.76 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/redteam/scenarios` | `200` | 6.38 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/graph/subgraph` | `200` | 3.49 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/graph/root-cause/{incident_id}` | `200` | 2.98 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/graph/dependencies/{entity_id}` | `200` | 2.89 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/graph/incident-chain/{incident_id}` | `200` | 3.23 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/graph/seed` | `200` | 68.24 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/forecast` | `200` | 144.86 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/forecast/history` | `200` | 18.69 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/forecast/{forecast_id}` | `404` | 4.54 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/copilot/chat` | `422` | 3.5 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/copilot/propose` | `422` | 2.35 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/copilot/sessions` | `200` | 17.82 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/copilot/sessions/{session_id}` | `404` | 3.72 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/copilot/sessions/{session_id}/approve` | `422` | 3.02 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/replay/turning-points` | `200` | 2.44 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/replay/aar` | `422` | 2.5 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/replay/compare` | `422` | 2.24 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/replay/reports` | `200` | 4.82 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/replay/reports/{report_id}` | `404` | 3.98 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/federation/nodes` | `200` | 2.99 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/federation/nodes` | `422` | 2.62 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/federation/directives` | `422` | 2.86 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/federation/intelligence` | `422` | 2.6 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/theaters` | `200` | 2.46 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/theaters/cross-analysis` | `200` | 2.58 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/theaters/{theater_id}` | `404` | 3.73 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/worlds` | `200` | 2.91 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/swarm/plan` | `422` | 2.49 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/strategic/campaigns` | `422` | 2.54 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/strategic/campaigns` | `200` | 4.4 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/strategic/campaigns/{campaign_id}/brief` | `200` | 6.56 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/strategic/campaigns/{campaign_id}/readiness` | `200` | 2.62 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/strategic/campaigns/{campaign_id}/risks` | `200` | 894.9 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/strategic/campaigns/{campaign_id}/investments` | `200` | 3.39 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/graph-ai/reason` | `200` | 3.34 | `422` | `PASSED` | **WORKING** |
+| `GET` | `/api/graph-ai/cascade-failure/{entity_id}` | `200` | 2.37 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/graph-ai/emergent-risks` | `200` | 2.75 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/forecast/distributed` | `200` | 389.13 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/futures/generate` | `200` | 16.11 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/futures` | `200` | 10.62 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/campaigns/compare` | `200` | 1088.63 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/events/publish` | `422` | 3.31 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/events/replay` | `200` | 6.83 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/events/projection/{stream_name}` | `200` | 2.81 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/datalake/objects` | `422` | 2.41 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/datalake/objects` | `200` | 2.54 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/datalake/analysis` | `200` | 2.58 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/agents` | `200` | 2.83 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/agents` | `422` | 2.2 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/agents/runtime/status` | `200` | 4.53 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/agents/{agent_id}` | `404` | 3.67 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/agents/tasks` | `422` | 2.22 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/agents/tasks` | `404` | 3.64 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/memory/remember` | `422` | 2.62 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/memory/retrieve` | `200` | 4.25 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/memory/consolidate` | `200` | 32.02 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/memory/summary` | `200` | 5.34 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/analysis/run` | `200` | 12.69 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/analysis/findings` | `200` | 17.98 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/forecasting/matrix` | `200` | 5.21 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/forecasting/matrices` | `200` | 4.57 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/whatif/massive` | `200` | 68.9 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/analytics/kpis` | `200` | 2.99 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/analytics/dashboard` | `200` | 2.83 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/knowledge/synthesize` | `200` | 7.09 | `422` | `PASSED` | **WORKING** |
+| `GET` | `/api/observability/metrics` | `200` | 2.98 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/observability/health` | `200` | 2.44 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/observability/prometheus` | `200` | 2.29 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/models` | `200` | 4.42 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/models` | `422` | 2.75 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/models/route` | `422` | 3.07 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/models/{model_id}/health` | `200` | 4.32 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/workflows` | `422` | 2.56 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/workflows` | `200` | 4.49 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/workflows/{workflow_id}` | `404` | 3.95 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/workflows/{workflow_id}/approve` | `422` | 2.69 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/workflows/{workflow_id}/reject` | `422` | 2.6 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/workflows/{workflow_id}/advance` | `422` | 2.39 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/reports/generate` | `200` | 5.33 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/reports` | `200` | 6.43 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/reports/{report_id}` | `404` | 3.71 | `404` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/resilience/status` | `200` | 3.22 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/resilience/reset` | `200` | 2.4 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/cache/stats` | `200` | 2.51 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/cache/clear` | `200` | 3.25 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/scalability/benchmark` | `200` | 8.04 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/knowledge/unified/query` | `200` | 6.62 | `422` | `PASSED` | **WORKING** |
+| `GET` | `/api/platform/services` | `200` | 2.77 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/platform/health` | `200` | 2.77 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/platform/bootstrap` | `200` | 2.57 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/knowledge/unified/reason` | `422` | 3.2 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/knowledge/unified/retrieve` | `200` | 4.5 | `422` | `PASSED` | **WORKING** |
+| `GET` | `/api/knowledge/unified/trace/{target_id}` | `200` | 2.69 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/knowledge/unified/forecast/{entity_id}` | `200` | 2.52 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/knowledge/unified/analyze` | `200` | 2.58 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/operations/center/health` | `200` | 3.08 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/operations/center/reports/daily` | `200` | 4.26 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/operations/center/reports/weekly` | `200` | 2.75 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/operations/center/reports/monthly` | `200` | 2.38 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/governance/verify` | `422` | 2.24 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/governance/audit` | `200` | 2.65 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/validation/continuous` | `200` | 3.41 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/self-healing/action` | `422` | 2.39 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/quality/scorecard` | `200` | 2.69 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/research/sandbox/experiment` | `422` | 2.54 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `POST` | `/api/docs/sync` | `200` | 3.14 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/simulation/hybrid/step` | `200` | 136.18 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/simulation/hybrid/run` | `200` | 769.92 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/simulation/hybrid/whatif` | `200` | 10624.47 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/simulation/hybrid/disagreements` | `200` | 3717.8 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/laya/status` | `200` | 4.7 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/laya/decide` | `200` | 7.41 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/laya/models` | `200` | 3.93 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/simulation/hybrid/whatif/massive` | `200` | 33.59 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/simulation/disagreements/history` | `200` | 7.04 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/active-learning/samples` | `200` | 33.47 | `200` | `PASSED` | **WORKING** |
+| `POST` | `/api/laya/models/switch` | `422` | 5.26 | `422` | `PASSED` | **REQUIRES_SPECIFIC_ENTITY** |
+| `GET` | `/api/laya/metrics` | `200` | 5.38 | `200` | `PASSED` | **WORKING** |
+| `GET` | `/api/model-lab/train-status` | `200` | 5.36 | `200` | `PASSED` | **WORKING** |

@@ -5,8 +5,9 @@ import { useSim } from "@/sim/store";
 import { cn } from "@/lib/utils";
 import { formatSimClock } from "@/lib/doip";
 import type { EventType, SimEvent } from "@/sim/types";
-import { Download, Sliders, CheckSquare, Sparkles } from "lucide-react";
+import { Download, Sliders, CheckSquare, Sparkles, TrendingUp, BarChart3, LineChart } from "lucide-react";
 import { toast } from "sonner";
+import { solveOptimizer, type OptimizerResult } from "@/services/optimizer";
 
 export const Route = createFileRoute("/advisor")({
   head: () => ({
@@ -139,6 +140,32 @@ function AdvisorScreen() {
   const [budget, setBudget] = useState(70);
   const [weight, setWeight] = useState(50); // 0 = cost-first, 100 = readiness-first
   const [manualPinned, setManualPinned] = useState<Record<string, boolean>>({});
+  const [optimizerResult, setOptimizerResult] = useState<OptimizerResult | null>(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
+  const handleRunOptimizer = async () => {
+    setIsOptimizing(true);
+    try {
+      const res = await solveOptimizer({
+        budget: budget * 3000,
+        priorities: {
+          readiness: weight / 100,
+          risk_reduction: (100 - weight) / 100,
+          coverage: 0.25,
+          response_time: 0.2,
+          fuel_resilience: 0.15,
+        },
+      });
+      setOptimizerResult(res);
+      toast.success("Investment Portfolio Optimized", {
+        description: `Score: ${res.score} · Spent: $${(res.total_spent / 1000).toFixed(0)}k`,
+      });
+    } catch (e: any) {
+      toast.error("Optimizer failed", { description: e.message });
+    } finally {
+      setIsOptimizing(false);
+    }
+  };
 
   const evidence = useMemo(() => {
     const m = new Map<string, SimEvent[]>();
@@ -334,6 +361,58 @@ ${chosenOptions
                 deterministic model output
               </span>
             </div>
+          </div>
+
+          {/* Phase 2D Investment Optimization Engine */}
+          <div className="border-t border-border pt-3">
+            <button
+              onClick={handleRunOptimizer}
+              disabled={isOptimizing}
+              className="flex w-full items-center justify-center gap-1.5 border border-primary/60 bg-primary/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20 disabled:opacity-40"
+            >
+              <TrendingUp className="size-3" />
+              {isOptimizing ? "Optimizing Pareto Bundle..." : "Solve Investment Portfolio (OR Engine)"}
+            </button>
+            {optimizerResult && (
+              <div className="mt-2 space-y-1.5 font-mono text-[10px] bg-base p-2 border border-primary/30 rounded">
+                <div className="flex justify-between font-bold text-primary">
+                  <span>Score: {optimizerResult.score}</span>
+                  <span>Spent: ${(optimizerResult.total_spent / 1000).toFixed(0)}k</span>
+                </div>
+                <div className="space-y-0.5 text-muted-foreground">
+                  <div className="flex justify-between">
+                    <span>Readiness Gain:</span>
+                    <span className="text-success font-bold">+{optimizerResult.kpi_deltas.readiness_pct}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Coverage Gain:</span>
+                    <span className="text-success font-bold">+{optimizerResult.kpi_deltas.coverage_pct}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Response Time:</span>
+                    <span className="text-success font-bold">{optimizerResult.kpi_deltas.response_time_pct}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Risk Reduction:</span>
+                    <span className="text-success font-bold">+{optimizerResult.kpi_deltas.risk_reduction_pct}%</span>
+                  </div>
+                </div>
+                <div className="border-t border-border pt-1">
+                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">
+                    Pareto Trade-Off Frontier:
+                  </span>
+                  <div className="grid grid-cols-4 gap-1 text-[9px] text-center">
+                    {optimizerResult.tradeoffs.frontier_curve.map((pt) => (
+                      <div key={pt.budget_pct} className="border border-border/80 p-0.5 bg-raised/40">
+                        <div className="text-muted-foreground">{pt.budget_pct}%</div>
+                        <div className="font-bold text-primary">{pt.score}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-1 text-[9px] text-muted-foreground leading-tight">{optimizerResult.explanation}</p>
+              </div>
+            )}
           </div>
         </div>
       </Panel>

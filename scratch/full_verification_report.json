@@ -1,0 +1,215 @@
+{
+  "routeResults": [
+    {
+      "route": "/",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 29,
+      "title": "Live Map — DOIP Command Center"
+    },
+    {
+      "route": "/dashboard",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 23,
+      "title": "Dashboard — DOIP"
+    },
+    {
+      "route": "/run",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 52,
+      "title": "Run Control — DOIP"
+    },
+    {
+      "route": "/planner",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 35,
+      "title": "Mission Planner — DOIP"
+    },
+    {
+      "route": "/federation",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 22,
+      "title": "Federated Command Mesh — DOIP"
+    },
+    {
+      "route": "/theaters",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 16,
+      "title": "Multi-Theater Digital Twin — DOIP"
+    },
+    {
+      "route": "/campaigns",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 18,
+      "title": "Strategic Campaigns & Swarm Copilot — DOIP"
+    },
+    {
+      "route": "/futures",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 17,
+      "title": "Autonomous Simulation Futures — DOIP"
+    },
+    {
+      "route": "/datalake",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 21,
+      "title": "Event Streams & Data Lake — DOIP"
+    },
+    {
+      "route": "/doctrine",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 41,
+      "title": "Doctrine & SOP Corpus — DOIP"
+    },
+    {
+      "route": "/replay",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 29,
+      "title": "Replay — DOIP"
+    },
+    {
+      "route": "/sitrep",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 18,
+      "title": "AI Sitrep — DOIP"
+    },
+    {
+      "route": "/forecast",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 16,
+      "title": "Digital Twin Forecasting & Lookahead — DOIP"
+    },
+    {
+      "route": "/graph",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 38,
+      "title": "Operational Knowledge Graph & Causal Analysis — DOIP"
+    },
+    {
+      "route": "/whatif",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 15,
+      "title": "What-If Theater — DOIP"
+    },
+    {
+      "route": "/vision",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 72,
+      "title": "Surveillance & Computer Vision (YOLOv8) — DOIP"
+    },
+    {
+      "route": "/logistics",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 20,
+      "title": "Logistics — DOIP"
+    },
+    {
+      "route": "/personnel",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 17,
+      "title": "Personnel — DOIP"
+    },
+    {
+      "route": "/analytics",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 16,
+      "title": "Analytics — DOIP"
+    },
+    {
+      "route": "/advisor",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 20,
+      "title": "Investment Advisor — DOIP"
+    },
+    {
+      "route": "/warroom",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 84,
+      "title": "War-Room — DOIP"
+    },
+    {
+      "route": "/agents",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 22,
+      "title": "Unified Agent Runtime — DOIP"
+    },
+    {
+      "route": "/memory",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 23,
+      "title": "Long-Term Memory Explorer — DOIP"
+    },
+    {
+      "route": "/analytics-center",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 19,
+      "title": "Operational Analytics & Reporting Center — DOIP"
+    },
+    {
+      "route": "/workflows",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 35,
+      "title": "Operational Workflow Engine — DOIP"
+    },
+    {
+      "route": "/models",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 22,
+      "title": "Model Management & Router — DOIP"
+    },
+    {
+      "route": "/observability",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 17,
+      "title": "Observability Platform — DOIP"
+    },
+    {
+      "route": "/model-lab",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 22,
+      "title": "Model Lab — Hybrid Physics & Laya Decision Engine"
+    },
+    {
+      "route": "/scenario-editor",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 23,
+      "title": "Scenario Editor — DOIP"
+    },
+    {
+      "route": "/admin",
+      "loaded": true,
+      "hasError": false,
+      "buttonsCount": 25,
+      "title": "Admin — DOIP"
+    }
+  ],
+  "pageErrors": []
+}

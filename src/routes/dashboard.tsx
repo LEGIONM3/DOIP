@@ -4,6 +4,7 @@ import { MapView } from "@/components/map/MapView";
 import { EmptyState, Panel, SeverityTag, StatStrip, Mono } from "@/components/doip/primitives";
 import { SEVERITY_META, SEVERITY_ORDER, canOperate, formatSimClock } from "@/lib/doip";
 import { simStore, useSim } from "@/sim/store";
+import { contextStore } from "@/sim/contextStore";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard")({
@@ -234,6 +235,17 @@ function DashboardScreen() {
                           </span>
                         )}
                         <Mono className="text-[11px]">T+{a.tick}</Mono>
+                        <button
+                          onClick={() => {
+                            contextStore.handoffToAi({
+                              prompt: `Investigate tactical alert: "${a.message}" (severity ${a.severity}) at T+${a.tick}. What SOP applies and what are recommended mitigations?`,
+                            });
+                          }}
+                          className="border border-purple-500/40 bg-purple-950/20 px-1 font-mono text-[10px] text-purple-300 hover:bg-purple-900/40"
+                          title="Investigate with AI"
+                        >
+                          AI
+                        </button>
                         <button
                           onClick={() => {
                             if (!canOperate(role)) {
