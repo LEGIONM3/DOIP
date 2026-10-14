@@ -296,9 +296,9 @@ const initial: SimStoreState = {
   weatherLoading: false,
   weatherError: null,
   cloudOpacity: 0.75,
-  weatherLayerVisible: true,
+  weatherLayerVisible: false,
   movementTrailsVisible: true,
-  windVectorsVisible: true,
+  windVectorsVisible: false,
 };
 
 class SimStore {

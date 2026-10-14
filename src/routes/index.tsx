@@ -61,7 +61,7 @@ function LiveMapScreen() {
   const [layers, setLayers] = useState({
     units: true,
     incidents: true,
-    weather: true,
+    weather: false,
     zones: true,
   });
   // §18.8 follow-mode: when ON, the map re-centers on the selected unit each tick.
