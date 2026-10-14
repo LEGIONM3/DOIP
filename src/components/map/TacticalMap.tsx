@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { LngLatLike, StyleSpecification, MapMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -195,8 +195,10 @@ export default function TacticalMap({
   const zonesVisible = useSim((s) => s.zonesVisible);
   const unitsVisible = useSim((s) => s.unitsVisible);
   const clusterBadgesVisible = useSim((s) => s.clusterBadgesVisible);
-  const depots = useSim((s) => Object.values(s.world.depots));
-  const personnel = useSim((s) => Object.values(s.world.personnel));
+  const depotsMap = useSim((s) => s.world.depots);
+  const personnelMap = useSim((s) => s.world.personnel);
+  const depots = useMemo(() => Object.values(depotsMap ?? {}), [depotsMap]);
+  const personnel = useMemo(() => Object.values(personnelMap ?? {}), [personnelMap]);
   const [currentZoom, setCurrentZoom] = useState(zoom);
   const [metDrawerOpen, setMetDrawerOpen] = useState(false);
   const [activeSector, setActiveSector] = useState("ALL-IN");

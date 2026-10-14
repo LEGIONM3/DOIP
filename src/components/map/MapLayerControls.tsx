@@ -40,14 +40,17 @@ export function MapLayerControls({ className, compact = false }: MapLayerControl
   const worldMode = useSim((s) => s.worldMode);
   const activeBranchId = useSim((s) => s.activeBranchId);
   const world = useSim((s) => s.world);
-  const personnel = useSim((s) => Object.values(s.world.personnel));
-  const depots = useSim((s) => Object.values(s.world.depots));
+  const personnel = useMemo(() => Object.values(world.personnel ?? {}), [world.personnel]);
+  const depots = useMemo(() => Object.values(world.depots ?? {}), [world.depots]);
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
 
-  const units = Object.values(world.units);
-  const movingCount = units.filter((u) => u.status === "active" && (u.speedKph ?? 0) > 0).length;
+  const units = useMemo(() => Object.values(world.units ?? {}), [world.units]);
+  const movingCount = useMemo(
+    () => units.filter((u) => u.status === "active" && (u.speedKph ?? 0) > 0).length,
+    [units],
+  );
 
   const stationList = Object.values(envContext?.stations ?? {});
   const conditionCounts = useMemo(() => {
