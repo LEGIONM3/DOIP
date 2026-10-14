@@ -141548,5 +141548,1221 @@
       "laya_confidence": 1.0,
       "mined_at": "2026-10-14T06:09:08Z"
     }
+  },
+  {
+    "sample_id": "HARD_FC772E05_t000",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 0,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.5909,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 0:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 0.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -65.0 dBm, Jamming 0%, Packet Loss 0.0%, Latency 25 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "FAILED",
+      "mission_outcome": "FAILED",
+      "logistics_state": "CRITICAL",
+      "comms_state": "CONNECTED",
+      "environmental_impact": "LOW",
+      "recommended_action": "ABORT",
+      "risk_score": 1.0
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=FAILED vs Laya=NORMAL)",
+      "laya_confidence": 0.85,
+      "mined_at": "2026-10-14T06:37:49Z"
+    }
+  },
+  {
+    "sample_id": "HARD_6D76D3FC_t001",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 1,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9999,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 1:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:37:49Z"
+    }
+  },
+  {
+    "sample_id": "HARD_C240A75F_t002",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 2,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9998,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 2:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:37:49Z"
+    }
+  },
+  {
+    "sample_id": "HARD_8ECE6D08_t003",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 3,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9997,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 3:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:37:50Z"
+    }
+  },
+  {
+    "sample_id": "HARD_60903356_t004",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 4,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9996,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 4:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:37:50Z"
+    }
+  },
+  {
+    "sample_id": "HARD_DA3F5791_t005",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 5,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9995,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 5:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 99.9%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:37:50Z"
+    }
+  },
+  {
+    "sample_id": "HARD_7572639F_t001",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 1,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9999,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 1:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:44Z"
+    }
+  },
+  {
+    "sample_id": "HARD_EFB66C77_t002",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 2,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9998,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 2:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:44Z"
+    }
+  },
+  {
+    "sample_id": "HARD_941A3549_t003",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 3,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9997,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 3:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:44Z"
+    }
+  },
+  {
+    "sample_id": "HARD_EB053548_t004",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 4,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9996,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 4:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:45Z"
+    }
+  },
+  {
+    "sample_id": "HARD_F67361D8_t005",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 5,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9995,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 5:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 99.9%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:45Z"
+    }
+  },
+  {
+    "sample_id": "HARD_789E8DC8_t001",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 1,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9999,
+      1.0,
+      0.13,
+      0.0,
+      0.6667,
+      0.1333,
+      0.191,
+      0.8,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 1:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.2 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -109.0 dBm, Jamming 80%, Packet Loss 82.5%, Latency 310 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.9917,
+      "mined_at": "2026-10-14T06:39:45Z"
+    }
+  },
+  {
+    "sample_id": "HARD_00B4954E_t002",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 2,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9998,
+      1.0,
+      0.135,
+      0.0,
+      0.6667,
+      0.1333,
+      0.191,
+      0.8,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 2:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.4 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -109.0 dBm, Jamming 80%, Packet Loss 82.5%, Latency 310 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.9917,
+      "mined_at": "2026-10-14T06:39:45Z"
+    }
+  },
+  {
+    "sample_id": "HARD_2EECF3B5_t003",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 3,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9997,
+      1.0,
+      0.14,
+      0.0,
+      0.6667,
+      0.1333,
+      0.191,
+      0.8,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 3:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.6 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -109.0 dBm, Jamming 80%, Packet Loss 82.5%, Latency 310 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.9918,
+      "mined_at": "2026-10-14T06:39:46Z"
+    }
+  },
+  {
+    "sample_id": "HARD_8396CAD0_t004",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 4,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9996,
+      1.0,
+      0.145,
+      0.0,
+      0.6667,
+      0.1333,
+      0.191,
+      0.8,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 4:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.8 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -109.0 dBm, Jamming 80%, Packet Loss 82.5%, Latency 310 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.9918,
+      "mined_at": "2026-10-14T06:39:46Z"
+    }
+  },
+  {
+    "sample_id": "HARD_5987F8B2_t005",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 5,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9995,
+      1.0,
+      0.15,
+      0.0,
+      0.6667,
+      0.1333,
+      0.191,
+      0.8,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 5:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 99.9%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 6.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -109.0 dBm, Jamming 80%, Packet Loss 82.5%, Latency 310 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.9919,
+      "mined_at": "2026-10-14T06:39:46Z"
+    }
+  },
+  {
+    "sample_id": "HARD_3283232A_t001",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 1,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9999,
+      1.0,
+      0.63,
+      0.6667,
+      0.6667,
+      0.1333,
+      0.4092,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 1:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 25.2 m/s, Visibility 10.0 km, Rain 40.0 mm/h, Friction 1.00.\nComms: Signal -85.0 dBm, Jamming 0%, Packet Loss 23.0%, Latency 75 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "CRITICAL",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "SEVERE",
+      "recommended_action": "PAUSE",
+      "risk_score": 0.75
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=CRITICAL vs Laya=NORMAL)",
+      "laya_confidence": 0.9785,
+      "mined_at": "2026-10-14T06:39:46Z"
+    }
+  },
+  {
+    "sample_id": "HARD_E780F48D_t002",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 2,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9998,
+      1.0,
+      0.635,
+      0.6667,
+      0.6667,
+      0.1333,
+      0.4092,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 2:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 25.4 m/s, Visibility 10.0 km, Rain 40.0 mm/h, Friction 1.00.\nComms: Signal -85.0 dBm, Jamming 0%, Packet Loss 23.0%, Latency 75 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "CRITICAL",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "SEVERE",
+      "recommended_action": "PAUSE",
+      "risk_score": 0.75
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=CRITICAL vs Laya=NORMAL)",
+      "laya_confidence": 0.9756,
+      "mined_at": "2026-10-14T06:39:47Z"
+    }
+  },
+  {
+    "sample_id": "HARD_6A3B8FF4_t003",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 3,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9997,
+      1.0,
+      0.64,
+      0.6667,
+      0.6667,
+      0.1333,
+      0.4092,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 3:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 25.6 m/s, Visibility 10.0 km, Rain 40.0 mm/h, Friction 1.00.\nComms: Signal -85.0 dBm, Jamming 0%, Packet Loss 23.0%, Latency 75 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "CRITICAL",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "SEVERE",
+      "recommended_action": "PAUSE",
+      "risk_score": 0.75
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=CRITICAL vs Laya=NORMAL)",
+      "laya_confidence": 0.9723,
+      "mined_at": "2026-10-14T06:39:47Z"
+    }
+  },
+  {
+    "sample_id": "HARD_4AA7D908_t004",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 4,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9996,
+      1.0,
+      0.645,
+      0.6667,
+      0.6667,
+      0.1333,
+      0.4092,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 4:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 25.8 m/s, Visibility 10.0 km, Rain 40.0 mm/h, Friction 1.00.\nComms: Signal -85.0 dBm, Jamming 0%, Packet Loss 23.0%, Latency 75 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "CRITICAL",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "SEVERE",
+      "recommended_action": "PAUSE",
+      "risk_score": 0.75
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=CRITICAL vs Laya=NORMAL)",
+      "laya_confidence": 0.9685,
+      "mined_at": "2026-10-14T06:39:47Z"
+    }
+  },
+  {
+    "sample_id": "HARD_7768E81F_t005",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 5,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9995,
+      1.0,
+      0.65,
+      0.6667,
+      0.6667,
+      0.1333,
+      0.4092,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 5:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 99.9%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 26.0 m/s, Visibility 10.0 km, Rain 40.0 mm/h, Friction 1.00.\nComms: Signal -85.0 dBm, Jamming 0%, Packet Loss 23.0%, Latency 75 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "CRITICAL",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "SEVERE",
+      "recommended_action": "PAUSE",
+      "risk_score": 0.75
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=CRITICAL vs Laya=NORMAL)",
+      "laya_confidence": 0.9644,
+      "mined_at": "2026-10-14T06:39:47Z"
+    }
+  },
+  {
+    "sample_id": "HARD_7B7DE532_t001",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 1,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9999,
+      1.0,
+      0.505,
+      0.0,
+      0.6667,
+      0.1333,
+      0.2273,
+      0.7,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 1:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 20.2 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -105.0 dBm, Jamming 70%, Packet Loss 72.5%, Latency 270 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "HIGH",
+      "recommended_action": "REROUTE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.8336,
+      "mined_at": "2026-10-14T06:39:48Z"
+    }
+  },
+  {
+    "sample_id": "HARD_324E5BD5_t002",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 2,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9998,
+      1.0,
+      0.51,
+      0.0,
+      0.6667,
+      0.1333,
+      0.2273,
+      0.7,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 2:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 20.4 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -105.0 dBm, Jamming 70%, Packet Loss 72.5%, Latency 270 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "HIGH",
+      "recommended_action": "REROUTE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.8338,
+      "mined_at": "2026-10-14T06:39:48Z"
+    }
+  },
+  {
+    "sample_id": "HARD_68DE7ED1_t003",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 3,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9997,
+      1.0,
+      0.515,
+      0.0,
+      0.6667,
+      0.1333,
+      0.2273,
+      0.7,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 3:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 20.6 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -105.0 dBm, Jamming 70%, Packet Loss 72.5%, Latency 270 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "HIGH",
+      "recommended_action": "REROUTE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.8338,
+      "mined_at": "2026-10-14T06:39:48Z"
+    }
+  },
+  {
+    "sample_id": "HARD_7737DB80_t004",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 4,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9996,
+      1.0,
+      0.52,
+      0.0,
+      0.6667,
+      0.1333,
+      0.2273,
+      0.7,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 4:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 20.8 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -105.0 dBm, Jamming 70%, Packet Loss 72.5%, Latency 270 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "HIGH",
+      "recommended_action": "REROUTE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.8337,
+      "mined_at": "2026-10-14T06:39:48Z"
+    }
+  },
+  {
+    "sample_id": "HARD_74D1D2DB_t005",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 5,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9995,
+      1.0,
+      0.525,
+      0.0,
+      0.6667,
+      0.1333,
+      0.2273,
+      0.7,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 5:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 99.9%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 21.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -105.0 dBm, Jamming 70%, Packet Loss 72.5%, Latency 270 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "INTERMITTENT",
+      "environmental_impact": "HIGH",
+      "recommended_action": "REROUTE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=CRITICAL)",
+      "laya_confidence": 0.8333,
+      "mined_at": "2026-10-14T06:39:49Z"
+    }
+  },
+  {
+    "sample_id": "HARD_604F906A_t001",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 1,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9999,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 1:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:49Z"
+    }
+  },
+  {
+    "sample_id": "HARD_5486D92D_t001",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 1,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9999,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 1:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:49Z"
+    }
+  },
+  {
+    "sample_id": "HARD_A24596BE_t002",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 2,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9998,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 2:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:49Z"
+    }
+  },
+  {
+    "sample_id": "HARD_5A21E678_t003",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 3,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9997,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 3:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:50Z"
+    }
+  },
+  {
+    "sample_id": "HARD_EA4271C4_t004",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 4,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9996,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 4:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 100.0%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:50Z"
+    }
+  },
+  {
+    "sample_id": "HARD_062641F4_t005",
+    "scenario_id": "ONLINE_SIM",
+    "scenario_family": "ACTIVE_LEARNING_MINE",
+    "tick": 5,
+    "numeric_vector": [
+      0.4858,
+      0.5473,
+      0.0,
+      0.0,
+      0.9995,
+      1.0,
+      0.125,
+      0.0,
+      0.6667,
+      0.1333,
+      0.4819,
+      0.0,
+      0.05,
+      0.175,
+      1.0
+    ],
+    "prompt_text": "Operational telemetry for unit PATROL-1 (PATROL) at tick 5:\nKinematics: Position (12.9716, 77.5946), Heading 0.0 deg, Speed 0.0 m/s (max 30.0 m/s).\nEnergy: Fuel 99.9%, Battery 100.0%, Payload 250 kg.\nEnvironment: Wind 5.0 m/s, Visibility 10.0 km, Rain 0.0 mm/h, Friction 1.00.\nComms: Signal -77.0 dBm, Jamming 0%, Packet Loss 13.4%, Latency 51 ms.\nLogistics: Ammo 100.0%, Wear 5.0%, Distance to Depot 3500 m.",
+    "labels": {
+      "operational_state": "DEGRADED",
+      "mission_outcome": "DELAYED",
+      "logistics_state": "HEALTHY",
+      "comms_state": "DEGRADED",
+      "environmental_impact": "LOW",
+      "recommended_action": "CONTINUE",
+      "risk_score": 0.4
+    },
+    "mining_metadata": {
+      "reason": "MISCLASSIFIED_OPERATIONAL (Rule=DEGRADED vs Laya=NORMAL)",
+      "laya_confidence": 1.0,
+      "mined_at": "2026-10-14T06:39:50Z"
+    }
   }
 ]

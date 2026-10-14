@@ -100,6 +100,8 @@ def test_environmental_context_service_offline_resilience():
     assert leh["lat"] == 34.1526
     assert "temperatureC" in leh
     assert "windSpeedKph" in leh
+    assert "cloudPct" in leh
+    assert isinstance(leh["cloudPct"], (int, float))
 
 
 def test_api_world_baseline(client):

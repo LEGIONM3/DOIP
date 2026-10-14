@@ -369,6 +369,37 @@
 .doip-unit-marker.is-elevated .doip-unit-label {
   bottom: 18px;
 }
+.doip-unit-heading {
+  position: absolute;
+  left: -4px;
+  bottom: -4px;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+  transform: rotate(var(--unit-heading, 0deg));
+  transition: transform 0.2s ease-out;
+}
+.doip-unit-heading::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 1px;
+  width: 0;
+  height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-bottom: 6px solid var(--unit-color);
+}
+.doip-unit-marker.is-elevated .doip-unit-heading {
+  bottom: 23px;
+}
+.doip-unit-marker.is-moving .doip-unit-dot {
+  box-shadow: 0 0 8px #38bdf8, 0 0 20px rgba(56, 189, 248, 0.5);
+}
+.doip-unit-marker.is-halted .doip-unit-dot {
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+}
 .doip-cursor {
   --cursor-color: #ffffff;
   display: flex;

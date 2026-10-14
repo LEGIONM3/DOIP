@@ -46,6 +46,10 @@ export interface SimStoreState {
   selectedLocationWeather: WeatherObservation | null;
   weatherLoading: boolean;
   weatherError: string | null;
+  cloudOpacity: number;
+  weatherLayerVisible: boolean;
+  movementTrailsVisible: boolean;
+  windVectorsVisible: boolean;
 }
 
 export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
@@ -63,6 +67,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 3524,
       temperatureC: -4.2,
       humidityPct: 42,
+      cloudPct: 65,
       windSpeedKph: 28.5,
       windDirectionDeg: 315,
       precipitationMm: 0,
@@ -80,6 +85,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 1585,
       temperatureC: 8.5,
       humidityPct: 68,
+      cloudPct: 85,
       windSpeedKph: 12,
       windDirectionDeg: 280,
       precipitationMm: 0.2,
@@ -97,6 +103,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 216,
       temperatureC: 26.4,
       humidityPct: 54,
+      cloudPct: 25,
       windSpeedKph: 14.5,
       windDirectionDeg: 120,
       precipitationMm: 0,
@@ -114,6 +121,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 225,
       temperatureC: 38.8,
       humidityPct: 22,
+      cloudPct: 10,
       windSpeedKph: 24,
       windDirectionDeg: 240,
       precipitationMm: 0,
@@ -131,6 +139,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 110,
       temperatureC: 32.1,
       humidityPct: 58,
+      cloudPct: 15,
       windSpeedKph: 19.5,
       windDirectionDeg: 210,
       precipitationMm: 0,
@@ -148,6 +157,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 310,
       temperatureC: 29.5,
       humidityPct: 48,
+      cloudPct: 35,
       windSpeedKph: 11.2,
       windDirectionDeg: 90,
       precipitationMm: 0,
@@ -165,6 +175,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 4,
       temperatureC: 28.2,
       humidityPct: 82,
+      cloudPct: 80,
       windSpeedKph: 38,
       windDirectionDeg: 160,
       precipitationMm: 4.5,
@@ -182,6 +193,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 9,
       temperatureC: 29.0,
       humidityPct: 76,
+      cloudPct: 70,
       windSpeedKph: 16.5,
       windDirectionDeg: 170,
       precipitationMm: 1.2,
@@ -199,6 +211,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 48,
       temperatureC: 22.4,
       humidityPct: 88,
+      cloudPct: 75,
       windSpeedKph: 8,
       windDirectionDeg: 60,
       precipitationMm: 2.8,
@@ -216,6 +229,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 920,
       temperatureC: 24.6,
       humidityPct: 62,
+      cloudPct: 40,
       windSpeedKph: 15,
       windDirectionDeg: 260,
       precipitationMm: 0,
@@ -233,6 +247,7 @@ export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
       elevationM: 16,
       temperatureC: 27.8,
       humidityPct: 84,
+      cloudPct: 85,
       windSpeedKph: 26,
       windDirectionDeg: 220,
       precipitationMm: 3,
@@ -280,6 +295,10 @@ const initial: SimStoreState = {
   selectedLocationWeather: null,
   weatherLoading: false,
   weatherError: null,
+  cloudOpacity: 0.75,
+  weatherLayerVisible: true,
+  movementTrailsVisible: true,
+  windVectorsVisible: true,
 };
 
 class SimStore {
@@ -607,6 +626,22 @@ class SimStore {
       this.set({ weatherError: String(err), weatherLoading: false });
     }
     return null;
+  }
+
+  setCloudOpacity(cloudOpacity: number) {
+    this.set({ cloudOpacity: Math.max(0, Math.min(1, cloudOpacity)) });
+  }
+
+  setWeatherLayerVisible(weatherLayerVisible: boolean) {
+    this.set({ weatherLayerVisible });
+  }
+
+  setMovementTrailsVisible(movementTrailsVisible: boolean) {
+    this.set({ movementTrailsVisible });
+  }
+
+  setWindVectorsVisible(windVectorsVisible: boolean) {
+    this.set({ windVectorsVisible });
   }
 
   clearSelectedLocationWeather() {

@@ -130,11 +130,13 @@ export interface EnvironmentalStation {
   elevationM: number;
   temperatureC: number;
   humidityPct: number;
+  cloudPct?: number;
   windSpeedKph: number;
   windDirectionDeg: number;
   precipitationMm: number;
   weatherCode: number;
   conditionLabel: string;
+  conditionIcon?: string | null;
   severeAlert?: string | null;
   provenance: EnvironmentalProvenance;
   lastUpdated: string;

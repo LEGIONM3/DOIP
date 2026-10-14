@@ -8,6 +8,7 @@ import { canOperate, computeEventFingerprint } from "@/lib/doip";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { contextStore } from "@/sim/contextStore";
+import { MapView } from "@/components/map/MapView";
 import {
   Play,
   Pause,
@@ -21,6 +22,7 @@ import {
   Sparkles,
   FileText,
   Navigation,
+  Map as MapIcon,
 } from "lucide-react";
 
 export const Route = createFileRoute("/run")({
@@ -68,15 +70,23 @@ function RunControlScreen() {
   const worldMode = useSim((s) => s.worldMode);
   const activeBranchId = useSim((s) => s.activeBranchId);
   const envContext = useSim((s) => s.environmentalContext);
+  const world = useSim((s) => s.world);
+
+  const units = useMemo(() => Object.values(world.units), [world.units]);
+  const incidents = useMemo(() => Object.values(world.incidents), [world.incidents]);
+  const weather = useMemo(() => Object.values(world.weather), [world.weather]);
+  const zones = useMemo(() => Object.values(world.zones), [world.zones]);
 
   const fingerprint = useMemo(() => computeEventFingerprint(events), [events]);
 
   const [seedInput, setSeedInput] = useState(String(seed));
   const [picked, setPicked] = useState(scenarioId);
+  const [mapExpanded, setMapExpanded] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState<
     "all" | "live-baseline" | "artificial-impact" | "legacy"
   >("all");
   const allowed = canOperate(role);
+
 
   useEffect(() => {
     setPicked(scenarioId);
@@ -297,6 +307,39 @@ function RunControlScreen() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Real-Time Pan-India Tactical Map View with Unified Weather & Movement Overlays */}
+        <div className="border border-border bg-surface shadow-sm">
+          <div className="flex items-center justify-between border-b border-border bg-raised/40 px-3 py-1.5 font-mono text-xs">
+            <div className="flex items-center gap-2">
+              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+              <MapIcon className="size-3.5 text-primary" />
+              <span className="font-bold uppercase tracking-wider text-[11px] text-foreground">
+                Tactical Map Overview
+              </span>
+              <span className="text-[10px] text-muted-foreground hidden sm:inline">
+                ({units.length} UNITS · {incidents.length} INCIDENTS · {weather.length} WEATHER CELLS)
+              </span>
+            </div>
+            <button
+              onClick={() => setMapExpanded((e) => !e)}
+              className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground border border-border px-2 py-0.5 bg-background transition-colors"
+            >
+              {mapExpanded ? "COLLAPSE MAP ▲" : "EXPAND MAP ▼"}
+            </button>
+          </div>
+          {mapExpanded && (
+            <div className="h-[380px] w-full">
+              <MapView
+                units={units}
+                incidents={incidents}
+                weather={weather}
+                zones={zones}
+                tick={tick}
+              />
+            </div>
+          )}
         </div>
 
         <Panel

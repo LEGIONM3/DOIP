@@ -44,6 +44,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": -4.2,
             "humidityPct": 42.0,
+            "cloudPct": 65.0,
             "windSpeedKph": 28.5,
             "windDirectionDeg": 315,
             "precipitationMm": 0.0,
@@ -61,6 +62,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 8.5,
             "humidityPct": 68.0,
+            "cloudPct": 85.0,
             "windSpeedKph": 12.0,
             "windDirectionDeg": 280,
             "precipitationMm": 0.2,
@@ -78,6 +80,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 26.4,
             "humidityPct": 54.0,
+            "cloudPct": 25.0,
             "windSpeedKph": 14.5,
             "windDirectionDeg": 120,
             "precipitationMm": 0.0,
@@ -95,6 +98,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 38.8,
             "humidityPct": 22.0,
+            "cloudPct": 10.0,
             "windSpeedKph": 24.0,
             "windDirectionDeg": 240,
             "precipitationMm": 0.0,
@@ -112,6 +116,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 32.1,
             "humidityPct": 58.0,
+            "cloudPct": 15.0,
             "windSpeedKph": 19.5,
             "windDirectionDeg": 210,
             "precipitationMm": 0.0,
@@ -129,6 +134,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 29.5,
             "humidityPct": 48.0,
+            "cloudPct": 35.0,
             "windSpeedKph": 11.2,
             "windDirectionDeg": 90,
             "precipitationMm": 0.0,
@@ -146,6 +152,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 28.2,
             "humidityPct": 82.0,
+            "cloudPct": 80.0,
             "windSpeedKph": 38.0,
             "windDirectionDeg": 160,
             "precipitationMm": 4.5,
@@ -163,6 +170,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 29.0,
             "humidityPct": 76.0,
+            "cloudPct": 70.0,
             "windSpeedKph": 16.5,
             "windDirectionDeg": 170,
             "precipitationMm": 1.2,
@@ -180,6 +188,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 22.4,
             "humidityPct": 88.0,
+            "cloudPct": 75.0,
             "windSpeedKph": 8.0,
             "windDirectionDeg": 60,
             "precipitationMm": 2.8,
@@ -197,6 +206,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 24.6,
             "humidityPct": 62.0,
+            "cloudPct": 40.0,
             "windSpeedKph": 15.0,
             "windDirectionDeg": 260,
             "precipitationMm": 0.0,
@@ -214,6 +224,7 @@ MONITORING_STATIONS = {
         "default": {
             "temperatureC": 27.8,
             "humidityPct": 84.0,
+            "cloudPct": 85.0,
             "windSpeedKph": 26.0,
             "windDirectionDeg": 220,
             "precipitationMm": 3.0,
@@ -290,6 +301,8 @@ class EnvironmentalContextService:
                 elif precip >= 30.0:
                     severe_alert = f"Torrential downpour: {precip:.1f} mm/h precipitation"
 
+                cloud_pct = obs.cloud_pct if obs.cloud_pct is not None else stn["default"]["cloudPct"]
+
                 return {
                     "id": stn["id"],
                     "name": stn["name"],
@@ -299,6 +312,7 @@ class EnvironmentalContextService:
                     "elevationM": stn.get("elevation_m", 0),
                     "temperatureC": round(temp, 1),
                     "humidityPct": round(humidity, 1),
+                    "cloudPct": round(float(cloud_pct), 1),
                     "windSpeedKph": round(w_speed, 1),
                     "windDirectionDeg": w_dir,
                     "precipitationMm": round(precip, 1),
@@ -318,7 +332,7 @@ class EnvironmentalContextService:
         params = {
             "latitude": stn["lat"],
             "longitude": stn["lon"],
-            "current": "temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m",
+            "current": "temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m,cloud_cover",
             "timezone": "Asia/Kolkata",
         }
         try:
@@ -330,6 +344,7 @@ class EnvironmentalContextService:
                 label = WMO_CODE_MAP.get(w_code, "Variable Weather")
                 temp = float(current.get("temperature_2m", stn["default"]["temperatureC"]))
                 humidity = float(current.get("relative_humidity_2m", stn["default"]["humidityPct"]))
+                cloud_pct = float(current.get("cloud_cover", stn["default"]["cloudPct"]))
                 precip = float(current.get("precipitation", stn["default"]["precipitationMm"]))
                 w_speed = float(current.get("wind_speed_10m", stn["default"]["windSpeedKph"]))
                 w_dir = int(current.get("wind_direction_10m", stn["default"]["windDirectionDeg"]))
@@ -354,6 +369,7 @@ class EnvironmentalContextService:
                     "elevationM": stn.get("elevation_m", 0),
                     "temperatureC": round(temp, 1),
                     "humidityPct": round(humidity, 1),
+                    "cloudPct": round(cloud_pct, 1),
                     "windSpeedKph": round(w_speed, 1),
                     "windDirectionDeg": w_dir,
                     "precipitationMm": round(precip, 1),
@@ -377,6 +393,7 @@ class EnvironmentalContextService:
             "elevationM": stn.get("elevation_m", 0),
             "temperatureC": d["temperatureC"],
             "humidityPct": d["humidityPct"],
+            "cloudPct": d.get("cloudPct", 50.0),
             "windSpeedKph": d["windSpeedKph"],
             "windDirectionDeg": d["windDirectionDeg"],
             "precipitationMm": d["precipitationMm"],

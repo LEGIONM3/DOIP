@@ -10,6 +10,16 @@ import { Compass, Box, Square, Key, RotateCcw, Cloud, Radio, ChevronDown, Activi
 import type { Feature, FeatureCollection } from "geojson";
 import { resolveMapStyle, getMapAttribution } from "@/lib/mapConfig";
 import { MapKeyDialog } from "./MapKeyDialog";
+import {
+  buildWeatherCloudGeoJson,
+  setupWeatherMapLibreLayers,
+} from "./weatherLayers";
+import {
+  UnitTrailBuffer,
+  getUnitHeading,
+  isUnitMoving,
+} from "./movementLayers";
+import { MapLayerControls } from "./MapLayerControls";
 
 export const STYLE_URL = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 export const ATTRIBUTION = "© OpenStreetMap contributors © CARTO";
@@ -174,6 +184,10 @@ export default function TacticalMap({
   const selectedWeather = useSim((s) => s.selectedLocationWeather);
   const weatherLoading = useSim((s) => s.weatherLoading);
   const weatherError = useSim((s) => s.weatherError);
+  const weatherLayerVisible = useSim((s) => s.weatherLayerVisible);
+  const cloudOpacity = useSim((s) => s.cloudOpacity);
+  const movementTrailsVisible = useSim((s) => s.movementTrailsVisible);
+  const windVectorsVisible = useSim((s) => s.windVectorsVisible);
   const [metDrawerOpen, setMetDrawerOpen] = useState(false);
   const [activeSector, setActiveSector] = useState("ALL-IN");
 
@@ -204,7 +218,7 @@ export default function TacticalMap({
     return () => window.removeEventListener("doip:map-config-changed", onConfigChange);
   }, []);
   const [tilesLoading, setTilesLoading] = useState(true);
-  const trailsRef = useRef<Record<string, Array<[number, number]>>>({});
+  const trailBufferRef = useRef<UnitTrailBuffer>(new UnitTrailBuffer(25));
   const markersRef = useRef<Record<string, maplibregl.Marker>>({});
   const unitAnimRef = useRef<
     Record<
@@ -415,6 +429,9 @@ export default function TacticalMap({
       map.on("mouseenter", "incident-core", () => (map.getCanvas().style.cursor = "pointer"));
       map.on("mouseleave", "incident-core", () => (map.getCanvas().style.cursor = ""));
 
+      // Setup dedicated weather observation cloud & wind layers
+      setupWeatherMapLibreLayers(map);
+
       setReady(true);
     };
     map.on("style.load", initLayers);
@@ -439,6 +456,7 @@ export default function TacticalMap({
       cursorMarkers.current = {};
       Object.values(stationMarkers.current).forEach((m) => m.remove());
       stationMarkers.current = {};
+      trailBufferRef.current.clear();
       window.clearTimeout(loadFallback);
       map.remove();
 
@@ -499,6 +517,52 @@ export default function TacticalMap({
     );
   }, [weather, ready]);
 
+  /* ---------- Clear movement trails on world / scenario change ---------- */
+  useEffect(() => {
+    trailBufferRef.current.clear();
+    const map = mapRef.current;
+    if (map && ready) {
+      (map.getSource("trails") as maplibregl.GeoJSONSource | undefined)?.setData(fc([]));
+    }
+  }, [worldMode, activeBranchId, currentScenarioId, ready]);
+
+  /* ---------- Dedicated Weather Cloud & Wind Vector Layers ---------- */
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+
+    const cloudsOuterSrc = map.getSource("weather-clouds-outer") as maplibregl.GeoJSONSource | undefined;
+    const cloudsMidSrc = map.getSource("weather-clouds-mid") as maplibregl.GeoJSONSource | undefined;
+    const cloudsInnerSrc = map.getSource("weather-clouds-inner") as maplibregl.GeoJSONSource | undefined;
+    const cloudsOutlineSrc = map.getSource("weather-clouds-outline") as maplibregl.GeoJSONSource | undefined;
+    const windVectorsSrc = map.getSource("weather-wind-vectors") as maplibregl.GeoJSONSource | undefined;
+
+    if (!cloudsOuterSrc) return;
+
+    if (!weatherLayerVisible || !envContext?.stations) {
+      cloudsOuterSrc.setData(fc([]));
+      cloudsMidSrc?.setData(fc([]));
+      cloudsInnerSrc?.setData(fc([]));
+      cloudsOutlineSrc?.setData(fc([]));
+      windVectorsSrc?.setData(fc([]));
+      return;
+    }
+
+    const stationsList = Object.values(envContext.stations);
+    const geo = buildWeatherCloudGeoJson(stationsList, selectedWeather, cloudOpacity);
+
+    cloudsOuterSrc.setData(geo.cloudsOuter);
+    cloudsMidSrc?.setData(geo.cloudsMid);
+    cloudsInnerSrc?.setData(geo.cloudsInner);
+    cloudsOutlineSrc?.setData(geo.cloudsOutline);
+
+    if (windVectorsVisible) {
+      windVectorsSrc?.setData(geo.windVectors);
+    } else {
+      windVectorsSrc?.setData(fc([]));
+    }
+  }, [envContext, selectedWeather, weatherLayerVisible, cloudOpacity, windVectorsVisible, ready]);
+
   /* ---------- routes + waypoints ---------- */
   useEffect(() => {
     const map = mapRef.current;
@@ -558,7 +622,7 @@ export default function TacticalMap({
     return () => cancelAnimationFrame(raf);
   }, [ready]);
 
-  /* ---------- units: DOM markers + trails ---------- */
+  /* ---------- units: DOM markers + movement trails ---------- */
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
@@ -569,16 +633,17 @@ export default function TacticalMap({
       seen.add(u.id);
       const stale = isStale(u, tick);
       const color = unitColor(u);
-      const trail = trailsRef.current[u.id] ?? (trailsRef.current[u.id] = []);
-      const last = trail[trail.length - 1];
-      if (!last || last[0] !== u.lon || last[1] !== u.lat) trail.push([u.lon, u.lat]);
-      if (trail.length > TRAIL_LEN) trail.splice(0, trail.length - TRAIL_LEN);
+
+      trailBufferRef.current.record(u.id, u.lon, u.lat);
+      const trail = trailBufferRef.current.get(u.id);
+      const moving = isUnitMoving(u);
+      const heading = getUnitHeading(u, trail);
 
       let marker = markersRef.current[u.id];
       if (!marker) {
         const el = document.createElement("div");
         el.className = "doip-unit-marker";
-        el.innerHTML = `<span class="doip-unit-stem"></span><span class="doip-unit-shadow"></span><span class="doip-unit-dot"></span><span class="doip-unit-label"></span>`;
+        el.innerHTML = `<span class="doip-unit-heading"></span><span class="doip-unit-stem"></span><span class="doip-unit-shadow"></span><span class="doip-unit-dot"></span><span class="doip-unit-label"></span>`;
         el.addEventListener("click", (ev) => {
           ev.stopPropagation();
           cbRef.current.onSelectUnit?.(u.id);
@@ -601,11 +666,19 @@ export default function TacticalMap({
         }
       }
       const el = marker.getElement();
+      if (!el.querySelector(".doip-unit-heading")) {
+        const hSpan = document.createElement("span");
+        hSpan.className = "doip-unit-heading";
+        el.prepend(hSpan);
+      }
       const elevated = u.kind === "uav";
       el.classList.toggle("is-elevated", elevated);
       el.classList.toggle("is-stale", stale);
+      el.classList.toggle("is-moving", moving);
+      el.classList.toggle("is-halted", !moving && !stale);
       el.classList.toggle("is-selected", selectedId === u.id);
       el.style.setProperty("--unit-color", color);
+      el.style.setProperty("--unit-heading", `${heading}deg`);
       const label = el.querySelector(".doip-unit-label");
       if (label) label.textContent = unitDesignator(u, personnel);
     }
@@ -636,26 +709,23 @@ export default function TacticalMap({
       animRafRef.current = requestAnimationFrame(animLoop);
     }
 
+    trailBufferRef.current.prune(seen);
     for (const id of Object.keys(markersRef.current)) {
       if (!seen.has(id)) {
         markersRef.current[id]?.remove();
         delete markersRef.current[id];
-        delete trailsRef.current[id];
       }
     }
 
-    (map.getSource("trails") as maplibregl.GeoJSONSource | undefined)?.setData(
-      fc(
-        Object.entries(trailsRef.current)
-          .filter(([, pts]) => pts.length > 1)
-          .map(([id, pts]) => ({
-            type: "Feature",
-            properties: { id, color: "#FFFFFF" },
-            geometry: { type: "LineString", coordinates: pts },
-          })),
-      ),
-    );
-  }, [units, tick, selectedId, ready]);
+    if (movementTrailsVisible) {
+      (map.getSource("trails") as maplibregl.GeoJSONSource | undefined)?.setData(
+        trailBufferRef.current.toGeoJson(selectedId),
+      );
+    } else {
+      (map.getSource("trails") as maplibregl.GeoJSONSource | undefined)?.setData(fc([]));
+    }
+  }, [units, tick, selectedId, movementTrailsVisible, ready]);
+
 
   /* ---------- collaborator cursors ---------- */
   const cursorMarkers = useRef<Record<string, maplibregl.Marker>>({});
@@ -708,11 +778,13 @@ export default function TacticalMap({
       if (!m) {
         const el = document.createElement("div");
         el.className = "doip-station-marker group cursor-pointer pointer-events-auto select-none";
+        const cloudLabel = stn.cloudPct !== undefined ? `☁${stn.cloudPct}%` : "";
         el.innerHTML = `
           <div class="flex items-center gap-1 bg-[rgba(10,10,10,0.88)] border ${isSevere ? "border-amber-500/80" : "border-sky-500/50"} hover:border-sky-300 hover:bg-zinc-900 px-1.5 py-0.5 shadow-lg backdrop-blur-sm transition-all rounded-sm">
             <span class="size-1.5 rounded-full ${isSevere ? "bg-amber-400 animate-ping" : "bg-sky-400 animate-pulse"}"></span>
             <span class="font-mono text-[9px] font-bold text-zinc-300 group-hover:text-white uppercase tracking-wider">${stn.name.split(" ")[0]}</span>
             <span class="font-mono text-[9px] font-extrabold ${tempColor}">${stn.temperatureC.toFixed(0)}°</span>
+            ${cloudLabel ? `<span class="font-mono text-[8px] text-sky-300/80 font-semibold">${cloudLabel}</span>` : ""}
           </div>
         `;
         el.onclick = (e) => {
@@ -956,6 +1028,9 @@ export default function TacticalMap({
           ))}
         </div>
 
+        {/* Unified Map Layer & Weather Footprint Controls */}
+        <MapLayerControls />
+
         {/* Live Weather / Met Context Trigger */}
         <button
           onClick={() => setMetDrawerOpen((o) => !o)}
@@ -1012,7 +1087,7 @@ export default function TacticalMap({
                 </div>
                 <div className="flex items-center justify-between text-[9px] text-zinc-500 pt-0.5">
                   <span>Wind: {stn.windSpeedKph} km/h</span>
-                  <span>Precip: {stn.precipitationMm} mm</span>
+                  <span>Clouds: {stn.cloudPct !== undefined ? `${stn.cloudPct}%` : "--"}</span>
                   <span className="text-emerald-500/80">{stn.provenance}</span>
                 </div>
                 {stn.severeAlert && (
