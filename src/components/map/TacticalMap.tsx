@@ -13,6 +13,7 @@ import { MapKeyDialog } from "./MapKeyDialog";
 import {
   buildWeatherCloudGeoJson,
   setupWeatherMapLibreLayers,
+  classifyWeatherCondition,
 } from "./weatherLayers";
 import {
   UnitTrailBuffer,
@@ -535,15 +536,24 @@ export default function TacticalMap({
     const cloudsMidSrc = map.getSource("weather-clouds-mid") as maplibregl.GeoJSONSource | undefined;
     const cloudsInnerSrc = map.getSource("weather-clouds-inner") as maplibregl.GeoJSONSource | undefined;
     const cloudsOutlineSrc = map.getSource("weather-clouds-outline") as maplibregl.GeoJSONSource | undefined;
+    const rainBandsSrc = map.getSource("weather-rain-bands") as maplibregl.GeoJSONSource | undefined;
     const windVectorsSrc = map.getSource("weather-wind-vectors") as maplibregl.GeoJSONSource | undefined;
 
     if (!cloudsOuterSrc) return;
 
-    if (!weatherLayerVisible || !envContext?.stations) {
+    // Remove weather clouds in live map (baseline) while showing simulated weather clouds in simulation world model!
+    // Operators can also manually toggle weather clouds via the CLOUDS button in MapLayerControls in either mode.
+    const showSimulatedClouds =
+      worldMode === "simulation"
+        ? weatherLayerVisible !== false
+        : weatherLayerVisible === true;
+
+    if (!showSimulatedClouds || !envContext?.stations) {
       cloudsOuterSrc.setData(fc([]));
       cloudsMidSrc?.setData(fc([]));
       cloudsInnerSrc?.setData(fc([]));
       cloudsOutlineSrc?.setData(fc([]));
+      rainBandsSrc?.setData(fc([]));
       windVectorsSrc?.setData(fc([]));
       return;
     }
@@ -555,13 +565,14 @@ export default function TacticalMap({
     cloudsMidSrc?.setData(geo.cloudsMid);
     cloudsInnerSrc?.setData(geo.cloudsInner);
     cloudsOutlineSrc?.setData(geo.cloudsOutline);
+    rainBandsSrc?.setData(geo.rainBands);
 
-    if (windVectorsVisible) {
+    if (windVectorsVisible || (worldMode === "simulation" && windVectorsVisible !== false)) {
       windVectorsSrc?.setData(geo.windVectors);
     } else {
       windVectorsSrc?.setData(fc([]));
     }
-  }, [envContext, selectedWeather, weatherLayerVisible, cloudOpacity, windVectorsVisible, ready]);
+  }, [envContext, selectedWeather, weatherLayerVisible, worldMode, cloudOpacity, windVectorsVisible, ready]);
 
   /* ---------- routes + waypoints ---------- */
   useEffect(() => {
@@ -775,16 +786,41 @@ export default function TacticalMap({
             ? "text-amber-400"
             : "text-sky-400";
 
+      const classification = classifyWeatherCondition(
+        stn.temperatureC,
+        stn.precipitationMm,
+        stn.weatherCode,
+        stn.conditionLabel,
+        stn.windSpeedKph,
+        stn.cloudPct ?? 30,
+      );
+
+      const borderColor =
+        classification.category === "thunderstorm"
+          ? "border-purple-500/90 bg-[rgba(26,12,38,0.92)] shadow-[0_0_12px_rgba(168,85,247,0.4)]"
+          : classification.category === "rainy"
+            ? "border-sky-500/80 bg-[rgba(6,24,44,0.92)] shadow-[0_0_10px_rgba(14,165,233,0.35)]"
+            : classification.category === "windy"
+              ? "border-teal-500/80 bg-[rgba(6,36,32,0.92)] shadow-[0_0_10px_rgba(20,184,166,0.35)]"
+              : classification.category === "snow"
+                ? "border-cyan-400/90 bg-[rgba(8,30,44,0.92)] shadow-[0_0_10px_rgba(56,189,248,0.35)]"
+                : classification.category === "heat"
+                  ? "border-amber-500/90 bg-[rgba(38,20,6,0.92)] shadow-[0_0_10px_rgba(245,158,11,0.35)]"
+                  : classification.category === "cloudy"
+                    ? "border-zinc-500/70 bg-[rgba(18,18,18,0.92)]"
+                    : "border-zinc-700/60 bg-[rgba(12,12,12,0.88)]";
+
+      const badgeText = `${classification.icon} ${classification.categoryLabel.toUpperCase()}`;
+
       if (!m) {
         const el = document.createElement("div");
         el.className = "doip-station-marker group cursor-pointer pointer-events-auto select-none";
-        const cloudLabel = stn.cloudPct !== undefined ? `☁${stn.cloudPct}%` : "";
         el.innerHTML = `
-          <div class="flex items-center gap-1 bg-[rgba(10,10,10,0.88)] border ${isSevere ? "border-amber-500/80" : "border-sky-500/50"} hover:border-sky-300 hover:bg-zinc-900 px-1.5 py-0.5 shadow-lg backdrop-blur-sm transition-all rounded-sm">
-            <span class="size-1.5 rounded-full ${isSevere ? "bg-amber-400 animate-ping" : "bg-sky-400 animate-pulse"}"></span>
-            <span class="font-mono text-[9px] font-bold text-zinc-300 group-hover:text-white uppercase tracking-wider">${stn.name.split(" ")[0]}</span>
+          <div class="flex items-center gap-1.5 border ${borderColor} hover:border-white px-1.5 py-0.5 shadow-lg backdrop-blur-sm transition-all rounded-sm">
+            <span class="size-1.5 rounded-full ${classification.category === 'thunderstorm' || isSevere ? 'bg-purple-400 animate-ping' : classification.category === 'rainy' ? 'bg-sky-400 animate-pulse' : classification.category === 'windy' ? 'bg-teal-400 animate-pulse' : 'bg-emerald-400'}"></span>
+            <span class="font-mono text-[9px] font-bold text-zinc-200 group-hover:text-white uppercase tracking-wider">${stn.name.split(" ")[0]}</span>
             <span class="font-mono text-[9px] font-extrabold ${tempColor}">${stn.temperatureC.toFixed(0)}°</span>
-            ${cloudLabel ? `<span class="font-mono text-[8px] text-sky-300/80 font-semibold">${cloudLabel}</span>` : ""}
+            <span class="font-mono text-[8px] font-semibold text-zinc-300 border-l border-zinc-700/80 pl-1">${badgeText}</span>
           </div>
         `;
         el.onclick = (e) => {

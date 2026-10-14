@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { simStore, useSim } from "@/sim/store";
-import { WEATHER_FOOTPRINT_DISCLAIMER } from "./weatherLayers";
-import { Cloud, Wind, Navigation, Eye, Sliders, Info, Shield, Layers, X } from "lucide-react";
+import { WEATHER_FOOTPRINT_DISCLAIMER, classifyWeatherCondition, type WeatherCategory } from "./weatherLayers";
+import { Cloud, Wind, Navigation, Eye, Sliders, Info, Shield, Layers, X, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface MapLayerControlsProps {
@@ -24,6 +24,32 @@ export function MapLayerControls({ className, compact = false }: MapLayerControl
 
   const units = Object.values(world.units);
   const movingCount = units.filter((u) => u.status === "active" && (u.speedKph ?? 0) > 0).length;
+
+  const stationList = Object.values(envContext?.stations ?? {});
+  const conditionCounts = useMemo(() => {
+    const counts: Record<WeatherCategory, number> = {
+      thunderstorm: 0,
+      rainy: 0,
+      cloudy: 0,
+      windy: 0,
+      snow: 0,
+      heat: 0,
+      fog: 0,
+      clear: 0,
+    };
+    for (const stn of stationList) {
+      const c = classifyWeatherCondition(
+        stn.temperatureC,
+        stn.precipitationMm,
+        stn.weatherCode,
+        stn.conditionLabel,
+        stn.windSpeedKph,
+        stn.cloudPct ?? 30,
+      );
+      counts[c.category] += 1;
+    }
+    return counts;
+  }, [stationList]);
 
   return (
     <div className={cn("relative font-mono text-[11px] select-none", className)}>
@@ -160,6 +186,40 @@ export function MapLayerControls({ className, compact = false }: MapLayerControl
                       {Math.round(op * 100)}%
                     </button>
                   ))}
+                </div>
+
+                {/* Live Regional Condition Breakdown */}
+                <div className="pt-1.5 border-t border-zinc-900 space-y-1">
+                  <div className="flex items-center justify-between text-[9px] text-zinc-400 font-semibold uppercase">
+                    <span>Simulated Conditions:</span>
+                    <span className="text-zinc-500">11 REGIONS</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 text-[9px]">
+                    <div className="flex items-center justify-between px-1 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/60">
+                      <span>⚡ Storms:</span>
+                      <span className="font-bold">{conditionCounts.thunderstorm}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-1 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-800/60">
+                      <span>🌧 Rainy:</span>
+                      <span className="font-bold">{conditionCounts.rainy}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-1 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-zinc-700">
+                      <span>☁ Cloudy:</span>
+                      <span className="font-bold">{conditionCounts.cloudy}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-1 py-0.5 rounded bg-teal-950/60 text-teal-300 border border-teal-800/60">
+                      <span>💨 Windy:</span>
+                      <span className="font-bold">{conditionCounts.windy}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-1 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/60">
+                      <span>🔥 Thermal:</span>
+                      <span className="font-bold">{conditionCounts.heat}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-1 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-800/60">
+                      <span>❄ Blizzard:</span>
+                      <span className="font-bold">{conditionCounts.snow}</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-1 border-t border-zinc-900 text-[10px]">
