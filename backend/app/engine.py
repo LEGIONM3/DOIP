@@ -20,15 +20,107 @@ from .sim_types import Depot, Person, SimEvent, Unit, WeatherCell, Zone
 BASE_LAT = 12.9716
 BASE_LON = 77.5946
 
-# Strategic Indian regional anchors
+# Strategic Indian regional anchors (all 11 weather-monitored sectors)
 INDIAN_SECTORS = {
-    "NORTH": {"name": "Northern Sector (Ladakh/J&K)", "lat": 34.1526, "lon": 77.5771, "radius": 0.35},
-    "WEST": {"name": "Western Sector (Rajasthan/Thar)", "lat": 26.9157, "lon": 70.9083, "radius": 0.40},
-    "EAST": {"name": "Eastern Sector (Odisha/Coastal)", "lat": 20.3160, "lon": 86.6110, "radius": 0.35},
-    "CENTRAL": {"name": "Central Sector (Nagpur/Corridor)", "lat": 21.1458, "lon": 79.0882, "radius": 0.45},
-    "SOUTH": {"name": "Southern Sector (Bengaluru/Plateau)", "lat": 12.9716, "lon": 77.5946, "radius": 0.30},
-    "LITTORAL": {"name": "Littoral Sector (Andaman/Nicobar)", "lat": 11.6234, "lon": 92.7265, "radius": 0.25},
-    "NORTHEAST": {"name": "North-Eastern Sector (Assam/Arunachal)", "lat": 26.6338, "lon": 92.7926, "radius": 0.35},
+    "NORTH": {
+        "name": "Northern Sector (Ladakh)",
+        "lat": 34.1526,
+        "lon": 77.5771,
+        "radius": 0.35,
+        "weatherStationId": "STN-LEH",
+        "depotName": "NORTHERN FORWARD TACTICAL DEPOT (LEH)",
+        "facilityType": "forward_operating_base",
+    },
+    "KASHMIR": {
+        "name": "Northern Sector (Kashmir Valley)",
+        "lat": 34.0837,
+        "lon": 74.7973,
+        "radius": 0.30,
+        "weatherStationId": "STN-SRINAGAR",
+        "depotName": "KASHMIR VALLEY LOGISTICS & AIR SUPPORT HUB (SRINAGAR)",
+        "facilityType": "airbase",
+    },
+    "NCR": {
+        "name": "Northern Sector (NCR / Plains)",
+        "lat": 28.6139,
+        "lon": 77.2090,
+        "radius": 0.35,
+        "weatherStationId": "STN-DELHI",
+        "depotName": "NCR STRATEGIC LOGISTICS & RADAR FACILITY (DELHI)",
+        "facilityType": "depot",
+    },
+    "WEST": {
+        "name": "Western Sector (Rajasthan / Thar)",
+        "lat": 26.9157,
+        "lon": 70.9083,
+        "radius": 0.40,
+        "weatherStationId": "STN-JAISALMER",
+        "depotName": "WESTERN DESERT TACTICAL LOGISTICS DEPOT (JAISALMER)",
+        "facilityType": "forward_operating_base",
+    },
+    "KUTCH": {
+        "name": "Western Sector (Gujarat / Kutch Littoral)",
+        "lat": 23.2420,
+        "lon": 69.6669,
+        "radius": 0.35,
+        "weatherStationId": "STN-BHUJ",
+        "depotName": "KUTCH LITTORAL & MARITIME SUPPORT DEPOT (BHUJ)",
+        "facilityType": "naval_anchorage",
+    },
+    "CENTRAL": {
+        "name": "Central Sector (Nagpur Transit Corridor)",
+        "lat": 21.1458,
+        "lon": 79.0882,
+        "radius": 0.45,
+        "weatherStationId": "STN-NAGPUR",
+        "depotName": "CENTRAL LOGISTICS TRANSIT HUB (NAGPUR)",
+        "facilityType": "depot",
+    },
+    "EAST": {
+        "name": "Eastern Sector (Odisha Coast / Paradip)",
+        "lat": 20.3160,
+        "lon": 86.6110,
+        "radius": 0.35,
+        "weatherStationId": "STN-PARADIP",
+        "depotName": "BAY OF BENGAL NAVAL & RESCUE DEPOT (PARADIP)",
+        "facilityType": "naval_anchorage",
+    },
+    "BENGAL": {
+        "name": "Eastern Sector (West Bengal / Delta)",
+        "lat": 22.5726,
+        "lon": 88.3639,
+        "radius": 0.30,
+        "weatherStationId": "STN-KOLKATA",
+        "depotName": "EASTERN COMMAND AIR & LOGISTICS DEPOT (KOLKATA)",
+        "facilityType": "airbase",
+    },
+    "NORTHEAST": {
+        "name": "North-Eastern Sector (Assam / Arunachal)",
+        "lat": 26.6338,
+        "lon": 92.7926,
+        "radius": 0.35,
+        "weatherStationId": "STN-TEZPUR",
+        "depotName": "BRAHMAPUTRA VALLEY FRONTIER AIRBASE DEPOT (TEZPUR)",
+        "facilityType": "airbase",
+    },
+    "SOUTH": {
+        "name": "Southern Sector (Bengaluru Plateau)",
+        "lat": 12.9716,
+        "lon": 77.5946,
+        "radius": 0.30,
+        "weatherStationId": "STN-BENGALURU",
+        "depotName": "SOUTHERN COMMAND HEADQUARTERS DEPOT (BENGALURU)",
+        "facilityType": "depot",
+    },
+    "LITTORAL": {
+        "name": "Littoral & Island Sector (Andaman & Nicobar)",
+        "lat": 11.6234,
+        "lon": 92.7265,
+        "radius": 0.25,
+        "weatherStationId": "STN-PORTBLAIR",
+        "depotName": "PORT BLAIR MARITIME SUPPORT DEPOT",
+        "facilityType": "naval_anchorage",
+    },
 }
 
 PATROL_NAMES = ["ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL"]
@@ -37,6 +129,11 @@ CONVOY_NAMES = ["MULE", "CARAVAN", "IRONHORSE", "PACKHORSE", "OXCART", "DRAY"]
 SECTORS = ["A", "B", "C", "D"]
 FIRST = ["A. Rao", "S. Menon", "K. Iyer", "P. Singh", "N. Das", "R. Kapoor", "V. Nair", "M. Bose"]
 RANKS = ["SGT", "CPL", "LT", "PVT", "SSG"]
+INDIA_FIRST = [
+    "A. Rao", "S. Menon", "K. Iyer", "P. Singh", "N. Das", "R. Kapoor",
+    "V. Nair", "M. Bose", "D. Sharma", "T. Chatterjee", "A. Kulkarni", "R. Varma"
+]
+INDIA_RANKS = ["SGT", "CPL", "LT", "PVT", "SSG", "CAPT"]
 INCIDENT_KINDS = [
     "unauthorized-entry", "signal-jamming", "vehicle-breakdown",
     "unidentified-contact", "perimeter-breach", "medical", "supply-shortfall",
@@ -56,25 +153,25 @@ SCENARIOS: dict[str, dict] = {
     "SC-4": {"id": "SC-4", "name": "Convoy Escort",
              "incidentRate": 0.10, "weatherRate": 0.08,
              "uavCount": 3, "patrolCount": 6, "convoyCount": 6},
-    # Pan-India Scenarios
+    # Pan-India Scenarios (all 11 sectors populated)
     "IN-BASE-LIVE": {"id": "IN-BASE-LIVE", "name": "Pan-India Live Context Baseline",
                     "incidentRate": 0.04, "weatherRate": 0.02,
-                    "uavCount": 8, "patrolCount": 12, "convoyCount": 6},
+                    "uavCount": 11, "patrolCount": 22, "convoyCount": 11},
     "IN-SC-CYCLONE": {"id": "IN-SC-CYCLONE", "name": "Bay of Bengal Severe Cyclone & Coastal Flooding",
                      "incidentRate": 0.16, "weatherRate": 0.15,
-                     "uavCount": 6, "patrolCount": 8, "convoyCount": 4},
+                     "uavCount": 11, "patrolCount": 22, "convoyCount": 11},
     "IN-SC-NORTH-COMMS": {"id": "IN-SC-NORTH-COMMS", "name": "Himalayan High-Altitude Comms Blackout & Blizzard",
                           "incidentRate": 0.12, "weatherRate": 0.10,
-                          "uavCount": 6, "patrolCount": 10, "convoyCount": 4},
+                          "uavCount": 11, "patrolCount": 22, "convoyCount": 11},
     "IN-SC-WEST-HEAT": {"id": "IN-SC-WEST-HEAT", "name": "Thar Desert Extreme Heatwave & Fuel Boil-off",
                         "incidentRate": 0.11, "weatherRate": 0.05,
-                        "uavCount": 7, "patrolCount": 8, "convoyCount": 5},
+                        "uavCount": 11, "patrolCount": 22, "convoyCount": 11},
     "IN-SC-LOGISTICS": {"id": "IN-SC-LOGISTICS", "name": "Central Corridor Supply Chokepoint & Depot Breakdown",
                         "incidentRate": 0.14, "weatherRate": 0.03,
-                        "uavCount": 5, "patrolCount": 8, "convoyCount": 8},
+                        "uavCount": 11, "patrolCount": 22, "convoyCount": 11},
     "IN-SC-CASCADE": {"id": "IN-SC-CASCADE", "name": "Pan-India Multi-Sector Cascading Crisis",
                       "incidentRate": 0.18, "weatherRate": 0.16,
-                      "uavCount": 10, "patrolCount": 14, "convoyCount": 8},
+                      "uavCount": 11, "patrolCount": 22, "convoyCount": 11},
 }
 
 
@@ -100,6 +197,7 @@ class SimEngine:
         self._units: list[Unit] = []
         self._personnel: list[Person] = []
         self._depots: list[Depot] = []
+        self._zones: list[dict[str, Any]] = []
         self._weather: list[WeatherCell] = []
         self._route_idx: dict[str, int] = {}
         self._silence: dict[str, int] = {}  # unit_id -> silent_until_tick
@@ -190,6 +288,7 @@ class SimEngine:
              "points": _ring(rand, BASE_LAT - 0.02, BASE_LON - 0.045, 0.026, 6)},
         ]
 
+        self._zones = zones
         world_init = self._make_event(
             "world_init", "low", "system",
             {
@@ -228,122 +327,111 @@ class SimEngine:
                 lastSeenTick=0,
                 sector=sector_key,
                 route=route,
+                personnelCount=1 if kind == "uav" else (2 if kind == "convoy" else 3),
             )
 
         self._units = []
         self._personnel = []
 
-        # Patrols distributed across sectors
+        # Tactical Patrols (2 per sector across all 11 sectors)
+        roles = ["Squad Leader", "Scout", "Combat Medic", "Comms Specialist"]
         for i in range(sc["patrolCount"]):
             sec_k = sector_keys[i % len(sector_keys)]
-            callsign = f"PATROL-{sec_k}-{1 + (i // len(sector_keys))}"
+            suffix = "ALPHA" if (i // len(sector_keys)) == 0 else "BRAVO"
+            callsign = f"PATROL-{sec_k}-{suffix}"
             u = mk_india_unit("patrol", callsign, i + 1, sec_k)
             self._units.append(u)
             team_size = 2 + int(rand() * 2)
+            u.personnelCount = team_size
             for p_idx in range(team_size):
                 self._personnel.append(Person(
                     id=f"P-{u.id}-{p_idx}",
-                    name=pick(rand, FIRST), rank=pick(rand, RANKS),
+                    name=pick(rand, INDIA_FIRST),
+                    rank=pick(rand, INDIA_RANKS),
                     unitId=u.id,
                     heartRate=round(between(rand, 65, 88)),
                     fatigue=round(between(rand, 0.05, 0.40), 2),
                     history=[],
+                    condition="fit",
+                    role=roles[p_idx % len(roles)],
+                    sector=sec_k,
                 ))
 
-        # UAVs
+        # UAV Surveillance Drones (1 per sector across all 11 sectors)
         for i in range(sc["uavCount"]):
-            sec_k = sector_keys[(i + 1) % len(sector_keys)]
+            sec_k = sector_keys[i % len(sector_keys)]
             callsign = f"UAV-{sec_k}-{UAV_NAMES[i % len(UAV_NAMES)]}"
-            self._units.append(mk_india_unit("uav", callsign, i + 1, sec_k))
+            u = mk_india_unit("uav", callsign, i + 1, sec_k)
+            self._units.append(u)
+            self._personnel.append(Person(
+                id=f"P-{u.id}-0",
+                name=pick(rand, INDIA_FIRST),
+                rank=pick(rand, INDIA_RANKS),
+                unitId=u.id,
+                heartRate=round(between(rand, 68, 82)),
+                fatigue=round(between(rand, 0.05, 0.25), 2),
+                history=[],
+                condition="fit",
+                role="UAV Remote Pilot",
+                sector=sec_k,
+            ))
 
-        # Convoys
+        # Logistics Convoys (1 per sector across all 11 sectors)
         for i in range(sc["convoyCount"]):
-            sec_k = sector_keys[(i + 2) % len(sector_keys)]
+            sec_k = sector_keys[i % len(sector_keys)]
             callsign = f"CONVOY-{sec_k}-{CONVOY_NAMES[i % len(CONVOY_NAMES)]}"
-            self._units.append(mk_india_unit("convoy", callsign, i + 1, sec_k))
+            u = mk_india_unit("convoy", callsign, i + 1, sec_k)
+            u.personnelCount = 2
+            self._units.append(u)
+            for p_idx in range(2):
+                self._personnel.append(Person(
+                    id=f"P-{u.id}-{p_idx}",
+                    name=pick(rand, INDIA_FIRST),
+                    rank=pick(rand, INDIA_RANKS),
+                    unitId=u.id,
+                    heartRate=round(between(rand, 70, 85)),
+                    fatigue=round(between(rand, 0.10, 0.35), 2),
+                    history=[],
+                    condition="fit",
+                    role="Convoy Commander" if p_idx == 0 else "Heavy Transport Driver",
+                    sector=sec_k,
+                ))
 
-        # Depots across 6 strategic Indian nodes
-        self._depots = [
-            Depot(
-                id="D-IN-NORTH", name="NORTHERN FORWARD DEPOT (LEH)",
-                lat=34.1526, lon=77.5771,
-                stock={"fuel": round(between(rand, 3500, 5000)),
-                       "medkit": round(between(rand, 120, 200)),
-                       "rations": round(between(rand, 600, 1000)),
-                       "battery": round(between(rand, 150, 300))},
-                capacity={"fuel": 6000, "medkit": 250, "rations": 1200, "battery": 350},
-            ),
-            Depot(
-                id="D-IN-WEST", name="WESTERN DESERT DEPOT (JAISALMER)",
-                lat=26.9157, lon=70.9083,
-                stock={"fuel": round(between(rand, 4000, 6000)),
-                       "medkit": round(between(rand, 100, 180)),
-                       "rations": round(between(rand, 500, 900)),
-                       "battery": round(between(rand, 120, 250))},
-                capacity={"fuel": 6000, "medkit": 250, "rations": 1200, "battery": 350},
-            ),
-            Depot(
-                id="D-IN-CENTRAL", name="CENTRAL LOGISTICS HUB (NAGPUR)",
-                lat=21.1458, lon=79.0882,
-                stock={"fuel": round(between(rand, 6000, 9000)),
-                       "medkit": round(between(rand, 200, 350)),
-                       "rations": round(between(rand, 1200, 2000)),
-                       "battery": round(between(rand, 250, 500))},
-                capacity={"fuel": 10000, "medkit": 400, "rations": 2500, "battery": 600},
-            ),
-            Depot(
-                id="D-IN-EAST", name="BAY OF BENGAL NAVAL DEPOT (PARADIP)",
-                lat=20.3160, lon=86.6110,
-                stock={"fuel": round(between(rand, 3800, 5500)),
-                       "medkit": round(between(rand, 90, 170)),
-                       "rations": round(between(rand, 550, 850)),
-                       "battery": round(between(rand, 110, 220))},
-                capacity={"fuel": 6000, "medkit": 250, "rations": 1200, "battery": 350},
-            ),
-            Depot(
-                id="D-IN-SOUTH", name="SOUTHERN COMMAND DEPOT (BENGALURU)",
-                lat=12.9716, lon=77.5946,
-                stock={"fuel": round(between(rand, 4500, 7000)),
-                       "medkit": round(between(rand, 150, 250)),
-                       "rations": round(between(rand, 800, 1400)),
-                       "battery": round(between(rand, 180, 320))},
-                capacity={"fuel": 8000, "medkit": 300, "rations": 1800, "battery": 400},
-            ),
-            Depot(
-                id="D-IN-LITTORAL", name="PORT BLAIR MARITIME DEPOT",
-                lat=11.6234, lon=92.7265,
-                stock={"fuel": round(between(rand, 3000, 4800)),
-                       "medkit": round(between(rand, 80, 150)),
-                       "rations": round(between(rand, 450, 750)),
-                       "battery": round(between(rand, 90, 180))},
-                capacity={"fuel": 5000, "medkit": 200, "rations": 1000, "battery": 250},
-            ),
-            Depot(
-                id="D-IN-NORTHEAST", name="NORTH-EASTERN AIRBASE DEPOT (TEZPUR)",
-                lat=26.6338, lon=92.7926,
-                stock={"fuel": round(between(rand, 3500, 5200)),
-                       "medkit": round(between(rand, 90, 160)),
-                       "rations": round(between(rand, 500, 800)),
-                       "battery": round(between(rand, 100, 200))},
-                capacity={"fuel": 6000, "medkit": 250, "rations": 1200, "battery": 350},
-            ),
-        ]
+        # Strategic Depots & Support Facilities across all 11 Indian sectors
+        self._depots = []
+        for sec_k in sector_keys:
+            sec = INDIAN_SECTORS[sec_k]
+            self._depots.append(
+                Depot(
+                    id=f"D-IN-{sec_k}",
+                    name=sec["depotName"],
+                    lat=sec["lat"],
+                    lon=sec["lon"],
+                    stock={
+                        "fuel": round(between(rand, 3800, 6500)),
+                        "medkit": round(between(rand, 100, 250)),
+                        "rations": round(between(rand, 600, 1500)),
+                        "battery": round(between(rand, 120, 350)),
+                    },
+                    capacity={"fuel": 8000, "medkit": 350, "rations": 2000, "battery": 500},
+                    sector=sec_k,
+                    facilityType=sec.get("facilityType", "depot"),
+                )
+            )
 
-        # Strategic zones covering major Indian border / coastal / corridor areas
-        zones = [
-            {"id": "Z-IN-NORTH", "name": "LADAKH HIGH ALTITUDE PATROL GRID", "kind": "patrol",
-             "points": _ring(rand, 34.2, 77.6, 0.45, 8)},
-            {"id": "Z-IN-WEST", "name": "THAR DESERT SURVEILLANCE CORRIDOR", "kind": "restricted",
-             "points": _ring(rand, 26.9, 70.9, 0.50, 7)},
-            {"id": "Z-IN-EAST", "name": "BAY OF BENGAL CYCLONE WARNING SECTOR", "kind": "threat",
-             "points": _ring(rand, 20.3, 86.6, 0.48, 8)},
-            {"id": "Z-IN-CENTRAL", "name": "CENTRAL FREIGHT LOGISTICS CORRIDOR", "kind": "patrol",
-             "points": _ring(rand, 21.15, 79.1, 0.55, 6)},
-            {"id": "Z-IN-LITTORAL", "name": "ANDAMAN SEA APPROACH MARITIME ZONE", "kind": "restricted",
-             "points": _ring(rand, 11.6, 92.7, 0.35, 6)},
-            {"id": "Z-IN-NORTHEAST", "name": "BRAHMAPUTRA VALLEY FRONTIER GRID", "kind": "patrol",
-             "points": _ring(rand, 26.63, 92.79, 0.40, 7)},
-        ]
+        # Strategic Tactical Zones covering all 11 Indian sectors
+        zones = []
+        for sec_k in sector_keys:
+            sec = INDIAN_SECTORS[sec_k]
+            kind = "threat" if sec_k == "EAST" else ("restricted" if sec_k in ("WEST", "KUTCH", "LITTORAL") else "patrol")
+            zones.append({
+                "id": f"Z-IN-{sec_k}",
+                "name": f"{sec['name'].upper()} TACTICAL GRID",
+                "kind": kind,
+                "points": _ring(rand, sec["lat"], sec["lon"], sec["radius"] * 1.1, 7),
+                "sector": sec_k,
+            })
+        self._zones = zones
 
         # Injects initial artificial scenario weather / effects
         if scenario_id == "IN-SC-CYCLONE":
@@ -802,5 +890,6 @@ class SimEngine:
             "units": [u.to_dict() for u in self._units],
             "depots": [d.to_dict() for d in self._depots],
             "personnel": [p.to_dict() for p in self._personnel],
+            "zones": self._zones,
             "weather": [w.to_dict() for w in self._weather],
         }

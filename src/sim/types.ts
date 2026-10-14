@@ -50,6 +50,7 @@ export interface Unit {
   sector: string;
   route: Array<[number, number]>;
   activeMissionId?: string;
+  personnelCount?: number;
 }
 
 export interface Incident {
@@ -62,6 +63,7 @@ export interface Incident {
   entityId: string;
   open: boolean;
   closedTick?: number;
+  sector?: string;
 }
 
 export interface AlertItem {
@@ -73,6 +75,7 @@ export interface AlertItem {
   acked: boolean;
   ackedTick?: number;
   ackedBy?: string;
+  sector?: string;
 }
 
 export interface Depot {
@@ -82,6 +85,8 @@ export interface Depot {
   lon: number;
   stock: { fuel: number; medkit: number; rations: number; battery: number };
   capacity: { fuel: number; medkit: number; rations: number; battery: number };
+  sector?: string;
+  facilityType?: "depot" | "airbase" | "forward_operating_base" | "naval_anchorage" | "medical_hub" | "comms_relay";
 }
 
 export interface Person {
@@ -95,6 +100,8 @@ export interface Person {
   activeMissionId?: string;
   condition?: string;
   missionHistory?: string[];
+  role?: string;
+  sector?: string;
 }
 
 export interface WeatherCell {
@@ -104,6 +111,7 @@ export interface WeatherCell {
   radiusM: number;
   intensity: number;
   kind: string;
+  sector?: string;
 }
 
 export interface Zone {
@@ -111,6 +119,7 @@ export interface Zone {
   name: string;
   kind: "patrol" | "restricted" | "threat";
   points: Array<[number, number]>;
+  sector?: string;
 }
 
 export type WorldMode = "baseline" | "simulation";

@@ -16,16 +16,241 @@ export const BASE_LON = 77.5946;
 
 export const INDIAN_SECTORS: Record<
   string,
-  { name: string; lat: number; lon: number; radius: number }
+  {
+    name: string;
+    lat: number;
+    lon: number;
+    radius: number;
+    weatherStationId: string;
+    depotName: string;
+    facilityType: "forward_operating_base" | "airbase" | "depot" | "naval_anchorage";
+  }
 > = {
-  NORTH: { name: "Northern Sector (Ladakh/J&K)", lat: 34.1526, lon: 77.5771, radius: 0.35 },
-  WEST: { name: "Western Sector (Rajasthan/Thar)", lat: 26.9157, lon: 70.9083, radius: 0.4 },
-  EAST: { name: "Eastern Sector (Odisha/Coastal)", lat: 20.316, lon: 86.611, radius: 0.35 },
-  CENTRAL: { name: "Central Sector (Nagpur/Corridor)", lat: 21.1458, lon: 79.0882, radius: 0.45 },
-  SOUTH: { name: "Southern Sector (Bengaluru/Plateau)", lat: 12.9716, lon: 77.5946, radius: 0.3 },
-  LITTORAL: { name: "Littoral Sector (Andaman/Nicobar)", lat: 11.6234, lon: 92.7265, radius: 0.25 },
-  NORTHEAST: { name: "North-Eastern Sector (Assam/Arunachal)", lat: 26.6338, lon: 92.7926, radius: 0.35 },
+  NORTH: {
+    name: "Northern Sector (Ladakh High-Altitude)",
+    lat: 34.1526,
+    lon: 77.5771,
+    radius: 0.35,
+    weatherStationId: "STN-LEH",
+    depotName: "NORTHERN FORWARD OPERATING BASE & DEPOT (LEH)",
+    facilityType: "forward_operating_base",
+  },
+  KASHMIR: {
+    name: "Northern Sector (Kashmir Valley)",
+    lat: 34.0837,
+    lon: 74.7973,
+    radius: 0.3,
+    weatherStationId: "STN-SRINAGAR",
+    depotName: "KASHMIR VALLEY LOGISTICS & AIR SUPPORT HUB (SRINAGAR)",
+    facilityType: "airbase",
+  },
+  NCR: {
+    name: "Northern Sector (NCR / Plains)",
+    lat: 28.6139,
+    lon: 77.209,
+    radius: 0.35,
+    weatherStationId: "STN-DELHI",
+    depotName: "NCR STRATEGIC LOGISTICS & RADAR FACILITY (DELHI)",
+    facilityType: "depot",
+  },
+  WEST: {
+    name: "Western Sector (Rajasthan / Thar)",
+    lat: 26.9157,
+    lon: 70.9083,
+    radius: 0.4,
+    weatherStationId: "STN-JAISALMER",
+    depotName: "WESTERN DESERT TACTICAL LOGISTICS DEPOT (JAISALMER)",
+    facilityType: "forward_operating_base",
+  },
+  KUTCH: {
+    name: "Western Sector (Gujarat / Kutch Littoral)",
+    lat: 23.242,
+    lon: 69.6669,
+    radius: 0.35,
+    weatherStationId: "STN-BHUJ",
+    depotName: "KUTCH LITTORAL & MARITIME SUPPORT DEPOT (BHUJ)",
+    facilityType: "naval_anchorage",
+  },
+  CENTRAL: {
+    name: "Central Sector (Nagpur Transit Corridor)",
+    lat: 21.1458,
+    lon: 79.0882,
+    radius: 0.45,
+    weatherStationId: "STN-NAGPUR",
+    depotName: "CENTRAL LOGISTICS TRANSIT HUB (NAGPUR)",
+    facilityType: "depot",
+  },
+  EAST: {
+    name: "Eastern Sector (Odisha Coast / Paradip)",
+    lat: 20.316,
+    lon: 86.611,
+    radius: 0.35,
+    weatherStationId: "STN-PARADIP",
+    depotName: "BAY OF BENGAL NAVAL & RESCUE DEPOT (PARADIP)",
+    facilityType: "naval_anchorage",
+  },
+  BENGAL: {
+    name: "Eastern Sector (West Bengal / Delta)",
+    lat: 22.5726,
+    lon: 88.3639,
+    radius: 0.3,
+    weatherStationId: "STN-KOLKATA",
+    depotName: "EASTERN COMMAND AIR & LOGISTICS DEPOT (KOLKATA)",
+    facilityType: "airbase",
+  },
+  NORTHEAST: {
+    name: "North-Eastern Sector (Assam / Arunachal)",
+    lat: 26.6338,
+    lon: 92.7926,
+    radius: 0.35,
+    weatherStationId: "STN-TEZPUR",
+    depotName: "BRAHMAPUTRA VALLEY FRONTIER AIRBASE DEPOT (TEZPUR)",
+    facilityType: "airbase",
+  },
+  SOUTH: {
+    name: "Southern Sector (Bengaluru Plateau)",
+    lat: 12.9716,
+    lon: 77.5946,
+    radius: 0.3,
+    weatherStationId: "STN-BENGALURU",
+    depotName: "SOUTHERN COMMAND HEADQUARTERS DEPOT (BENGALURU)",
+    facilityType: "depot",
+  },
+  LITTORAL: {
+    name: "Littoral & Island Sector (Andaman & Nicobar)",
+    lat: 11.6234,
+    lon: 92.7265,
+    radius: 0.25,
+    weatherStationId: "STN-PORTBLAIR",
+    depotName: "PORT BLAIR MARITIME SUPPORT DEPOT",
+    facilityType: "naval_anchorage",
+  },
 };
+
+export interface StrategicCorridor {
+  id: string;
+  name: string;
+  fromSector: string;
+  toSector: string;
+  points: Array<[number, number]>;
+  color: string;
+  category: "highway" | "air" | "maritime";
+}
+
+export const STRATEGIC_SUPPLY_CORRIDORS: StrategicCorridor[] = [
+  {
+    id: "CORR-KASHMIR-LADAKH",
+    name: "Northern Mountain Highway (Srinagar ↔ Leh)",
+    fromSector: "KASHMIR",
+    toSector: "NORTH",
+    points: [
+      [34.0837, 74.7973],
+      [34.25, 75.35],
+      [34.3, 76.15],
+      [34.1526, 77.5771],
+    ],
+    color: "#38BDF8",
+    category: "highway",
+  },
+  {
+    id: "CORR-NCR-CENTRAL",
+    name: "Grand Trunk Logistics Artery (Delhi ↔ Nagpur)",
+    fromSector: "NCR",
+    toSector: "CENTRAL",
+    points: [
+      [28.6139, 77.209],
+      [26.45, 77.8],
+      [23.85, 78.5],
+      [21.1458, 79.0882],
+    ],
+    color: "#38BDF8",
+    category: "highway",
+  },
+  {
+    id: "CORR-WEST-DESERT",
+    name: "Western Thar Border Corridor (Jaisalmer ↔ Bhuj)",
+    fromSector: "WEST",
+    toSector: "KUTCH",
+    points: [
+      [26.9157, 70.9083],
+      [25.5, 70.8],
+      [24.2, 70.2],
+      [23.242, 69.6669],
+    ],
+    color: "#F59E0B",
+    category: "highway",
+  },
+  {
+    id: "CORR-CENTRAL-SOUTH",
+    name: "Deccan Transit Spine (Nagpur ↔ Bengaluru)",
+    fromSector: "CENTRAL",
+    toSector: "SOUTH",
+    points: [
+      [21.1458, 79.0882],
+      [18.5, 78.5],
+      [15.5, 78.0],
+      [12.9716, 77.5946],
+    ],
+    color: "#10B981",
+    category: "highway",
+  },
+  {
+    id: "CORR-EAST-COASTAL",
+    name: "Bay of Bengal Coastal Route (Kolkata ↔ Paradip)",
+    fromSector: "BENGAL",
+    toSector: "EAST",
+    points: [
+      [22.5726, 88.3639],
+      [21.8, 87.5],
+      [21.0, 87.0],
+      [20.316, 86.611],
+    ],
+    color: "#A855F7",
+    category: "highway",
+  },
+  {
+    id: "CORR-NORTHEAST-AXIS",
+    name: "Brahmaputra Frontier Air-Ground Axis (Kolkata ↔ Tezpur)",
+    fromSector: "BENGAL",
+    toSector: "NORTHEAST",
+    points: [
+      [22.5726, 88.3639],
+      [24.5, 89.8],
+      [26.1, 91.5],
+      [26.6338, 92.7926],
+    ],
+    color: "#06B6D4",
+    category: "air",
+  },
+  {
+    id: "CORR-LITTORAL-SEA",
+    name: "Andaman Sea Sea Line of Communication (Paradip ↔ Port Blair)",
+    fromSector: "EAST",
+    toSector: "LITTORAL",
+    points: [
+      [20.316, 86.611],
+      [17.5, 88.5],
+      [14.5, 90.8],
+      [11.6234, 92.7265],
+    ],
+    color: "#3B82F6",
+    category: "maritime",
+  },
+  {
+    id: "CORR-KUTCH-CENTRAL",
+    name: "East-West Trans-Peninsular Link (Bhuj ↔ Nagpur)",
+    fromSector: "KUTCH",
+    toSector: "CENTRAL",
+    points: [
+      [23.242, 69.6669],
+      [22.5, 72.8],
+      [21.8, 76.2],
+      [21.1458, 79.0882],
+    ],
+    color: "#EC4899",
+    category: "highway",
+  },
+];
 
 const PATROL_NAMES = ["ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL"];
 const UAV_NAMES = ["RAVEN", "KITE", "FALCON", "OSPREY", "SHRIKE", "HARRIER", "MERLIN", "CONDOR"];
@@ -40,8 +265,12 @@ const FIRST = [
   "R. Kapoor",
   "V. Nair",
   "M. Bose",
+  "D. Sharma",
+  "T. Chatterjee",
+  "A. Kulkarni",
+  "R. Varma",
 ];
-const RANKS = ["SGT", "CPL", "LT", "PVT", "SSG"];
+const RANKS = ["SGT", "CPL", "LT", "PVT", "SSG", "CAPT"];
 
 const INCIDENT_KINDS = [
   "unauthorized-entry",
@@ -103,14 +332,19 @@ export function buildInitialWorld(seed: number, scenarioId: string): InitWorld {
         lastSeenTick: 0,
         sector: secKey,
         route,
+        personnelCount: kind === "uav" ? 1 : kind === "convoy" ? 2 : 3,
       };
     };
 
+    // Tactical Patrols (2 per sector across all 11 sectors)
     for (let i = 0; i < sc.patrolCount; i++) {
       const secKey = sectorKeys[i % sectorKeys.length]!;
-      const u = mkIndia("patrol", `PATROL-${secKey}-${1 + Math.floor(i / sectorKeys.length)}`, i + 1, secKey);
+      const suffix = Math.floor(i / sectorKeys.length) === 0 ? "ALPHA" : "BRAVO";
+      const u = mkIndia("patrol", `PATROL-${secKey}-${suffix}`, i + 1, secKey);
       units.push(u);
       const teamSize = 2 + Math.floor(rand() * 2);
+      u.personnelCount = teamSize;
+      const roles = ["Squad Leader", "Scout", "Combat Medic", "Comms Specialist"];
       for (let p = 0; p < teamSize; p++) {
         personnel.push({
           id: `P-${u.id}-${p}`,
@@ -120,151 +354,92 @@ export function buildInitialWorld(seed: number, scenarioId: string): InitWorld {
           heartRate: Math.round(between(rand, 65, 88)),
           fatigue: Number(between(rand, 0.05, 0.4).toFixed(2)),
           history: [],
+          condition: "fit",
+          role: roles[p % roles.length] || "Squad Leader",
+          sector: secKey,
         });
       }
     }
 
+    // UAV Surveillance Drones (1 per sector across all 11 sectors)
     for (let i = 0; i < sc.uavCount; i++) {
-      const secKey = sectorKeys[(i + 1) % sectorKeys.length]!;
-      units.push(mkIndia("uav", `UAV-${secKey}-${UAV_NAMES[i % UAV_NAMES.length]}`, i + 1, secKey));
+      const secKey = sectorKeys[i % sectorKeys.length]!;
+      const u = mkIndia("uav", `UAV-${secKey}-${UAV_NAMES[i % UAV_NAMES.length]}`, i + 1, secKey);
+      units.push(u);
+      personnel.push({
+        id: `P-${u.id}-0`,
+        name: pick(rand, FIRST),
+        rank: pick(rand, RANKS),
+        unitId: u.id,
+        heartRate: Math.round(between(rand, 68, 82)),
+        fatigue: Number(between(rand, 0.05, 0.25).toFixed(2)),
+        history: [],
+        condition: "fit",
+        role: "UAV Remote Pilot",
+        sector: secKey,
+      });
     }
+
+    // Logistics Convoys (1 per sector across all 11 sectors)
     for (let i = 0; i < sc.convoyCount; i++) {
-      const secKey = sectorKeys[(i + 2) % sectorKeys.length]!;
-      units.push(mkIndia("convoy", `CONVOY-${secKey}-${CONVOY_NAMES[i % CONVOY_NAMES.length]}`, i + 1, secKey));
+      const secKey = sectorKeys[i % sectorKeys.length]!;
+      const u = mkIndia("convoy", `CONVOY-${secKey}-${CONVOY_NAMES[i % CONVOY_NAMES.length]}`, i + 1, secKey);
+      units.push(u);
+      const teamSize = 2;
+      u.personnelCount = teamSize;
+      for (let p = 0; p < teamSize; p++) {
+        personnel.push({
+          id: `P-${u.id}-${p}`,
+          name: pick(rand, FIRST),
+          rank: pick(rand, RANKS),
+          unitId: u.id,
+          heartRate: Math.round(between(rand, 70, 85)),
+          fatigue: Number(between(rand, 0.1, 0.35).toFixed(2)),
+          history: [],
+          condition: "fit",
+          role: p === 0 ? "Convoy Commander" : "Heavy Transport Driver",
+          sector: secKey,
+        });
+      }
     }
 
-    const depots: Depot[] = [
-      {
-        id: "D-IN-NORTH",
-        name: "NORTHERN FORWARD DEPOT (LEH)",
-        lat: 34.1526,
-        lon: 77.5771,
+    // Strategic Depots & Support Facilities across all 11 Indian sectors
+    const depots: Depot[] = sectorKeys.map((secKey) => {
+      const sec = INDIAN_SECTORS[secKey]!;
+      return {
+        id: `D-IN-${secKey}`,
+        name: sec.depotName,
+        lat: sec.lat,
+        lon: sec.lon,
         stock: {
-          fuel: Math.round(between(rand, 3500, 5000)),
-          medkit: Math.round(between(rand, 120, 200)),
-          rations: Math.round(between(rand, 600, 1000)),
-          battery: Math.round(between(rand, 150, 300)),
+          fuel: Math.round(between(rand, 3800, 6500)),
+          medkit: Math.round(between(rand, 100, 250)),
+          rations: Math.round(between(rand, 600, 1500)),
+          battery: Math.round(between(rand, 120, 350)),
         },
-        capacity: { fuel: 6000, medkit: 250, rations: 1200, battery: 350 },
-      },
-      {
-        id: "D-IN-WEST",
-        name: "WESTERN DESERT DEPOT (JAISALMER)",
-        lat: 26.9157,
-        lon: 70.9083,
-        stock: {
-          fuel: Math.round(between(rand, 4000, 6000)),
-          medkit: Math.round(between(rand, 100, 180)),
-          rations: Math.round(between(rand, 500, 900)),
-          battery: Math.round(between(rand, 120, 250)),
-        },
-        capacity: { fuel: 6000, medkit: 250, rations: 1200, battery: 350 },
-      },
-      {
-        id: "D-IN-CENTRAL",
-        name: "CENTRAL LOGISTICS HUB (NAGPUR)",
-        lat: 21.1458,
-        lon: 79.0882,
-        stock: {
-          fuel: Math.round(between(rand, 6000, 9000)),
-          medkit: Math.round(between(rand, 200, 350)),
-          rations: Math.round(between(rand, 1200, 2000)),
-          battery: Math.round(between(rand, 250, 500)),
-        },
-        capacity: { fuel: 10000, medkit: 400, rations: 2500, battery: 600 },
-      },
-      {
-        id: "D-IN-EAST",
-        name: "BAY OF BENGAL NAVAL DEPOT (PARADIP)",
-        lat: 20.316,
-        lon: 86.611,
-        stock: {
-          fuel: Math.round(between(rand, 3800, 5500)),
-          medkit: Math.round(between(rand, 90, 170)),
-          rations: Math.round(between(rand, 550, 850)),
-          battery: Math.round(between(rand, 110, 220)),
-        },
-        capacity: { fuel: 6000, medkit: 250, rations: 1200, battery: 350 },
-      },
-      {
-        id: "D-IN-SOUTH",
-        name: "SOUTHERN COMMAND DEPOT (BENGALURU)",
-        lat: 12.9716,
-        lon: 77.5946,
-        stock: {
-          fuel: Math.round(between(rand, 4500, 7000)),
-          medkit: Math.round(between(rand, 150, 250)),
-          rations: Math.round(between(rand, 800, 1400)),
-          battery: Math.round(between(rand, 180, 320)),
-        },
-        capacity: { fuel: 8000, medkit: 300, rations: 1800, battery: 400 },
-      },
-      {
-        id: "D-IN-LITTORAL",
-        name: "PORT BLAIR MARITIME DEPOT",
-        lat: 11.6234,
-        lon: 92.7265,
-        stock: {
-          fuel: Math.round(between(rand, 3000, 4800)),
-          medkit: Math.round(between(rand, 80, 150)),
-          rations: Math.round(between(rand, 450, 750)),
-          battery: Math.round(between(rand, 90, 180)),
-        },
-        capacity: { fuel: 5000, medkit: 200, rations: 1000, battery: 250 },
-      },
-      {
-        id: "D-IN-NORTHEAST",
-        name: "NORTH-EASTERN AIRBASE DEPOT (TEZPUR)",
-        lat: 26.6338,
-        lon: 92.7926,
-        stock: {
-          fuel: Math.round(between(rand, 3500, 5200)),
-          medkit: Math.round(between(rand, 90, 160)),
-          rations: Math.round(between(rand, 500, 800)),
-          battery: Math.round(between(rand, 100, 200)),
-        },
-        capacity: { fuel: 6000, medkit: 250, rations: 1200, battery: 350 },
-      },
-    ];
+        capacity: { fuel: 8000, medkit: 350, rations: 2000, battery: 500 },
+        sector: secKey,
+        facilityType: sec.facilityType,
+      };
+    });
 
-    const zones: Zone[] = [
-      {
-        id: "Z-IN-NORTH",
-        name: "LADAKH HIGH ALTITUDE PATROL GRID",
-        kind: "patrol",
-        points: ring(rand, 34.2, 77.6, 0.45, 8),
-      },
-      {
-        id: "Z-IN-WEST",
-        name: "THAR DESERT SURVEILLANCE CORRIDOR",
-        kind: "restricted",
-        points: ring(rand, 26.9, 70.9, 0.5, 7),
-      },
-      {
-        id: "Z-IN-EAST",
-        name: "BAY OF BENGAL CYCLONE WARNING SECTOR",
-        kind: "threat",
-        points: ring(rand, 20.3, 86.6, 0.48, 8),
-      },
-      {
-        id: "Z-IN-CENTRAL",
-        name: "CENTRAL FREIGHT LOGISTICS CORRIDOR",
-        kind: "patrol",
-        points: ring(rand, 21.15, 79.1, 0.55, 6),
-      },
-      {
-        id: "Z-IN-LITTORAL",
-        name: "ANDAMAN SEA APPROACH MARITIME ZONE",
-        kind: "restricted",
-        points: ring(rand, 11.6, 92.7, 0.35, 6),
-      },
-      {
-        id: "Z-IN-NORTHEAST",
-        name: "BRAHMAPUTRA VALLEY FRONTIER GRID",
-        kind: "patrol",
-        points: ring(rand, 26.63, 92.79, 0.4, 7),
-      },
-    ];
+    // Strategic Tactical Zones covering all 11 Indian sectors
+    const zones: Zone[] = sectorKeys.map((secKey) => {
+      const sec = INDIAN_SECTORS[secKey]!;
+      const kind: Zone["kind"] =
+        secKey === "EAST"
+          ? "threat"
+          : secKey === "WEST" || secKey === "KUTCH" || secKey === "LITTORAL"
+            ? "restricted"
+            : "patrol";
+      return {
+        id: `Z-IN-${secKey}`,
+        name: `${sec.name.toUpperCase()} TACTICAL GRID`,
+        kind,
+        points: ring(rand, sec.lat, sec.lon, sec.radius * 1.1, 7),
+        sector: secKey,
+      };
+    });
 
     const weather: WeatherCell[] = [];
     if (scenarioId === "IN-SC-CYCLONE") {

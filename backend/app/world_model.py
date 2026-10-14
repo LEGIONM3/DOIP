@@ -112,14 +112,7 @@ class WorldModelService:
             "units": [u.to_dict() for u in self.baseline_engine._units],
             "depots": [d.to_dict() for d in self.baseline_engine._depots],
             "personnel": [p.to_dict() for p in self.baseline_engine._personnel],
-            "zones": [
-                {"id": "Z-IN-NORTH", "name": "LADAKH HIGH ALTITUDE PATROL GRID", "kind": "patrol", "sector": "NORTH"},
-                {"id": "Z-IN-WEST", "name": "THAR DESERT SURVEILLANCE CORRIDOR", "kind": "restricted", "sector": "WEST"},
-                {"id": "Z-IN-EAST", "name": "BAY OF BENGAL MARITIME SECTOR", "kind": "threat", "sector": "EAST"},
-                {"id": "Z-IN-CENTRAL", "name": "CENTRAL FREIGHT LOGISTICS CORRIDOR", "kind": "patrol", "sector": "CENTRAL"},
-                {"id": "Z-IN-LITTORAL", "name": "ANDAMAN SEA SURVEILLANCE ZONE", "kind": "restricted", "sector": "LITTORAL"},
-                {"id": "Z-IN-NORTHEAST", "name": "BRAHMAPUTRA VALLEY FRONTIER GRID", "kind": "patrol", "sector": "NORTHEAST"},
-            ],
+            "zones": self.baseline_engine._zones,
         }
 
     def fork_simulation(

@@ -21,6 +21,7 @@ import {
   isUnitMoving,
 } from "./movementLayers";
 import { MapLayerControls } from "./MapLayerControls";
+import { INDIAN_SECTORS, STRATEGIC_SUPPLY_CORRIDORS } from "@/sim/engine";
 
 export const STYLE_URL = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 export const ATTRIBUTION = "© OpenStreetMap contributors © CARTO";
@@ -189,6 +190,14 @@ export default function TacticalMap({
   const cloudOpacity = useSim((s) => s.cloudOpacity);
   const movementTrailsVisible = useSim((s) => s.movementTrailsVisible);
   const windVectorsVisible = useSim((s) => s.windVectorsVisible);
+  const facilitiesVisible = useSim((s) => s.facilitiesVisible);
+  const supplyCorridorsVisible = useSim((s) => s.supplyCorridorsVisible);
+  const zonesVisible = useSim((s) => s.zonesVisible);
+  const unitsVisible = useSim((s) => s.unitsVisible);
+  const clusterBadgesVisible = useSim((s) => s.clusterBadgesVisible);
+  const depots = useSim((s) => Object.values(s.world.depots));
+  const personnel = useSim((s) => Object.values(s.world.personnel));
+  const [currentZoom, setCurrentZoom] = useState(zoom);
   const [metDrawerOpen, setMetDrawerOpen] = useState(false);
   const [activeSector, setActiveSector] = useState("ALL-IN");
 
@@ -221,6 +230,8 @@ export default function TacticalMap({
   const [tilesLoading, setTilesLoading] = useState(true);
   const trailBufferRef = useRef<UnitTrailBuffer>(new UnitTrailBuffer(25));
   const markersRef = useRef<Record<string, maplibregl.Marker>>({});
+  const clusterMarkers = useRef<Record<string, maplibregl.Marker>>({});
+  const depotMarkers = useRef<Record<string, maplibregl.Marker>>({});
   const unitAnimRef = useRef<
     Record<
       string,
@@ -430,9 +441,34 @@ export default function TacticalMap({
       map.on("mouseenter", "incident-core", () => (map.getCanvas().style.cursor = "pointer"));
       map.on("mouseleave", "incident-core", () => (map.getCanvas().style.cursor = ""));
 
+      // Strategic supply corridors
+      map.addSource("corridors", { type: "geojson", data: fc([]) });
+      map.addLayer({
+        id: "corridors-glow",
+        type: "line",
+        source: "corridors",
+        paint: {
+          "line-color": ["get", "color"],
+          "line-width": 4,
+          "line-opacity": 0.35,
+          "line-blur": 2,
+        },
+      });
+      map.addLayer({
+        id: "corridors-line",
+        type: "line",
+        source: "corridors",
+        paint: {
+          "line-color": ["get", "color"],
+          "line-width": 2,
+          "line-opacity": 0.85,
+        },
+      });
+
       // Setup dedicated weather observation cloud & wind layers
       setupWeatherMapLibreLayers(map);
 
+      setCurrentZoom(map.getZoom());
       setReady(true);
     };
     map.on("style.load", initLayers);
@@ -442,9 +478,11 @@ export default function TacticalMap({
       cbRef.current.onMapClick?.([e.lngLat.lat, e.lngLat.lng]);
     });
     map.on("rotate", () => setBearing(map.getBearing()));
+    map.on("zoom", () => setCurrentZoom(map.getZoom()));
     map.on("moveend", () => {
       const c = map.getCenter();
       viewRef.current = { center: [c.lng, c.lat], zoom: map.getZoom() };
+      setCurrentZoom(map.getZoom());
     });
 
     return () => {
@@ -453,6 +491,10 @@ export default function TacticalMap({
       unitAnimRef.current = {};
       Object.values(markersRef.current).forEach((m) => m.remove());
       markersRef.current = {};
+      Object.values(clusterMarkers.current).forEach((m) => m.remove());
+      clusterMarkers.current = {};
+      Object.values(depotMarkers.current).forEach((m) => m.remove());
+      depotMarkers.current = {};
       Object.values(cursorMarkers.current).forEach((m) => m.remove());
       cursorMarkers.current = {};
       Object.values(stationMarkers.current).forEach((m) => m.remove());
@@ -470,6 +512,11 @@ export default function TacticalMap({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
+    if (!zonesVisible) {
+      (map.getSource("zones") as maplibregl.GeoJSONSource | undefined)?.setData(fc([]));
+      (map.getSource("zone-lines") as maplibregl.GeoJSONSource | undefined)?.setData(fc([]));
+      return;
+    }
     const color = (k: Zone["kind"]) =>
       k === "restricted" ? "#F87171" : k === "threat" ? "#FB923C" : "#8A8A8A";
     const polys = zones.map((z) => ({
@@ -498,7 +545,33 @@ export default function TacticalMap({
         })),
       ),
     );
-  }, [zones, ready]);
+  }, [zones, zonesVisible, ready]);
+
+  /* ---------- strategic supply corridors ---------- */
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const src = map.getSource("corridors") as maplibregl.GeoJSONSource | undefined;
+    if (!src) return;
+    if (!supplyCorridorsVisible || !isPanIndia) {
+      src.setData(fc([]));
+      return;
+    }
+    const features: Feature[] = STRATEGIC_SUPPLY_CORRIDORS.map((c) => ({
+      type: "Feature",
+      properties: {
+        id: c.id,
+        name: c.name,
+        color: c.color,
+        category: c.category,
+      },
+      geometry: {
+        type: "LineString",
+        coordinates: c.points.map(([la, lo]) => [lo, la]),
+      },
+    }));
+    src.setData(fc(features));
+  }, [supplyCorridorsVisible, isPanIndia, ready]);
 
   /* ---------- weather domes ---------- */
   useEffect(() => {
@@ -690,8 +763,21 @@ export default function TacticalMap({
       el.classList.toggle("is-selected", selectedId === u.id);
       el.style.setProperty("--unit-color", color);
       el.style.setProperty("--unit-heading", `${heading}deg`);
+
+      const isNational = currentZoom < 5.8;
+      const isLocal = currentZoom >= 9.5;
+      if (!unitsVisible || (isNational && isPanIndia)) {
+        el.style.display = "none";
+      } else {
+        el.style.display = "block";
+      }
+
       const label = el.querySelector(".doip-unit-label");
-      if (label) label.textContent = unitDesignator(u, personnel);
+      if (label) {
+        const baseName = unitDesignator(u, personnel);
+        const countSuffix = u.personnelCount ? ` [${u.personnelCount}p]` : "";
+        label.textContent = isLocal ? `${baseName}${countSuffix}` : baseName;
+      }
     }
 
     const animLoop = (time: number) => {
@@ -735,7 +821,154 @@ export default function TacticalMap({
     } else {
       (map.getSource("trails") as maplibregl.GeoJSONSource | undefined)?.setData(fc([]));
     }
-  }, [units, tick, selectedId, movementTrailsVisible, ready]);
+  }, [units, tick, selectedId, movementTrailsVisible, unitsVisible, currentZoom, isPanIndia, personnel, ready]);
+
+  /* ---------- National Overview: Regional Cluster Badges ---------- */
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const isNationalZoom = currentZoom < 5.8;
+
+    if (!isNationalZoom || !clusterBadgesVisible || !isPanIndia) {
+      Object.values(clusterMarkers.current).forEach((m) => m.remove());
+      clusterMarkers.current = {};
+      return;
+    }
+
+    const seen = new Set<string>();
+    const sectorKeys = Object.keys(INDIAN_SECTORS);
+
+    for (const secKey of sectorKeys) {
+      seen.add(secKey);
+      const sec = INDIAN_SECTORS[secKey];
+      if (!sec) continue;
+
+      const sectorUnits = units.filter((u) => u.sector === secKey);
+      const sectorPersonnel = personnel.filter((p) => p.sector === secKey);
+      const stn = envContext?.stations?.[sec.weatherStationId];
+
+      const patrolsCount = sectorUnits.filter((u) => u.kind === "patrol").length;
+      const uavCount = sectorUnits.filter((u) => u.kind === "uav").length;
+      const convoyCount = sectorUnits.filter((u) => u.kind === "convoy").length;
+
+      let marker = clusterMarkers.current[secKey];
+      if (!marker) {
+        const el = document.createElement("div");
+        el.className = "doip-sector-cluster-badge";
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          map.flyTo({
+            center: [sec.lon, sec.lat],
+            zoom: 7.2,
+            duration: 1000,
+            pitch: is3d ? DEFAULT_PITCH : 0,
+          });
+          setActiveSector(secKey);
+        });
+
+        marker = new maplibregl.Marker({ element: el, anchor: "center" })
+          .setLngLat([sec.lon, sec.lat])
+          .addTo(map);
+        clusterMarkers.current[secKey] = marker;
+      }
+
+      const el = marker.getElement();
+      const facilityTypeName = (sec.facilityType || "DEPOT").toUpperCase().replace("_", " ");
+      const tempStr = stn ? `${stn.temperatureC.toFixed(0)}°C` : "--°C";
+      const conditionStr = stn ? stn.conditionLabel : "Clear";
+
+      el.innerHTML = `
+        <div class="doip-cluster-header">
+          <span>${secKey} SECTOR</span>
+          <span class="text-[8px] px-1 py-0.2 bg-sky-950 text-sky-300 border border-sky-800">CLICK TO ZOOM</span>
+        </div>
+        <div class="doip-cluster-stats">
+          <div class="doip-cluster-stat-row">
+            <span>UNITS:</span>
+            <span class="doip-cluster-stat-val text-sky-300">${sectorUnits.length} (${patrolsCount}P • ${uavCount}U • ${convoyCount}C)</span>
+          </div>
+          <div class="doip-cluster-stat-row">
+            <span>PERSONNEL:</span>
+            <span class="doip-cluster-stat-val text-emerald-300">${sectorPersonnel.length} active</span>
+          </div>
+          <div class="doip-cluster-stat-row">
+            <span>FACILITY:</span>
+            <span class="doip-cluster-stat-val text-amber-300 truncate max-w-[90px]" title="${sec.depotName}">${facilityTypeName}</span>
+          </div>
+        </div>
+        <div class="doip-cluster-weather-pill">
+          <span>☁ ${tempStr} • ${conditionStr}</span>
+        </div>
+      `;
+    }
+
+    for (const key of Object.keys(clusterMarkers.current)) {
+      if (!seen.has(key)) {
+        clusterMarkers.current[key]?.remove();
+        delete clusterMarkers.current[key];
+      }
+    }
+  }, [currentZoom, clusterBadgesVisible, isPanIndia, units, personnel, depots, envContext, is3d, ready]);
+
+  /* ---------- Strategic Facilities & Depots on Map ---------- */
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const isNationalZoom = currentZoom < 5.8;
+
+    if (!facilitiesVisible || (isNationalZoom && isPanIndia)) {
+      Object.values(depotMarkers.current).forEach((m) => m.remove());
+      depotMarkers.current = {};
+      return;
+    }
+
+    const seen = new Set<string>();
+    const facilityIcon = (ft?: string) => {
+      switch (ft) {
+        case "airbase": return "✈";
+        case "naval_anchorage": return "⚓";
+        case "forward_operating_base": return "🛡";
+        default: return "📦";
+      }
+    };
+
+    for (const d of depots) {
+      seen.add(d.id);
+      let marker = depotMarkers.current[d.id];
+      if (!marker) {
+        const el = document.createElement("div");
+        el.className = "doip-facility-marker";
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          map.flyTo({ center: [d.lon, d.lat], zoom: Math.max(currentZoom, 8.5), duration: 800 });
+        });
+        marker = new maplibregl.Marker({ element: el, anchor: "bottom" })
+          .setLngLat([d.lon, d.lat])
+          .addTo(map);
+        depotMarkers.current[d.id] = marker;
+      }
+
+      const el = marker.getElement();
+      const icon = facilityIcon(d.facilityType);
+      const fuelPct = d.capacity?.fuel ? Math.round((d.stock.fuel / d.capacity.fuel) * 100) : 100;
+      const fType = (d.facilityType || "depot").toUpperCase().replace("_", " ");
+
+      el.innerHTML = `
+        <span class="doip-facility-icon text-emerald-400 font-bold">${icon}</span>
+        <div class="flex flex-col">
+          <span class="doip-facility-tag">${d.name.split(" ")[0]} ${fType}</span>
+          <span class="doip-facility-stock">⛽ ${fuelPct}% | 🩺 ${d.stock.medkit || 0} | ⚡ ${d.stock.battery || 0}</span>
+        </div>
+      `;
+    }
+
+    for (const key of Object.keys(depotMarkers.current)) {
+      if (!seen.has(key)) {
+        depotMarkers.current[key]?.remove();
+        delete depotMarkers.current[key];
+      }
+    }
+  }, [depots, facilitiesVisible, currentZoom, isPanIndia, ready]);
 
 
   /* ---------- collaborator cursors ---------- */

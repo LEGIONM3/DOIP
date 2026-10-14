@@ -39,8 +39,19 @@ def test_pan_india_baseline_generation():
 
     units = init_payload["units"]
     depots = init_payload["depots"]
-    assert len(units) >= 20
-    assert len(depots) == 7  # 7 strategic depots including Northeast (Tezpur)
+    personnel = init_payload["personnel"]
+    zones = init_payload["zones"]
+    assert len(units) == 44  # 22 patrols, 11 UAVs, 11 convoys
+    assert len(depots) == 11  # 11 strategic depots across all 11 weather stations
+    assert len(zones) == 11   # 11 strategic tactical zones
+    assert 77 <= len(personnel) <= 100
+
+    # Verify personnel referential integrity
+    unit_ids = {u["id"] for u in units}
+    for p in personnel:
+        assert p["unitId"] in unit_ids
+        assert p.get("role") is not None
+        assert p.get("sector") is not None
 
     # Verify pan-India geographic spread (from Ladakh ~34N to South/Islands ~11N)
     lats = [u["lat"] for u in units]
@@ -111,8 +122,9 @@ def test_api_world_baseline(client):
     data = resp.json()
     assert data["worldMode"] == "baseline"
     assert data["subcontinent"] == "India"
-    assert len(data["units"]) >= 20
-    assert len(data["depots"]) == 7
+    assert len(data["units"]) == 44
+    assert len(data["depots"]) == 11
+    assert len(data["zones"]) == 11
     assert "environmentalContext" in data
 
 

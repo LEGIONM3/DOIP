@@ -419,6 +419,115 @@
   color: var(--cursor-color);
 }
 
+/* Sector Overview Cluster Badges — National Zoom (zoom < 5.8) */
+.doip-sector-cluster-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 130px;
+  padding: 5px 8px;
+  background: rgba(10, 14, 22, 0.94);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 10px rgba(56, 189, 248, 0.2);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #e2e8f0;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+.doip-sector-cluster-badge:hover {
+  transform: scale(1.06);
+  border-color: #38bdf8;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9), 0 0 16px rgba(56, 189, 248, 0.45);
+}
+.doip-cluster-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 9.5px;
+  color: #38bdf8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 2px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.doip-cluster-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5px;
+  font-size: 9px;
+  color: #94a3b8;
+}
+.doip-cluster-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.doip-cluster-stat-val {
+  font-weight: 600;
+  color: #f1f5f9;
+}
+.doip-cluster-weather-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 4px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  font-size: 8.5px;
+  color: #38bdf8;
+  margin-top: 2px;
+}
+
+/* Strategic Facilities & Depots — Regional & Local Zoom */
+.doip-facility-marker {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7), 0 0 8px rgba(16, 185, 129, 0.25);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: #e2e8f0;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.doip-facility-marker:hover {
+  transform: scale(1.08);
+  border-color: #10b981;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 12px rgba(16, 185, 129, 0.5);
+}
+.doip-facility-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  font-size: 10px;
+}
+.doip-facility-tag {
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #34d399;
+}
+.doip-facility-stock {
+  font-size: 8px;
+  color: #94a3b8;
+}
+
 /* Radar sweep — S3 only, anchored on base location */
 .doip-radar-sweep {
   position: absolute;

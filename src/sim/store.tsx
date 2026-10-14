@@ -50,6 +50,11 @@ export interface SimStoreState {
   weatherLayerVisible: boolean;
   movementTrailsVisible: boolean;
   windVectorsVisible: boolean;
+  facilitiesVisible: boolean;
+  supplyCorridorsVisible: boolean;
+  zonesVisible: boolean;
+  unitsVisible: boolean;
+  clusterBadgesVisible: boolean;
 }
 
 export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
@@ -299,6 +304,11 @@ const initial: SimStoreState = {
   weatherLayerVisible: false,
   movementTrailsVisible: true,
   windVectorsVisible: false,
+  facilitiesVisible: true,
+  supplyCorridorsVisible: true,
+  zonesVisible: true,
+  unitsVisible: true,
+  clusterBadgesVisible: true,
 };
 
 class SimStore {
@@ -642,6 +652,46 @@ class SimStore {
 
   setWindVectorsVisible(windVectorsVisible: boolean) {
     this.set({ windVectorsVisible });
+  }
+
+  setFacilitiesVisible(facilitiesVisible: boolean) {
+    this.set({ facilitiesVisible });
+  }
+
+  setSupplyCorridorsVisible(supplyCorridorsVisible: boolean) {
+    this.set({ supplyCorridorsVisible });
+  }
+
+  setZonesVisible(zonesVisible: boolean) {
+    this.set({ zonesVisible });
+  }
+
+  setUnitsVisible(unitsVisible: boolean) {
+    this.set({ unitsVisible });
+  }
+
+  setClusterBadgesVisible(clusterBadgesVisible: boolean) {
+    this.set({ clusterBadgesVisible });
+  }
+
+  toggleFacilitiesVisible() {
+    this.set({ facilitiesVisible: !this.state.facilitiesVisible });
+  }
+
+  toggleSupplyCorridorsVisible() {
+    this.set({ supplyCorridorsVisible: !this.state.supplyCorridorsVisible });
+  }
+
+  toggleZonesVisible() {
+    this.set({ zonesVisible: !this.state.zonesVisible });
+  }
+
+  toggleUnitsVisible() {
+    this.set({ unitsVisible: !this.state.unitsVisible });
+  }
+
+  toggleClusterBadgesVisible() {
+    this.set({ clusterBadgesVisible: !this.state.clusterBadgesVisible });
   }
 
   clearSelectedLocationWeather() {

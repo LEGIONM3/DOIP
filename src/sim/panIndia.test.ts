@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildInitialWorld, MockSimSource, INDIAN_SECTORS } from "./engine";
+import { buildInitialWorld, MockSimSource, INDIAN_SECTORS, STRATEGIC_SUPPLY_CORRIDORS } from "./engine";
 import { simStore } from "./store";
 
 describe("Pan-India Live World Model & Simulation", () => {
@@ -17,16 +17,44 @@ describe("Pan-India Live World Model & Simulation", () => {
 
   it("generates Pan-India live baseline units across strategic Indian sectors", () => {
     const world = buildInitialWorld(20261014, "IN-BASE-LIVE");
-    expect(world.units.length).toBeGreaterThanOrEqual(20);
-    expect(world.depots.length).toBe(7); // 7 strategic depots across subcontinent
+    expect(world.units.length).toBe(44); // 22 patrols, 11 UAVs, 11 convoys
+    expect(world.depots.length).toBe(11); // 11 strategic depots across all 11 sectors
+    expect(world.zones.length).toBe(11);  // 11 tactical zones
+    expect(world.personnel.length).toBeGreaterThanOrEqual(77);
+    expect(world.personnel.length).toBeLessThanOrEqual(100);
 
     const sectors = new Set(world.units.map((u) => u.sector));
+    expect(sectors.size).toBe(11);
     expect(sectors.has("NORTH")).toBe(true);
+    expect(sectors.has("KASHMIR")).toBe(true);
+    expect(sectors.has("NCR")).toBe(true);
     expect(sectors.has("WEST")).toBe(true);
-    expect(sectors.has("EAST")).toBe(true);
+    expect(sectors.has("KUTCH")).toBe(true);
     expect(sectors.has("CENTRAL")).toBe(true);
-    expect(sectors.has("SOUTH")).toBe(true);
+    expect(sectors.has("EAST")).toBe(true);
+    expect(sectors.has("BENGAL")).toBe(true);
     expect(sectors.has("NORTHEAST")).toBe(true);
+    expect(sectors.has("SOUTH")).toBe(true);
+    expect(sectors.has("LITTORAL")).toBe(true);
+
+    // Verify referential integrity between units and personnel
+    const unitIds = new Set(world.units.map((u) => u.id));
+    for (const p of world.personnel) {
+      expect(unitIds.has(p.unitId)).toBe(true);
+      expect(p.role).toBeDefined();
+      expect(p.sector).toBeDefined();
+    }
+
+    // Verify units have personnelCount
+    for (const u of world.units) {
+      expect(u.personnelCount).toBeGreaterThanOrEqual(1);
+    }
+
+    // Verify depots have sector and facilityType
+    for (const d of world.depots) {
+      expect(d.sector).toBeDefined();
+      expect(d.facilityType).toBeDefined();
+    }
 
     const lats = world.units.map((u) => u.lat);
     const lons = world.units.map((u) => u.lon);
@@ -88,5 +116,56 @@ describe("Pan-India Live World Model & Simulation", () => {
     expect(simStore.getState().worldMode).toBe("baseline");
     expect(simStore.getState().activeBranchId).toBeNull();
     expect(simStore.getState().scenarioId).toBe("IN-BASE-LIVE");
+  });
+
+  it("validates all 8 strategic supply corridors connect valid Indian sectors", () => {
+    expect(STRATEGIC_SUPPLY_CORRIDORS.length).toBe(8);
+
+    for (const corr of STRATEGIC_SUPPLY_CORRIDORS) {
+      expect(INDIAN_SECTORS[corr.fromSector]).toBeDefined();
+      expect(INDIAN_SECTORS[corr.toSector]).toBeDefined();
+      expect(corr.points.length).toBeGreaterThanOrEqual(2);
+      expect(["highway", "air", "maritime"]).toContain(corr.category);
+    }
+  });
+
+  it("verifies depot capacity and stock integrity across all 11 sectors", () => {
+    const world = buildInitialWorld(20261014, "IN-BASE-LIVE");
+    for (const d of world.depots) {
+      expect(d.stock.fuel).toBeGreaterThan(0);
+      expect(d.stock.fuel).toBeLessThanOrEqual(d.capacity.fuel);
+      expect(d.stock.medkit).toBeGreaterThan(0);
+      expect(d.stock.medkit).toBeLessThanOrEqual(d.capacity.medkit);
+      expect(d.stock.rations).toBeGreaterThan(0);
+      expect(d.stock.rations).toBeLessThanOrEqual(d.capacity.rations);
+      expect(d.stock.battery).toBeGreaterThan(0);
+      expect(d.stock.battery).toBeLessThanOrEqual(d.capacity.battery);
+    }
+  });
+
+  it("manages synthetic world layer visibility controls in simStore", () => {
+    expect(simStore.getState().facilitiesVisible).toBe(true);
+    expect(simStore.getState().supplyCorridorsVisible).toBe(true);
+    expect(simStore.getState().zonesVisible).toBe(true);
+    expect(simStore.getState().unitsVisible).toBe(true);
+
+    simStore.toggleFacilitiesVisible();
+    expect(simStore.getState().facilitiesVisible).toBe(false);
+
+    simStore.toggleSupplyCorridorsVisible();
+    expect(simStore.getState().supplyCorridorsVisible).toBe(false);
+
+    simStore.toggleZonesVisible();
+    expect(simStore.getState().zonesVisible).toBe(false);
+
+    simStore.toggleUnitsVisible();
+    expect(simStore.getState().unitsVisible).toBe(false);
+
+    // Reset back to visible
+    simStore.setFacilitiesVisible(true);
+    simStore.setSupplyCorridorsVisible(true);
+    simStore.setZonesVisible(true);
+    simStore.setUnitsVisible(true);
+    expect(simStore.getState().facilitiesVisible).toBe(true);
   });
 });

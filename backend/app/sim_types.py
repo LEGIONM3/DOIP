@@ -50,6 +50,7 @@ class Unit:
     sector: str
     route: list[tuple[float, float]]
     activeMissionId: str | None = None
+    personnelCount: int | None = None
 
     def to_dict(self) -> dict:
         d = {
@@ -69,6 +70,8 @@ class Unit:
         }
         if self.activeMissionId is not None:
             d["activeMissionId"] = self.activeMissionId
+        if self.personnelCount is not None:
+            d["personnelCount"] = self.personnelCount
         return d
 
 
@@ -80,9 +83,23 @@ class Depot:
     lon: float
     stock: dict[str, float]
     capacity: dict[str, float]
+    sector: str | None = None
+    facilityType: str | None = None
 
     def to_dict(self) -> dict:
-        return self.__dict__.copy()
+        d = {
+            "id": self.id,
+            "name": self.name,
+            "lat": self.lat,
+            "lon": self.lon,
+            "stock": self.stock,
+            "capacity": self.capacity,
+        }
+        if self.sector is not None:
+            d["sector"] = self.sector
+        if self.facilityType is not None:
+            d["facilityType"] = self.facilityType
+        return d
 
 
 @dataclass
@@ -97,6 +114,8 @@ class Person:
     condition: str = "fit"
     activeMissionId: str | None = None
     missionHistory: list[str] = field(default_factory=list)
+    role: str | None = None
+    sector: str | None = None
 
     def to_dict(self) -> dict:
         d = {
@@ -114,9 +133,11 @@ class Person:
             d["activeMissionId"] = self.activeMissionId
         if self.missionHistory:
             d["missionHistory"] = self.missionHistory
+        if self.role is not None:
+            d["role"] = self.role
+        if self.sector is not None:
+            d["sector"] = self.sector
         return d
-
-
 
 
 @dataclass
@@ -127,9 +148,20 @@ class WeatherCell:
     radiusM: float
     intensity: float
     kind: str
+    sector: str | None = None
 
     def to_dict(self) -> dict:
-        return self.__dict__.copy()
+        d = {
+            "id": self.id,
+            "lat": self.lat,
+            "lon": self.lon,
+            "radiusM": self.radiusM,
+            "intensity": self.intensity,
+            "kind": self.kind,
+        }
+        if self.sector is not None:
+            d["sector"] = self.sector
+        return d
 
 
 @dataclass
@@ -138,6 +170,15 @@ class Zone:
     name: str
     kind: str  # patrol | restricted | threat
     points: list[tuple[float, float]]
+    sector: str | None = None
 
     def to_dict(self) -> dict:
-        return self.__dict__.copy()
+        d = {
+            "id": self.id,
+            "name": self.name,
+            "kind": self.kind,
+            "points": self.points,
+        }
+        if self.sector is not None:
+            d["sector"] = self.sector
+        return d
