@@ -29,12 +29,21 @@ log = logging.getLogger(__name__)
 class SimulationBranch:
     """An isolated simulation branch running independently from the baseline."""
 
-    def __init__(self, branch_id: str, scenario_id: str, seed: int = 20261014, name: str | None = None) -> None:
+    def __init__(
+        self,
+        branch_id: str,
+        scenario_id: str,
+        seed: int = 20261014,
+        name: str | None = None,
+        environmental_snapshot: dict[str, Any] | None = None,
+    ) -> None:
         self.branch_id = branch_id
         self.scenario_id = scenario_id
         self.seed = seed
         self.name = name or f"Branch: {scenario_id}"
         self.created_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        # Immutable frozen environmental snapshot
+        self.environmental_snapshot = copy.deepcopy(environmental_snapshot) if environmental_snapshot else None
         self.engine = SimEngine()
         self.init_events = self.engine.start(seed, scenario_id)
         self.initial_snapshot = self.engine.snapshot()
@@ -59,6 +68,7 @@ class SimulationBranch:
             "units_count": len(self.engine._units),
             "depots_count": len(self.engine._depots),
             "weather_count": len(self.engine._weather),
+            "environmental_snapshot": self.environmental_snapshot,
         }
 
 

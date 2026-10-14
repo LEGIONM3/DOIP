@@ -191,3 +191,62 @@ export interface SimSource {
   subscribe(cb: (events: SimEvent[]) => void): () => void;
 }
 
+export type WeatherFreshness = "fresh" | "stale" | "fallback";
+
+export interface WeatherObservation {
+  provider: string;
+  location_query: string;
+  resolved_name?: string | null;
+  region?: string | null;
+  country?: string | null;
+  lat: number;
+  lon: number;
+  timezone_id?: string | null;
+  provider_localtime?: string | null;
+  provider_observation_time_epoch?: number | null;
+  provider_observation_time_utc?: string | null;
+  fetch_timestamp_utc: string;
+  temp_c?: number | null;
+  feelslike_c?: number | null;
+  temp_f?: number | null;
+  feelslike_f?: number | null;
+  humidity_pct?: number | null;
+  wind_kph?: number | null;
+  wind_mph?: number | null;
+  wind_degree?: number | null;
+  wind_dir?: string | null;
+  gust_kph?: number | null;
+  precip_mm?: number | null;
+  cloud_pct?: number | null;
+  visibility_km?: number | null;
+  pressure_mb?: number | null;
+  uv_index?: number | null;
+  is_day?: boolean | null;
+  condition_text?: string | null;
+  condition_icon?: string | null;
+  condition_code?: number | null;
+  provenance: EnvironmentalProvenance;
+  freshness: WeatherFreshness;
+  is_cached: boolean;
+  cache_age_seconds: number;
+  stale_warning?: string | null;
+}
+
+export interface WeatherDiagnostics {
+  service: string;
+  is_configured: boolean;
+  cache_ttl_seconds: number;
+  cache_total_entries: number;
+  cache_fresh_entries: number;
+  metrics: {
+    total_requests: number;
+    cache_hits: number;
+    cache_misses: number;
+    stale_serves: number;
+    provider_errors: number;
+    last_error: string | null;
+    last_success_utc: string | null;
+  };
+}
+
+

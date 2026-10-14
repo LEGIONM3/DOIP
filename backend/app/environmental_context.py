@@ -21,6 +21,8 @@ from typing import Any, Literal
 
 import httpx
 
+from .weather_service import weather_service
+
 log = logging.getLogger(__name__)
 
 ProvenanceType = Literal[
@@ -264,7 +266,54 @@ class EnvironmentalContextService:
     async def _fetch_station_weather(
         self, client: httpx.AsyncClient, stn_id: str, stn: dict[str, Any]
     ) -> dict[str, Any]:
-        """Fetch current weather for one station from Open-Meteo with strict fallback."""
+        """Fetch current weather for one station, prioritizing WeatherAPI.com with Open-Meteo fallback."""
+        # Tier 1: WeatherAPI.com (if key configured)
+        if weather_service.is_configured:
+            try:
+                obs = await weather_service.get_current_weather(
+                    lat=stn["lat"], lon=stn["lon"], client=client
+                )
+                temp = obs.temp_c if obs.temp_c is not None else stn["default"]["temperatureC"]
+                humidity = obs.humidity_pct if obs.humidity_pct is not None else stn["default"]["humidityPct"]
+                precip = obs.precip_mm if obs.precip_mm is not None else stn["default"]["precipitationMm"]
+                w_speed = obs.wind_kph if obs.wind_kph is not None else stn["default"]["windSpeedKph"]
+                w_dir = obs.wind_degree if obs.wind_degree is not None else stn["default"]["windDirectionDeg"]
+                label = obs.condition_text or "Variable Weather"
+
+                severe_alert = None
+                if w_speed >= 65.0:
+                    severe_alert = f"Gale warning: wind speed {w_speed:.1f} km/h exceeds threshold"
+                elif temp >= 45.0:
+                    severe_alert = f"Extreme thermal load: {temp:.1f}°C ambient temperature"
+                elif temp <= -10.0:
+                    severe_alert = f"Severe freeze: {temp:.1f}°C with structural icing risk"
+                elif precip >= 30.0:
+                    severe_alert = f"Torrential downpour: {precip:.1f} mm/h precipitation"
+
+                return {
+                    "id": stn["id"],
+                    "name": stn["name"],
+                    "region": stn["region"],
+                    "lat": stn["lat"],
+                    "lon": stn["lon"],
+                    "elevationM": stn.get("elevation_m", 0),
+                    "temperatureC": round(temp, 1),
+                    "humidityPct": round(humidity, 1),
+                    "windSpeedKph": round(w_speed, 1),
+                    "windDirectionDeg": w_dir,
+                    "precipitationMm": round(precip, 1),
+                    "weatherCode": obs.condition_code or 0,
+                    "conditionLabel": label,
+                    "conditionIcon": obs.condition_icon,
+                    "severeAlert": severe_alert,
+                    "provider": "WeatherAPI.com",
+                    "provenance": obs.provenance,
+                    "lastUpdated": obs.fetch_timestamp_utc,
+                }
+            except Exception as exc:
+                log.warning("WeatherAPI fetch failed for %s: %s; falling back to secondary provider", stn_id, exc)
+
+        # Tier 2: Open-Meteo fallback
         url = "https://api.open-meteo.com/v1/forecast"
         params = {
             "latitude": stn["lat"],

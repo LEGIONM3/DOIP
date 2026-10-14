@@ -12,6 +12,7 @@ import type {
   Role,
   RunStatus,
   SimEvent,
+  WeatherObservation,
   WorldMode,
   WorldState,
 } from "./types";
@@ -42,6 +43,9 @@ export interface SimStoreState {
   activeBranchId: string | null;
   baselineSnapshot: WorldState | null;
   environmentalContext: EnvironmentalContext | null;
+  selectedLocationWeather: WeatherObservation | null;
+  weatherLoading: boolean;
+  weatherError: string | null;
 }
 
 export const DEFAULT_INDIA_ENVIRONMENT: EnvironmentalContext = {
@@ -188,6 +192,9 @@ const initial: SimStoreState = {
   activeBranchId: null,
   baselineSnapshot: null,
   environmentalContext: DEFAULT_INDIA_ENVIRONMENT,
+  selectedLocationWeather: null,
+  weatherLoading: false,
+  weatherError: null,
 };
 
 class SimStore {
@@ -485,6 +492,40 @@ class SimStore {
     }
     this.set({ environmentalContext: DEFAULT_INDIA_ENVIRONMENT });
     return DEFAULT_INDIA_ENVIRONMENT;
+  }
+
+  async fetchWeatherForLocation(
+    lat: number,
+    lon: number,
+    refresh = false,
+  ): Promise<WeatherObservation | null> {
+    this.set({ weatherLoading: true, weatherError: null });
+    try {
+      const url = `/api/weather/current?lat=${lat}&lon=${lon}${refresh ? "&refresh=true" : ""}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.ok && data.observation) {
+          const obs = data.observation as WeatherObservation;
+          this.set({ selectedLocationWeather: obs, weatherLoading: false });
+          return obs;
+        } else {
+          this.set({
+            weatherError: data.detail || data.message || "Failed to load weather observation",
+            weatherLoading: false,
+          });
+        }
+      } else {
+        this.set({ weatherError: `HTTP ${res.status}`, weatherLoading: false });
+      }
+    } catch (err) {
+      this.set({ weatherError: String(err), weatherLoading: false });
+    }
+    return null;
+  }
+
+  clearSelectedLocationWeather() {
+    this.set({ selectedLocationWeather: null, weatherError: null });
   }
 }
 

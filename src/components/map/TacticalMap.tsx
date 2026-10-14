@@ -6,7 +6,7 @@ import { SEVERITY_META, unitDesignator } from "@/lib/doip";
 import { simStore, useSim } from "@/sim/store";
 import { isStale } from "@/sim/reducer";
 import type { Incident, Unit, WeatherCell, Zone } from "@/sim/types";
-import { Compass, Box, Square, Key, RotateCcw, Cloud, Radio, ChevronDown, Activity } from "lucide-react";
+import { Compass, Box, Square, Key, RotateCcw, Cloud, Radio, ChevronDown, Activity, RefreshCw, X } from "lucide-react";
 import type { Feature, FeatureCollection } from "geojson";
 import { resolveMapStyle, getMapAttribution } from "@/lib/mapConfig";
 import { MapKeyDialog } from "./MapKeyDialog";
@@ -162,6 +162,9 @@ export default function TacticalMap({
   const activeBranchId = useSim((s) => s.activeBranchId);
   const currentScenarioId = useSim((s) => s.scenarioId);
   const envContext = useSim((s) => s.environmentalContext);
+  const selectedWeather = useSim((s) => s.selectedLocationWeather);
+  const weatherLoading = useSim((s) => s.weatherLoading);
+  const weatherError = useSim((s) => s.weatherError);
   const [metDrawerOpen, setMetDrawerOpen] = useState(false);
   const [activeSector, setActiveSector] = useState("ALL-IN");
 
@@ -407,7 +410,10 @@ export default function TacticalMap({
     };
     map.on("style.load", initLayers);
 
-    map.on("click", (e: MapMouseEvent) => cbRef.current.onMapClick?.([e.lngLat.lat, e.lngLat.lng]));
+    map.on("click", (e: MapMouseEvent) => {
+      void simStore.fetchWeatherForLocation(e.lngLat.lat, e.lngLat.lng);
+      cbRef.current.onMapClick?.([e.lngLat.lat, e.lngLat.lng]);
+    });
     map.on("rotate", () => setBearing(map.getBearing()));
     map.on("moveend", () => {
       const c = map.getCenter();
@@ -874,11 +880,20 @@ export default function TacticalMap({
             {Object.values(envContext.stations).map((stn) => (
               <div
                 key={stn.id}
-                className="border border-zinc-900 bg-zinc-950/60 p-1.5 flex flex-col gap-0.5 hover:border-zinc-700 transition-colors"
+                onClick={() => {
+                  mapRef.current?.easeTo({ center: [stn.lon, stn.lat], zoom: 7.5, duration: 800 });
+                  void simStore.fetchWeatherForLocation(stn.lat, stn.lon);
+                }}
+                className="border border-zinc-900 bg-zinc-950/60 p-1.5 flex flex-col gap-0.5 hover:border-sky-500/60 transition-colors cursor-pointer group"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-zinc-200">{stn.name}</span>
-                  <span className="text-[10px] font-bold text-sky-400">{stn.temperatureC}°C</span>
+                  <span className="font-semibold text-zinc-200 group-hover:text-sky-300 transition-colors">{stn.name}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold text-sky-400">{stn.temperatureC}°C</span>
+                    <span className="text-[9px] bg-sky-950/90 text-sky-300 border border-sky-800/80 px-1 py-0.2 group-hover:bg-sky-900">
+                      LIVE
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-center justify-between text-[10px] text-zinc-400">
                   <span>{stn.region}</span>
@@ -897,6 +912,174 @@ export default function TacticalMap({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Floating Tactical Weather Inspection Card */}
+      {(selectedWeather || weatherLoading || weatherError) && (
+        <div className="absolute bottom-3 right-3 z-20 w-80 max-w-[calc(100vw-24px)] border border-sky-500/40 bg-[rgba(10,10,10,0.95)] p-3 font-mono text-zinc-300 shadow-2xl backdrop-blur-md">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-1.5 mb-2">
+            <div className="flex items-center gap-1.5">
+              <Cloud className="size-4 text-sky-400 shrink-0" />
+              <div className="min-w-0">
+                <div className="text-[11px] font-bold tracking-wider text-white truncate">
+                  {selectedWeather?.resolved_name || (selectedWeather ? `${selectedWeather.lat.toFixed(2)}°, ${selectedWeather.lon.toFixed(2)}°` : "WEATHER OBSERVATION")}
+                </div>
+                <div className="text-[9px] text-zinc-400 truncate">
+                  {selectedWeather?.region ? `${selectedWeather.region}, ` : ""}{selectedWeather?.country ?? "Subcontinent"}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 shrink-0">
+              {selectedWeather && (
+                <button
+                  onClick={() => simStore.fetchWeatherForLocation(selectedWeather.lat, selectedWeather.lon, true)}
+                  title="Force refresh live observation from WeatherAPI.com"
+                  disabled={weatherLoading}
+                  className="p-1 text-zinc-400 hover:text-sky-300 hover:bg-zinc-800 transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw className={`size-3.5 ${weatherLoading ? "animate-spin text-sky-400" : ""}`} />
+                </button>
+              )}
+              <button
+                onClick={() => simStore.clearSelectedLocationWeather()}
+                title="Dismiss observation"
+                className="p-1 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {weatherLoading && !selectedWeather && (
+            <div className="py-4 text-center text-xs text-sky-400 animate-pulse">
+              Querying WeatherAPI.com live observation...
+            </div>
+          )}
+
+          {weatherError && (
+            <div className="mb-2 border border-amber-800/60 bg-amber-950/40 p-1.5 text-[10px] text-amber-300">
+              ⚠ {weatherError}
+            </div>
+          )}
+
+          {selectedWeather && (
+            <div className="space-y-2">
+              {/* Badges Row */}
+              <div className="flex flex-wrap items-center gap-1 text-[9px]">
+                <span className="border border-sky-800 bg-sky-950/80 px-1 py-0.5 font-semibold text-sky-300">
+                  {selectedWeather.provider}
+                </span>
+                <span
+                  className={`border px-1 py-0.5 font-semibold ${
+                    selectedWeather.freshness === "fresh"
+                      ? "border-emerald-800 bg-emerald-950/80 text-emerald-300"
+                      : selectedWeather.freshness === "stale"
+                        ? "border-amber-800 bg-amber-950/80 text-amber-300"
+                        : "border-zinc-800 bg-zinc-900 text-zinc-300"
+                  }`}
+                >
+                  {selectedWeather.freshness.toUpperCase()}
+                  {selectedWeather.is_cached ? ` (${Math.round(selectedWeather.cache_age_seconds)}s)` : ""}
+                </span>
+                <span className="border border-zinc-700 bg-zinc-900 px-1 py-0.5 text-zinc-400">
+                  {selectedWeather.provenance}
+                </span>
+              </div>
+
+              {/* Temperature & Condition Highlight */}
+              <div className="flex items-center justify-between bg-zinc-950/80 border border-zinc-900 p-2">
+                <div>
+                  <div className="text-2xl font-bold tracking-tight text-white">
+                    {selectedWeather.temp_c !== null && selectedWeather.temp_c !== undefined
+                      ? `${selectedWeather.temp_c.toFixed(1)}°C`
+                      : "--"}
+                    {selectedWeather.temp_f !== null && selectedWeather.temp_f !== undefined && (
+                      <span className="ml-1.5 text-xs text-zinc-400 font-normal">
+                        ({selectedWeather.temp_f.toFixed(1)}°F)
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[10px] text-zinc-400">
+                    Feels like: {selectedWeather.feelslike_c !== null && selectedWeather.feelslike_c !== undefined
+                      ? `${selectedWeather.feelslike_c.toFixed(1)}°C`
+                      : "--"}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-end">
+                  {selectedWeather.condition_icon && (
+                    <img
+                      src={selectedWeather.condition_icon.startsWith("//") ? `https:${selectedWeather.condition_icon}` : selectedWeather.condition_icon}
+                      alt={selectedWeather.condition_text ?? "Condition"}
+                      className="size-8 object-contain"
+                    />
+                  )}
+                  <span className="text-[11px] font-semibold text-sky-300 text-right">
+                    {selectedWeather.condition_text ?? "N/A"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Multi-Parameter Environmental Grid */}
+              <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+                <div className="border border-zinc-900 bg-zinc-950/40 p-1">
+                  <span className="text-zinc-500">WIND:</span>{" "}
+                  <span className="font-semibold text-zinc-200">
+                    {selectedWeather.wind_kph ?? "--"} km/h {selectedWeather.wind_dir ?? ""}
+                  </span>
+                </div>
+                <div className="border border-zinc-900 bg-zinc-950/40 p-1">
+                  <span className="text-zinc-500">HUMIDITY:</span>{" "}
+                  <span className="font-semibold text-zinc-200">
+                    {selectedWeather.humidity_pct ?? "--"}%
+                  </span>
+                </div>
+                <div className="border border-zinc-900 bg-zinc-950/40 p-1">
+                  <span className="text-zinc-500">PRECIP:</span>{" "}
+                  <span className="font-semibold text-zinc-200">
+                    {selectedWeather.precip_mm ?? "0"} mm
+                  </span>
+                </div>
+                <div className="border border-zinc-900 bg-zinc-950/40 p-1">
+                  <span className="text-zinc-500">PRESSURE:</span>{" "}
+                  <span className="font-semibold text-zinc-200">
+                    {selectedWeather.pressure_mb ?? "--"} mb
+                  </span>
+                </div>
+                <div className="border border-zinc-900 bg-zinc-950/40 p-1">
+                  <span className="text-zinc-500">UV INDEX:</span>{" "}
+                  <span className="font-semibold text-zinc-200">
+                    {selectedWeather.uv_index ?? "--"}
+                  </span>
+                </div>
+                <div className="border border-zinc-900 bg-zinc-950/40 p-1">
+                  <span className="text-zinc-500">VISIBILITY:</span>{" "}
+                  <span className="font-semibold text-zinc-200">
+                    {selectedWeather.visibility_km ?? "--"} km
+                  </span>
+                </div>
+              </div>
+
+              {selectedWeather.stale_warning && (
+                <div className="border border-amber-900/60 bg-amber-950/40 p-1 text-[9px] text-amber-300">
+                  ⚠ {selectedWeather.stale_warning}
+                </div>
+              )}
+
+              {/* Coordinates and Timestamp Footer */}
+              <div className="flex items-center justify-between border-t border-zinc-900 pt-1 text-[9px] text-zinc-500">
+                <span>
+                  {selectedWeather.lat.toFixed(4)}°N, {selectedWeather.lon.toFixed(4)}°E
+                </span>
+                <span>
+                  {selectedWeather.provider_localtime
+                    ? `Local: ${selectedWeather.provider_localtime}`
+                    : `UTC: ${selectedWeather.fetch_timestamp_utc.slice(11, 16)}`}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

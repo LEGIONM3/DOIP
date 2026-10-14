@@ -96,6 +96,7 @@ from .quality_platform import quality_platform
 from .research_sandbox import research_sandbox
 from .environmental_context import environmental_context_service
 from .world_model import world_model_service
+from .weather_service import weather_service, redact_secrets
 from fastapi.responses import PlainTextResponse
 
 app = FastAPI(title="DOIP Command Center Backend", version="0.9.0")
@@ -239,6 +240,68 @@ def step_simulation_branch(body: StepSimulationBody) -> dict:
         return {"branch_id": body.branch_id, "events": events}
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
+
+
+# ============================================================
+# WeatherAPI.com Current-Weather & Snapshot Endpoints
+# ============================================================
+@app.get("/api/weather/current")
+async def get_current_weather(
+    lat: float | None = None,
+    lon: float | None = None,
+    q: str | None = None,
+    refresh: bool = False,
+) -> dict:
+    if lat is None and lon is None and not q:
+        raise HTTPException(
+            status_code=400,
+            detail="Either lat/lon coordinates or query string 'q' must be provided",
+        )
+    if (lat is not None and lon is None) or (lat is None and lon is not None):
+        raise HTTPException(
+            status_code=400,
+            detail="Both 'lat' and 'lon' coordinates must be provided together",
+        )
+    if lat is not None and lon is not None:
+        if not (-90.0 <= lat <= 90.0 and -180.0 <= lon <= 180.0):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Coordinates out of bounds: lat={lat}, lon={lon}",
+            )
+    try:
+        obs = await weather_service.get_current_weather(
+            lat=lat, lon=lon, query=q, force_refresh=refresh
+        )
+        return {"ok": True, "source": "WeatherAPI.com", "observation": obs.to_dict()}
+    except RuntimeError as exc:
+        safe_msg = redact_secrets(str(exc))
+        return {
+            "ok": False,
+            "error": "weather_unavailable",
+            "message": "Weather service is currently unavailable or unconfigured.",
+            "detail": safe_msg,
+        }
+
+
+@app.get("/api/weather/health")
+def get_weather_health() -> dict:
+    return {"ok": True, "diagnostics": weather_service.get_diagnostics()}
+
+
+@app.get("/api/weather/snapshot")
+async def get_weather_snapshot() -> dict:
+    env_ctx = await environmental_context_service.get_environmental_context()
+    snap_id = f"SNAP-ENV-{hash(env_ctx.get('lastSync', '')) & 0xFFFFFFFF:08X}"
+    return {
+        "ok": True,
+        "snapshot_id": snap_id,
+        "subcontinent": "India",
+        "captured_at": env_ctx.get("lastSync"),
+        "global_provenance": env_ctx.get("globalProvenance"),
+        "stations_count": env_ctx.get("stationsCount"),
+        "stations": env_ctx.get("stations"),
+    }
+
 
 
 
